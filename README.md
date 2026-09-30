@@ -1,4 +1,4 @@
-# LinYi - Community Parcel Collection Point Management System
+#Community Parcel Collection Point Management System
 
 COMP 3500SEF Software Engineering, group project, 10 members.
 
