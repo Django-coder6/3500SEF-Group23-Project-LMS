@@ -13,7 +13,7 @@ For example `20260000_ZhangSan_Logbook.md`.
    the end of the semester.
 2. A record without a link is not evidence. Every entry needs a pull request,
    commit, issue or document path.
-3. No empty weeks. From week 1 to week 16, any week with work in it needs at
+3. No empty weeks. From week 1 to week 8, any week with work in it needs at
    least one row.
 4. Update your file before 21:00 every Sunday.
 
