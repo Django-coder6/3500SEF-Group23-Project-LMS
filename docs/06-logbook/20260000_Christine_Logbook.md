@@ -3,7 +3,7 @@
 - GitHub: @Christine049
 - Role: R5 frontend developer
 - Modules: resident, staff and admin pages
-- Period covered: W01-W16
+- Period covered: W01-W8
 ## Weekly log
 
 | Week | Date | Task | Description | Time | Hours | Status | Evidence | With | Problem and fix | Note |
