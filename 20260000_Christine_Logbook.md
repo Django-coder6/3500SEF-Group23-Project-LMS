@@ -2,7 +2,7 @@
 - Student ID: 13374348
 - GitHub: @Christine049
 - Role: R5 frontend developer
-- Modules: TBD
+- Modules: resident, staff and admin pages
 - Period covered: W01-W16
 ## Weekly log
 
