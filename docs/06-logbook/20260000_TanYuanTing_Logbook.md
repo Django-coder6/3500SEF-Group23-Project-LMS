@@ -8,7 +8,7 @@
 
 | Week | Date | Task | Description | Time | Hours | Status | Evidence | With | Problem and fix | Note |
 |---|---|---|---|---|---|---|---|---|---|---|
-| W01 | 2026-10-05 | T-00-05 | I finished reading CONTRIBUTING.md and made my first commit. | 21:00-21:30 | 0.5 | done | https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/21 | - | - | I used the PR workflow for the first time.
+| W01 | 2026-10-05 | T-00-02 | I finished reading CONTRIBUTING.md and made my first commit. | 21:00-21:30 | 0.5 | done | https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/21 | - | - | I used the PR workflow for the first time.
 
  |
 ---
