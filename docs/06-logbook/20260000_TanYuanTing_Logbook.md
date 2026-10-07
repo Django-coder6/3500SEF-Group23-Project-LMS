@@ -8,5 +8,5 @@
 
 | Week | Date | Task | Description | Time | Hours | Status | Evidence | With | Problem and fix | Note |
 |---|---|---|---|---|---|---|---|---|---|---|
-| W01 | 2026-10-07 | T-00-05 | 讀完 CONTRIBUTING.md 並完成第一次提交 | 22:00-22:30 | 0.5 | done | （稍後補上 PR 連結） | - | - | 第一次用 PR 流程 |
+| W01 | 2026-10-07 | T-00-05 | 讀完 CONTRIBUTING.md 並完成第一次提交 | 22:00-22:30 | 0.5 | done | https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/23 | - | - | 第一次用 PR 流程 |
 ---
