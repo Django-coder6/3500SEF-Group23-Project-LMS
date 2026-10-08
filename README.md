@@ -1,4 +1,4 @@
-# - Community Parcel Collection Point Management System
+## - Community Parcel Collection Point Management System
 
 COMP 3500SEF Software Engineering, group project, 10 members.
 
@@ -25,20 +25,21 @@ by staff through the web interface.
 | backend | Express + Sequelize service | R6, R7 |
 | frontend | Vue 3 + Vite client | R4, R5 |
 
+
 ## Team
 
-| ID | Role | Name | GitHub | Module |
-|---|---|---|---|---|
-| R1 | Project manager | | @ | schedule, reviews, report process chapters |
-| R2 | Product owner | | @ | backlog, priorities, billing rules |
-| R3 | Requirements analyst | | @ | SRS, RTM, elicitation |
-| R4 | Frontend lead | | @ | frontend architecture, design system, UML |
-| R5 | Frontend developer | | @ | resident, staff and admin pages |
-| R6 | Backend lead | | @ | architecture, data model, API, recommender |
-| R7 | Backend developer | | @ | location, pickup, billing, stocktake |
-| R8 | QA lead | | @ | test plan, cases, defects, acceptance |
-| R9 | Documentation | | @ | report editing, user manual, glossary |
-| R10 | DevOps and integration | | @ | CI, Docker, fake data service, deployment |
+| Role ID | Role | Name | Student ID | GitHub |
+| :---: | --- | --- | --- | --- |
+| RI | Project Lead / Team Leader | Liu Jialiao | 13662451 | [Django-coder6](https://github.com/Django-coder6) |
+| R2 | Product Owner | Chan Yin Cho | 14489395 | [ohcyc246](https://github.com/ohcyc246) |
+| R3 | Requirements Documentation Officer / Business Analyst | Li Cheuk Fung | 1432036 | [Kennethli13](https://github.com/Kennethli13) |
+| R4 | Frontend Lead + Product Architect A | Yuan Chong Jun | 13705584| [RookieVENENO](https://github.com/RookieVENENO/) |
+| R5 | Frontend Developer | Tan Yuan Ting | 13374348 | [Christine049](https://github.com/Christine049) |
+| R6 | Backend Lead + Product Architect B | Hu Qing Kai | 13661454 | [123dvfj123](https://github.com/123dvfj123?tab=repositories)|
+| R7 | Backend Developer | Huang Wei Jia | 13686319 | [Momoka17](https://github.com/momoka17)|
+| R8 | QA Lead | Wu Kehao | 14612273 | [fannaodawang](https://github.com/fannaodawang) |
+| R9 | Documentation & Quality | Guoyuhui | 14294174 | [RavenG7](https://github.com/RavenG7) |
+| R10 | Infrastructure & Integration DevOps | Chan Sung Ming | 14480597 | [smcheese9731-sys](https://github.com/smcheese9731-sys) |
 
 ## Getting started
 
