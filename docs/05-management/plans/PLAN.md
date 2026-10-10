@@ -29,8 +29,7 @@ to the task it belongs to.
 | M9 | stocktake and reconciliation | R7 |
 | M10 | reporting, audit and admin | R6 |
 
-Frontend pages are split by role: resident pages (R5), staff pages (R5),
-admin pages (R5), all reviewed by R4.
+Frontend foundation is owned by R4: application layout, routing, Pinia setup, Axios wrapper and shared components. Feature pages are implemented by R5 under R4's standards and reviewed by R4. Page-level ownership follows docs/02-design/frontend-page-map.md
 
 ## Sprint 2, weeks 3 to 4
 
@@ -43,17 +42,18 @@ hands the parcel over. Everything else waits.
 | T-30-01 | Docker Compose with PostgreSQL, Redis, backend and frontend | R10 | repository root |
 | T-30-02 | Spring Boot skeleton: controller / service / repository / entity / dto, unified error handling | R6 | backend/src/main/java/com/linyi/common |
 | T-30-03 | Flyway migrations and seed data | R7 | backend/src/main/resources/db/migration |
-| T-30-04 | Frontend skeleton: Vite, router, Pinia, axios wrapper | R4 | frontend/src |
+| T-30-04 | Frontend skeleton: Vite, router, Pinia, Axios wrapper, shared layout, /login and /dashboard placeholders | R4 | frontend/src |
 | T-30-05 | Checkstyle, Spotless, commitlint, Git hooks | R10 | repository root |
 | T-30-06 | CI runs `./mvnw verify` and frontend tests | R10 | .github/workflows |
 | T-41-01 | Registration, login, JWT, four-role RBAC | R6 | backend/src/main/java/com/linyi/auth |
-| T-41-02 | Login and registration pages, route guards | R5 | frontend/src/views |
+| T-41-02 | Login page; connect to the auth store and route guards | R5 | frontend/src/views |
 | T-41-03 | Audit log interceptor | R7 | backend/src/main/java/com/linyi/common |
 | T-41-04 | Unit tests for auth and RBAC | R8 | backend/src/test/java/com/linyi |
 | T-42-01 | Staff records a parcel, carrier recognised from the waybill prefix, duplicate waybills rejected | R7 | backend/src/main/java/com/linyi/parcel |
 | T-42-02 | Storage location recommender: size filter, zone priority, turnover score, safe under concurrency | R6 | backend/src/main/java/com/linyi/location |
 | T-42-03 | Storage location management: zones, states, manual override | R7 | backend/src/main/java/com/linyi/location |
 | T-42-04 | Pickup code issue and handover, one-time use, transaction and unique constraint | R6 | backend/src/main/java/com/linyi/pickup |
+| T-42-05	| Pickup verification and handover page	| R4 | frontend/src/views |
 | T-42-06 | Location board component with zone filter and full-shelf warning | R5 | frontend/src/components |
 | T-42-07 | Staff workbench: intake form, suggested location, handover screen | R5 | frontend/src/views |
 | T-42-08 | Unit and integration tests for the intake to handover path | R8 | backend/src/test/java/com/linyi |
@@ -78,6 +78,7 @@ hands the parcel over. Everything else waits.
 
 | ID | Task | Owner | Folder |
 |---|---|---|---|
+| T-44-05	| Reports view: parcel volume, overdue and exception summary | R4 | frontend/src/views |
 | T-44-06 | End to end tests with Playwright covering the must-have flows | R8 | frontend/tests |
 | T-50-01 | System testing across the five test scope dimensions | R8 | docs/04-testing |
 | T-50-02 | Performance and concurrency testing | R8 | docs/04-testing |
