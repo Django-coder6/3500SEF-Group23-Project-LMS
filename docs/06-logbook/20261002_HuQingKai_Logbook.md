@@ -27,5 +27,5 @@ Note: backend scope to be confirmed in Sprint 1.
 - Went through the frontend API dependency list with R4 and confirmed that the backend will own the final endpoint paths, field names and status values. (0.5 h)
 
 Status: done.
-Evidence: design files added under docs/02-design and docs/03-api on the docs/backend-design-baseline branch.
+Evidence: design PR #38.
 Note: design documents are ready for review in PR #35.
