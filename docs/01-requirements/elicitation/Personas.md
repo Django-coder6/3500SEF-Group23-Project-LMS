@@ -1,4 +1,4 @@
-# User Personas
+# Personas (Questionnaire interview)
 
 | Item | Detail |
 |---|---|
