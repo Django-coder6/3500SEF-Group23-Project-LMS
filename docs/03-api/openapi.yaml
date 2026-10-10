@@ -1,0 +1,349 @@
+openapi: 3.0.3
+info:
+  title: LinYi Parcel Collection Point API
+  version: 0.1.0-draft
+  description: Draft OpenAPI contract. The backend owns the final paths and fields.
+servers:
+  - url: /api
+paths:
+  /health:
+    get:
+      summary: Service health check
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /auth/login:
+    post:
+      summary: Staff or admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /parcels:
+    get:
+      summary: List parcels
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: keyword
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Paged parcel list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedParcels"
+    post:
+      summary: Register an incoming parcel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParcelCreateRequest"
+      responses:
+        "201":
+          description: Parcel registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Parcel"
+  /parcels/{id}/status:
+    patch:
+      summary: Update parcel status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status, expectedVersion]
+              properties:
+                status:
+                  type: string
+                reason:
+                  type: string
+                expectedVersion:
+                  type: integer
+                  format: int64
+      responses:
+        "200":
+          description: Parcel updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Parcel"
+        "409":
+          description: Version conflict
+  /locations:
+    get:
+      summary: List locations and occupancy
+      responses:
+        "200":
+          description: Location list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Location"
+  /locations/recommend:
+    post:
+      summary: Recommend an available location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [size]
+              properties:
+                size:
+                  type: string
+                  enum: [small, medium, large]
+                zone:
+                  type: string
+      responses:
+        "200":
+          description: Recommendation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocationRecommendation"
+  /pickup/verify:
+    post:
+      summary: Verify a pickup code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pickupCode]
+              properties:
+                pickupCode:
+                  type: string
+      responses:
+        "200":
+          description: Pickup code is valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PickupVerifyResponse"
+        "404":
+          description: Code not found or invalid
+  /pickup/confirm:
+    post:
+      summary: Confirm handover
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pickupCode, operatorId]
+              properties:
+                pickupCode:
+                  type: string
+                operatorId:
+                  type: string
+                  format: uuid
+                result:
+                  type: string
+                  enum: [collected, returned, exception]
+      responses:
+        "200":
+          description: Handover confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Handover"
+        "409":
+          description: Handover already completed
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/UserSummary"
+    UserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    Parcel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        trackingNo:
+          type: string
+        status:
+          type: string
+        size:
+          type: string
+        locationId:
+          type: string
+          format: uuid
+        expectedVersion:
+          type: integer
+          format: int64
+    ParcelCreateRequest:
+      type: object
+      required: [trackingNo, carrier, recipientName, recipientPhone, size]
+      properties:
+        trackingNo:
+          type: string
+        carrier:
+          type: string
+        recipientName:
+          type: string
+        recipientPhone:
+          type: string
+        size:
+          type: string
+          enum: [small, medium, large]
+        locationId:
+          type: string
+          format: uuid
+    PagedParcels:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Parcel"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        zone:
+          type: string
+        size:
+          type: string
+        status:
+          type: string
+        parcelId:
+          type: string
+          format: uuid
+          nullable: true
+    LocationRecommendation:
+      type: object
+      properties:
+        recommendedLocation:
+          $ref: "#/components/schemas/Location"
+          nullable: true
+        reason:
+          type: string
+    PickupVerifyResponse:
+      type: object
+      properties:
+        pickupCode:
+          type: string
+        parcelSummary:
+          $ref: "#/components/schemas/Parcel"
+        location:
+          $ref: "#/components/schemas/Location"
+    Handover:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        parcelId:
+          type: string
+          format: uuid
+        result:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            requestId:
+              type: string
