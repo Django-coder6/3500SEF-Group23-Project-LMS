@@ -1,6 +1,6 @@
 # Continuous integration.
-# Weeks 1 to 6 only check the repository structure. From week 7 the backend and
-# frontend jobs are enabled once the skeletons exist.
+# The sanity job always runs. The backend and frontend jobs are enabled in
+# Sprint 2 once backend/pom.xml and frontend/package.json exist.
 
 name: CI
 
@@ -22,6 +22,7 @@ jobs:
           test -f CONTRIBUTING.md
           test -d docs/01-requirements
           test -d docs/06-logbook
+          test -d backend/src/main/java/com/linyi
           echo "structure check passed"
 
       - name: Check that no environment file was committed
@@ -32,19 +33,41 @@ jobs:
           fi
           echo "no environment file tracked"
 
-      # Uncomment from week 7, once backend/package.json exists.
-      # backend:
-      #   runs-on: ubuntu-latest
-      #   defaults:
-      #     run:
-      #       working-directory: backend
-      #   steps:
-      #     - uses: actions/checkout@v4
-      #     - uses: actions/setup-node@v4
-      #       with:
-      #         node-version: '18'
-      #         cache: npm
-      #         cache-dependency-path: backend/package-lock.json
-      #     - run: npm ci
-      #     - run: npm run lint
-      #     - run: npm test -- --coverage
+  # Uncomment in Sprint 2, once backend/pom.xml exists.
+  # backend:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: backend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-java@v4
+  #       with:
+  #         distribution: temurin
+  #         java-version: '17'
+  #         cache: maven
+  #     - run: ./mvnw -B verify
+  #     - name: Upload test reports
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: surefire-reports
+  #         path: backend/target/surefire-reports/
+
+  # Uncomment in Sprint 2, once frontend/package.json exists.
+  # frontend:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: frontend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #         cache: npm
+  #         cache-dependency-path: frontend/package-lock.json
+  #     - run: npm ci
+  #     - run: npm run lint
+  #     - run: npm run test -- --run
+  #     - run: npm run build
