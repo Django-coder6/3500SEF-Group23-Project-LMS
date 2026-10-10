@@ -2,7 +2,15 @@
 node_modules/
 .pnpm-store/
 
-# build output
+# Java and Maven build output
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+
+# frontend build output
 dist/
 build/
 out/
@@ -15,7 +23,7 @@ out/
 *.pem
 *.key
 
-# database and logs
+# database, logs and coverage
 *.sqlite
 *.sqlite3
 *.db
@@ -24,11 +32,13 @@ logs/
 npm-debug.log*
 coverage/
 .nyc_output/
+target/site/jacoco/
 
 # editors and operating system
 .vscode/*
 !.vscode/extensions.json
 .idea/
+*.iml
 *.swp
 .DS_Store
 Thumbs.db

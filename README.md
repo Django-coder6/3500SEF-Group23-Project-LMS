@@ -1,4 +1,4 @@
-# - Community Parcel Collection Point Management System
+# LinYi - Community Parcel Collection Point Management System
 
 COMP 3500SEF Software Engineering, group project, 10 members.
 
@@ -22,8 +22,8 @@ by staff through the web interface.
 | docs/05-management | meeting minutes, risk register, change log, weekly screenshots | R1 |
 | docs/06-logbook | one personal logbook per member | everyone |
 | docs/07-report | report chapters and figures | R9, R1 |
-| backend | Express + Sequelize service | R6, R7 |
-| frontend | Vue 3 + Vite client | R4, R5 |
+| backend | Java 17 and Spring Boot service, Maven layout | R6, R7 |
+| frontend | Vue 3 and Vite client | R4, R5 |
 
 ## Team
 
@@ -40,26 +40,57 @@ by staff through the web interface.
 | R9 | Documentation | | @ | report editing, user manual, glossary |
 | R10 | DevOps and integration | | @ | CI, Docker, fake data service, deployment |
 
+## Technology stack
+
+| Layer | Choice | Reason |
+|---|---|---|
+| Frontend | Vue 3, Vite, Pinia, Element Plus | Component based, quick to build, easy for ten people to work on in parallel |
+| Backend | Java 17, Spring Boot 3.3 | Mature layered structure, and real transaction support for the handover requirement |
+| Build | Maven (use the Maven wrapper `mvnw`) | Same build on every machine, no local Maven install needed |
+| Persistence | Spring Data JPA / Hibernate | Entities map directly onto the ER design |
+| Migrations | Flyway | Schema versions are files in the repository, so every change is reviewable |
+| Database | PostgreSQL 16 | Storage location, parcel and handover data are strongly relational, and handover needs row level locking |
+| Cache | Spring Data Redis | Pickup code checks and hot storage location lookups |
+| Security | Spring Security with JWT | Four roles with clear permission boundaries |
+| API documentation | SpringDoc OpenAPI | Generated from the controllers, so it cannot drift from the code |
+| Backend tests | JUnit 5, Mockito, MockMvc | Unit tests plus slice tests for the controllers |
+| Frontend tests | Vitest, Playwright | Unit tests plus end to end tests |
+| CI | GitHub Actions | Lint, tests and build run on every push |
+| Deployment | Docker Compose, Nginx | One command reproduces the environment |
+
 ## Getting started
 
-This section is filled in during Sprint 2 (week 7) once the backend and
+This section is filled in during Sprint 2 (week 3) once the backend and
 frontend skeletons exist.
 
 ```bash
-git clone https://github.com/<user>/<repo>.git
-cd <repo>
-cd backend && npm install && cd ..
-cd frontend && npm install && cd ..
-cp backend/.env.example backend/.env
+git clone https://github.com/Django-coder6/3500SEF-Group23-Project-LMS.git
+cd 3500SEF-Group23-Project-LMS
+
+# backend (Java 17 and the Maven wrapper)
+cd backend
+./mvnw clean install        # on Windows use: mvnw.cmd clean install
+cd ..
+
+# frontend
+cd frontend
+npm install
+cd ..
+
 docker compose up -d
 ```
 
 ## Sprint status
 
-| Sprint | Weeks | Goal | Status |
+The project runs for eight weeks.
+
+| Sprint | Week | Goal | Status |
 |---|---|---|---|
-| Sprint 0 | 1-2 | topic, repository, user research, competitor review | in progress |
-| Sprint 1 | 3-6 | requirements and design baseline | not started |
-| Sprint 2 | 7-9 | intake, shelving and pickup working end to end | not started |
-| Sprint 3 | 10-12 | notifications, exceptions, stocktake, admin, progress review | not started |
-| Sprint 4 | 13-14 | billing, reports, audit, full test pass | not started |
+| Sprint 0 | 1 | topic, repository, user research, competency review | done |
+| Sprint 1 | 2 | requirements and design baseline | in progress |
+| Sprint 2 | 3-4 | intake, shelving and pickup working end to end | not started |
+| Sprint 3 | 5-6 | notifications, exceptions, stocktake, billing, progress review | not started |
+| Sprint 4 | 7-8 | full test pass, report, presentation, logbooks | not started |
+
+See `docs/05-management/plans/PLAN.md` for the task breakdown and
+`CONTRIBUTING.md` for the branch and commit rules.

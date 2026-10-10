@@ -14,7 +14,7 @@ trim_trailing_whitespace = false
 [*.{js,jsx,ts,tsx,vue,json,yml,yaml,html,css}]
 indent_size = 2
 
-[*.py]
+[*.{java,xml}]
 indent_size = 4
 
 [Makefile]
