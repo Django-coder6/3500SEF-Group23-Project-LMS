@@ -1,59 +1,74 @@
 # ADR-003: Frontend Architecture
 
 - Status: Proposed
-- Date: 2026-10-10
+- Date: 2026-10-11
+- Task: T-30-04
 - Owners: R4 Frontend Lead (implementation lead), R5 Frontend Developer
 - Scope: Frontend architecture for the community parcel collection-point Web system
 
 ## Context
 
-The repository uses a Vue 3 + Vite frontend and an Express + Sequelize backend. The frontend workstream has only two students and the team has limited experience with advanced frontend tooling. The project has a fixed course deadline and needs a small, understandable stack that supports parallel work without requiring a large amount of new framework knowledge.
+The repository now uses a Java 17 Spring Boot backend and a PostgreSQL database. The frontend workstream has two students and must support a small but visible management system with multiple roles, tables, forms and status-heavy workflows.
+
+The project plan defines `T-30-04` as the frontend skeleton: Vite, router, Pinia and an HTTP wrapper. The README also lists Vue 3, Vite, Pinia and Element Plus as the frontend stack. The architecture therefore needs to be simple enough for two developers but structured enough to avoid duplicated state and UI code.
 
 ## Decision
 
-The frontend will use:
+Use the following frontend stack:
 
 - Vue 3 with the Composition API
 - Vite for development and production builds
-- Vue Router for page navigation
+- Vue Router for page navigation and route guards
+- Pinia for shared authentication/session, parcel and location state
+- Element Plus as the approved component library for tables, forms, dialogs and date controls
 - Plain JavaScript, not TypeScript
-- Native `fetch` with one shared API wrapper
-- Reusable Vue components and the existing reference UI styling
-- Simple `ref` and `reactive` modules for shared state
+- Axios with one shared wrapper for API calls
+- Reusable Vue components and the existing visual reference
 
-Element Plus is optional. It may be introduced gradually for complex tables, forms, dialogs or date pickers when it saves time. It is not a required dependency for the first MVP.
+Element Plus should be introduced page by page where it reduces custom code. A page does not need to use Element Plus when ordinary HTML and project CSS are simpler.
 
-Pinia and TypeScript are deferred. They should only be added if a concrete need appears and the team agrees through a new ADR or documented change.
+TypeScript is deferred. It should only be added through a new ADR if a concrete need appears.
+
+## Responsibilities
+
+- R4 owns the frontend architecture, router, Pinia store structure, API wrapper, shared components and code review.
+- R5 implements resident, staff and admin pages inside those standards.
+- R4 and R5 must reuse shared components instead of creating separate copies.
+- API field names and response shapes must follow the OpenAPI contract owned by R6.
 
 ## Alternatives Considered
 
-### Vue 3 + Vite + Pinia + Element Plus + TypeScript
+### Vue without Pinia
 
-Rejected for the first release. Pinia and TypeScript add extra learning and setup costs for a two-person team with limited frontend experience. Element Plus remains optional because it can reduce table and form work.
+Rejected. Authentication state, current user, parcel lists and location selections are shared across routes. Pinia gives both developers one predictable place for that state.
 
-### Plain HTML, CSS and JavaScript served by Express
+### Native fetch instead of Axios
 
-Rejected as the main frontend architecture. It is simple for one page, but repeated layouts, routing, permissions, shared state and multi-person maintenance become harder. The existing HTML prototype may be used as a visual reference, but not as the final application structure.
+Rejected for the final structure. Axios provides one consistent interceptor location for authentication, error normalisation and request IDs. The wrapper prevents pages from calling Axios directly.
 
-### Nuxt or server-side rendering
+### TypeScript
 
-Rejected. The system is an internal management application and does not need SEO, server-side rendering or the extra Nuxt learning curve.
+Deferred. The two-person frontend team has limited time and needs to prioritise working features, tests and integration over a new language workflow.
+
+### Plain HTML, CSS and JavaScript served by Spring Boot
+
+Rejected as the main frontend architecture. It makes reusable components, route guards, state management and multi-person maintenance harder.
 
 ## Consequences
 
-- Two developers can learn the stack quickly.
-- R4 owns frontend architecture, routing, component standards and code review.
-- R5 owns individual pages, forms, tables and API integration under those standards.
-- Less framework abstraction means some common components must be written manually.
-- If global state becomes difficult to manage, Pinia can be added later.
-- If Element Plus is adopted, it should be imported only in the pages that need it.
-- API field names and response shapes must follow R6's OpenAPI specification.
+- R4 and R5 can develop pages in parallel with a shared store and component model.
+- Element Plus reduces work on data tables and forms.
+- Pinia adds one learning topic, but avoids custom global-state code.
+- Axios adds one dependency, but provides one consistent API boundary.
+- Some reference HTML must be converted into Vue components rather than copied directly.
 
 ## Delivery Rules
 
-- One layout shell and one router configuration.
-- One API wrapper in `frontend/src/api/`.
-- One component per reusable UI element.
-- No duplicated HTML tables or dialogs across pages.
-- Mock data is used until the backend endpoint is available.
+- One application layout and one router configuration.
+- One Axios instance in `frontend/src/api/http.js`.
+- Feature API modules live under `frontend/src/api/`.
+- Shared Pinia stores live under `frontend/src/stores/`.
+- Reusable components live under `frontend/src/components/`.
+- Pages live under `frontend/src/views/`.
+- Mock data is used until the corresponding backend endpoint is approved.
 - Every new dependency must be discussed before it is added.

@@ -1,39 +1,49 @@
 # Frontend API Dependencies
 
-- Status: Draft for review with R6
+- Status: Draft aligned with PR #38 OpenAPI v0.1
+- Task: T-30-04
 - Owners: R4 Frontend Lead, R6 Backend Lead
 - Consumers: R4 and R5 frontend implementation
+- Base URL: `/api`
 
 ## Contract Rules
 
 - The backend owns the final endpoint paths and response fields.
-- The frontend must not invent fields after the OpenAPI draft is agreed.
+- The frontend must not invent fields before R6 updates the OpenAPI draft.
 - Requests and responses use JSON.
-- The frontend needs a stable success response and a stable error shape.
-- Dates use ISO 8601 strings and are formatted in the frontend.
-- Parcel and location status values must be stable strings, not UI labels.
+- The shared response envelope from ADR-002 is `data`, `error` and `requestId`.
+- Dates use ISO 8601 strings in UTC and are formatted in the frontend.
+- Parcel sizes use `small`, `medium` and `large`.
+- Parcel, location and exception status values are stable strings, not UI labels.
+- Endpoint paths in the table omit the `/api` base URL.
 
-## Suggested Endpoint List
+## P0 Endpoint List
 
-| Priority | Method and path | Used by | Purpose | Important fields | Backend owner |
+| Priority | Method and path | Used by | Purpose | Important fields | Status |
 |---|---|---|---|---|---|
-| P0 | `POST /api/auth/login` | Login | Staff or admin login | username/email, password, user, roles, token | R6 |
-| P0 | `GET /api/auth/me` | App shell | Restore current session | user, roles, siteId | R6 |
-| P0 | `GET /api/parcels` | Parcel list | List and filter parcels | page, pageSize, status, keyword, items, total | R6/R7 |
-| P0 | `POST /api/parcels` | Parcel create | Register incoming parcel | trackingNo, carrier, recipient, phone, size, locationId | R6/R7 |
-| P0 | `GET /api/parcels/:id` | Parcel detail | Retrieve parcel and history | parcel, statusHistory, pickupCodeSummary | R6/R7 |
-| P0 | `PATCH /api/parcels/:id/status` | Parcel detail | Controlled status update | status, reason, expectedVersion | R6/R7 |
-| P0 | `GET /api/locations` | Dashboard, location board | List locations and occupancy | id, zone, size, status, parcelId | R6/R7 |
-| P0 | `POST /api/locations/recommend` | Parcel create | Recommend an available location | size, cabinet/zone preference, recommendedLocation | R6 |
-| P0 | `POST /api/pickup/verify` | Pickup workflow | Validate a pickup code | pickupCode, parcelSummary, location | R6/R7 |
-| P0 | `POST /api/pickup/confirm` | Pickup workflow | Confirm handover | pickupCode, operatorId, result, auditId | R6/R7 |
-| P1 | `GET /api/exceptions` | Exception list | List abnormal parcels | status, type, parcel, location, assignee | R6/R7 |
-| P1 | `POST /api/exceptions/:id/resolve` | Exception detail | Resolve an exception | resolution, note, resolvedAt | R6/R7 |
-| P1 | `GET /api/reports/summary` | Dashboard/reports | Retrieve summary metrics | dateRange, inbound, pickedUp, occupancy, exceptions | R6/R7 |
-| P1 | `GET /api/users` | User management | List staff, residents and couriers | role, active, page, items, total | R6 |
-| P1 | `GET /api/audit-logs` | Audit log page | List audit records | actor, action, target, time | R6 |
-| P1 | `GET /api/settings` | Settings page | Load system rules | storageHours, reminderHours, prefixes | R6 |
-| P1 | `PUT /api/settings` | Settings page | Update system rules | storageHours, reminderHours, prefixes | R6 |
+| P0 | `GET /health` | Development | Service health check | status | In OpenAPI draft |
+| P0 | `POST /auth/login` | Login | Login | username, password, token, user.roles | In OpenAPI draft |
+| P0 | `GET /auth/me` | App shell | Restore current session | user.id, user.username, user.roles | Proposed, needs R6 confirmation |
+| P0 | `GET /parcels` | Parcel list | List and filter parcels | page, pageSize, status, keyword, items, total | In OpenAPI draft |
+| P0 | `POST /parcels` | Parcel create | Register an incoming parcel | trackingNo, carrier, recipientName, recipientPhone, size, locationId | In OpenAPI draft |
+| P0 | `GET /parcels/{id}` | Parcel detail | Retrieve one parcel | id, trackingNo, status, size, locationId, expectedVersion | Proposed, needs R6 confirmation |
+| P0 | `PATCH /parcels/{id}/status` | Parcel detail | Controlled status update | status, reason, expectedVersion | In OpenAPI draft |
+| P0 | `GET /locations` | Dashboard, location board | List storage locations | id, code, zone, size, status, parcelId | In OpenAPI draft |
+| P0 | `POST /locations/recommend` | Parcel create | Recommend an available location | size, zone, recommendedLocation, reason | In OpenAPI draft |
+| P0 | `POST /pickup/verify` | Pickup workflow | Validate a pickup code | pickupCode, parcelSummary, location | In OpenAPI draft |
+| P0 | `POST /pickup/confirm` | Pickup workflow | Confirm handover | pickupCode, operatorId, result | In OpenAPI draft |
+
+## P1 Endpoint List
+
+| Priority | Method and path | Used by | Purpose | Status |
+|---|---|---|---|---|
+| P1 | `GET /exceptions` | Exception list | List abnormal parcels | Proposed, needs SRS requirement IDs |
+| P1 | `POST /exceptions/{id}/resolve` | Exception detail | Resolve an exception | Proposed, needs SRS requirement IDs |
+| P1 | `GET /reports/summary` | Dashboard and reports | Retrieve summary metrics | Proposed, needs SRS requirement IDs |
+| P1 | `GET /users` | User management | List staff and resident accounts | Proposed, needs SRS requirement IDs |
+| P1 | `GET /audit-logs` | Audit page | List audit records | Proposed, needs SRS requirement IDs |
+| P1 | `GET /settings` | Settings page | Load system configuration | Proposed, needs SRS requirement IDs |
+| P1 | `PUT /settings` | Settings page | Update system configuration | Proposed, needs SRS requirement IDs |
 
 ## Status Values Needed by the Frontend
 
@@ -49,24 +59,25 @@
 
 `open`, `processing`, `resolved`.
 
-The backend should provide the canonical values. The frontend maps them to display labels and colours.
+The backend provides the canonical values. The frontend maps them to display labels and colours.
 
 ## Shared API Wrapper
 
-The frontend will use one module:
+Use one Axios instance:
 
 ```text
 frontend/src/api/http.js
 ```
 
-It will be responsible for:
+The wrapper is responsible for:
 
-- Base URL selection.
-- JSON serialisation.
-- Authentication header.
-- Common error messages.
-- Redirect on 401.
-- No business logic.
+- Base URL `/api`.
+- JSON request and response handling.
+- Authentication header or token injection.
+- Response-envelope normalisation.
+- Error normalisation to `code`, `message` and `requestId`.
+- Redirecting to `/login` on HTTP 401.
+- No feature-specific business logic.
 
 Feature-specific calls go in:
 
@@ -75,17 +86,31 @@ frontend/src/api/auth.js
 frontend/src/api/parcels.js
 frontend/src/api/locations.js
 frontend/src/api/pickup.js
+frontend/src/api/exceptions.js
 frontend/src/api/reports.js
 ```
 
+## Shared State
+
+Pinia stores are used for data shared across routes:
+
+```text
+frontend/src/stores/auth.js
+frontend/src/stores/parcels.js
+frontend/src/stores/locations.js
+```
+
+Pages should not duplicate authentication or parcel-list state.
+
 ## Mock Strategy
 
-Until an endpoint is ready, each feature uses a local mock module with the same function name and return shape as the real API. Switching from mock to real API should change the import at the API boundary, not the page code.
+Until an endpoint is approved, each feature uses a local mock module with the same function name and return shape as the real API. Switching from mock to real API should change the API boundary, not page code.
 
 ## Review Checklist Before Implementation
 
-- R6 has confirmed endpoint names and response shapes.
-- R5 has confirmed the fields needed by each page.
+- R6 confirms the final paths, schema fields and response envelope.
+- R5 confirms the fields required by each page.
+- SRS FR and NFR IDs are linked to the relevant endpoints.
 - Status values and error codes are stable.
-- The pickup confirmation endpoint defines idempotency behaviour.
-- The location recommendation endpoint defines what happens when no location is available.
+- Pickup confirmation defines idempotency behaviour.
+- Location recommendation defines `recommendedLocation = null` and `reason`.
