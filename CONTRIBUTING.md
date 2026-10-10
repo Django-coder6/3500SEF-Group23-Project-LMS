@@ -160,13 +160,28 @@ reference it in the text.
 2. Commit incrementally. Each commit should correspond to one explainable change.
 3. Push to the remote.
 4. Open a PR against `develop` (`hotfix/*` opens against `main`).
-5. At least one non-author member must approve, and CI must pass before merge.
-6. Delete the working branch after merge.
+5. **Link the relevant Issues in the PR description** (e.g., `Closes #13`, `Fixes #14`). Remember to add the Issues before requesting a review.
+6. At least one non-author member must approve, and CI must pass before merge.
+7. Delete the working branch after merge.
 
 ### PR title and description
 
 - Title format is the same as commit messages: `<type>(<scope>): <subject> [TASK-ID]`
-- The description must include: change summary, linked issue number, how it was tested, and screenshots or evidence links if UI or documents are involved.
+- The description must include: change summary, **linked GitHub Issue numbers**, how it was tested, and screenshots or evidence links if UI or documents are involved.
+
+**Example PR description:**
+
+```
+## Summary
+Updated README, glossary, and document naming rules.
+
+## Linked Issues
+Closes #13
+Closes #14
+
+## Testing
+- Verified all Markdown files render correctly on GitHub.
+```
 
 ### Review requirements
 
@@ -194,6 +209,97 @@ A log entry should include: task ID, description, time spent, status, evidence l
 
 ---
 
+## Week 1 Issues (Sprint 0)
+
+Below are the specific WBS tasks assigned to each role during Week 1. Every member must link their PR to the relevant Issue before requesting a review.
+
+### [T-00-02] Set up repository structure and branch protection
+- **WBS task**: [T-00-02]
+- **Requirement**: Set up repository structure and branch protection
+- **Owner**: R10 (DevOps & Integration)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: ✅ Closed
+
+### [T-00-04] Create initial issues and project board
+- **WBS task**: [T-00-04]
+- **Requirement**: Create initial issues and project board
+- **Owner**: R1 (Project Manager)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: ✅ Closed
+
+### [T-00-05] Team training on Git, branches and commit convention
+- **WBS task**: [T-00-05]
+- **Requirement**: Team training on Git, branches and commit convention
+- **Owner**: R1 (Project Manager)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: Open
+
+### [T-00-06] Write README, glossary and document naming rules
+- **WBS task**: [T-00-06]
+- **Requirement**: Write README, glossary and document naming rules
+- **Owner**: R9 (Documentation Specialist)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: Open
+
+### [T-10-01] Design and distribute the requirement survey
+- **WBS task**: [T-10-01]
+- **Requirement**: Design and distribute the requirement survey
+- **Owner**: R3 (Requirements Analyst)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: Open
+
+### [T-10-02] Interview three real users and write up the notes
+- **WBS task**: [T-10-02]
+- **Requirement**: Interview three real users and write up the notes
+- **Owner**: R3 (Requirements Analyst)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: Open
+
+### [T-10-03] Competitor analysis of parcel collection services
+- **WBS task**: [T-10-03]
+- **Requirement**: Competitor analysis of parcel collection services
+- **Owner**: R2 (Product Owner)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: Open
+
+### [T-10-04] Build three personas and the user journey map
+- **WBS task**: [T-10-04]
+- **Requirement**: Build three personas and the user journey map
+- **Owner**: R3 (Requirements Analyst)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: Open
+
+### [T-10-05] Draft SRS chapters 1 and 2
+- **WBS task**: [T-10-05]
+- **Requirement**: Draft SRS chapters 1 and 2
+- **Owner**: R2 (Product Owner)
+- **Sprint**: Sprint 0
+- **Due**: Week 1
+- **Status**: Open
+- **Description**: See GitHub Issue #11 for detailed scope and acceptance criteria.
+
+---
+
+## Task Tracking Example
+
+Below is an example of how a WBS task is recorded in an Issue:
+
+> **WBS task**: [T-00-06]
+> **Requirement**: Write README, glossary and document naming rules
+> **Owner**: R9
+> **Sprint**: Sprint 0
+> **Due**: week 1
+
+---
+
 ## Directory conventions
 
 | Directory | Content | Owner |
@@ -218,8 +324,3 @@ A log entry should include: task ID, description, time spent, status, evidence l
 ## Questions
 
 If you have questions about these rules, please ask in the team chat. R1 (Project Manager) or R10 (DevOps & Integration) will make the final decision. Changes to this document require a PR and review by at least one other member before merge.
-git push
-```
-
-Do not use `git push --force`. If it is genuinely necessary, say so in the
-group chat first and only force push your own branch.
