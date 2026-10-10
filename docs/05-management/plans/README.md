@@ -4,15 +4,16 @@
 
 | Output | Folder | Example filename |
 |---|---|---|
-| Code | `backend/src/modules/` or `frontend/src/views/` | `location.ts`, `LocationBoard.vue` |
+| Code (backend) | `backend/src/main/java/com/linyi/<module>/` | `StorageLocationService.java` |
+| Code (frontend) | `frontend/src/views/` | `LocationBoard.vue` |
 | Requirements | `docs/01-requirements/specification/` | `SRS.md` |
 | Survey and interview notes | `docs/01-requirements/elicitation/` | `20260305_survey-results.xlsx` |
 | UML and ER diagrams | `docs/02-design/uml/`, `docs/02-design/database/` | `usecase-intake.puml` |
-| Design decisions | `docs/02-design/adr/` | `ADR-001-relational-database.md` |
+| Design decisions | `docs/02-design/adr/` | `ADR-002-spring-boot-backend.md` |
 | API specification | `docs/03-api/` | `openapi.yaml` |
 | Test cases and reports | `docs/04-testing/` | `test-cases-pickup.xlsx` |
 | Meeting minutes | `docs/05-management/minutes/` | `20260305_weekly-meeting.md` |
-| Weekly contributor screenshot | `docs/05-management/weekly/` | `W05_contributors.png` |
+| Weekly contributor screenshot | `docs/05-management/weekly/` | `W02_contributors.png` |
 | Personal logbook | `docs/06-logbook/` | `20260000_name_Logbook.md` |
 | Report chapters | `docs/07-report/chapters/` | `03-requirements.md` |
 
@@ -22,12 +23,12 @@
 git switch develop
 git pull
 
-git switch -c docs/W05-srs-requirements
+git switch -c docs/W02-srs-requirements
 
 git add docs/01-requirements/specification/SRS.md
 git commit -m "docs(srs): add functional requirements FR-2.x [T-10-06]"
 
-git push -u origin docs/W05-srs-requirements
+git push -u origin docs/W02-srs-requirements
 ```
 
 Then open a pull request on GitHub with `develop` as the base branch.

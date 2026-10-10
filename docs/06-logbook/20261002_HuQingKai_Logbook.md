@@ -3,11 +3,11 @@
 Student ID: 13661454
 GitHub: @123dvfj123
 Modules: backend architecture, data model, API, recommender
-Period: W01-W16
+Period: W00-W16
 
 ## Weekly log
 
-## Week 1
+## Week 0
 
 ### 2026-10-02
 
@@ -18,7 +18,7 @@ Status: done.
 Evidence: meeting minutes will be filed under docs/05-management/minutes.
 Note: backend scope to be confirmed in Sprint 1.
 
-## Week 4
+## Week 1
 
 ### 2026-10-10
 
@@ -27,5 +27,5 @@ Note: backend scope to be confirmed in Sprint 1.
 - Went through the frontend API dependency list with R4 and confirmed that the backend will own the final endpoint paths, field names and status values. (0.5 h)
 
 Status: done.
-Evidence: design files added under docs/02-design and docs/03-api on the docs/backend-design-baseline branch.
-Note: files are ready but not committed yet while waiting for the WBS task IDs.
+Evidence: design PR #38.
+Note: design documents are ready for review in PR #35.
