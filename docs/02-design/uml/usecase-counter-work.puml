@@ -1,0 +1,62 @@
+@startuml
+title Use Case Diagram(Collection Point Counter Work)
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Resident" as Resident
+actor "Staff" as Staff
+actor "Courier" as Courier
+
+rectangle "Community Parcel Collection Point System" {
+
+  usecase "Log in" as UC_LOGIN
+  usecase "Record an exception parcel" as UC_EXCEPTION
+
+  package "Parcel intake" as PKG_INTAKE {
+    usecase "Register a courier batch" as UC_INTAKE
+    usecase "Get a storage location suggestion" as UC_RECOMMEND
+    usecase "Shelve a parcel" as UC_SHELVE
+  }
+
+  package "Collection at the counter" {
+    usecase "Verify a pickup code" as UC_VERIFY
+    usecase "Confirm a handover" as UC_HANDOVER
+  }
+
+  package "Resident self service" {
+    usecase "Receive an arrival notice" as UC_NOTICE
+    usecase "View my parcels" as UC_MY_PARCELS
+    usecase "See the storage location and pickup code" as UC_SEE_CODE
+  }
+}
+
+Courier --> UC_INTAKE : delivers a batch at the counter
+
+Staff --> UC_LOGIN
+Staff --> UC_INTAKE
+Staff --> UC_SHELVE
+Staff --> UC_VERIFY
+Staff --> UC_HANDOVER
+Staff --> UC_EXCEPTION
+
+Resident --> UC_LOGIN
+Resident --> UC_NOTICE
+Resident --> UC_MY_PARCELS
+
+UC_MY_PARCELS ..> UC_SEE_CODE : <<include>>
+UC_HANDOVER ..> UC_VERIFY : <<include>>
+
+note right of Courier
+  External actor. The courier has no account
+  and never logs in. Staff record what the
+  courier delivers, which is why the courier
+  is drawn outside the system boundary.
+end note
+
+note bottom of PKG_INTAKE
+  The location suggestion inside this package is
+  a suggestion only. Staff keep the final decision
+  on the shelf position.
+end note
+@enduml

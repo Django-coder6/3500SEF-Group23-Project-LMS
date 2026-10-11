@@ -1,0 +1,62 @@
+@startuml
+title Use Case Diagram(Oversight And Administration)
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Resident" as Resident
+actor "Owner" as Owner
+actor "System Administrator" as Admin
+
+rectangle "Community Parcel Collection Point System" {
+
+  package "Account" {
+    usecase "Log in" as UC_LOGIN
+    usecase "Register an account" as UC_REGISTER
+    usecase "Approve a registration" as UC_APPROVE
+  }
+
+  package "Owner oversight" {
+    usecase "View the operations dashboard" as UC_DASHBOARD
+    usecase "View the overdue parcel report" as UC_OVERDUE
+    usecase "Compare collection points" as UC_COMPARE
+    usecase "Manage staff accounts" as UC_STAFF_ADMIN
+    usecase "Review the audit log" as UC_AUDIT
+  }
+
+  package "System administration" {
+    usecase "Manage users and roles" as UC_USERS
+    usecase "Manage collection points" as UC_POINTS
+    usecase "Configure a collection point" as UC_SETTINGS
+  }
+}
+
+Resident --> UC_REGISTER
+Resident --> UC_LOGIN
+
+Owner --> UC_LOGIN
+Owner --> UC_DASHBOARD
+Owner --> UC_OVERDUE
+Owner --> UC_COMPARE
+Owner --> UC_STAFF_ADMIN
+Owner --> UC_AUDIT
+
+Admin --> UC_LOGIN
+Admin --> UC_USERS
+Admin --> UC_POINTS
+Admin --> UC_SETTINGS
+Admin --> UC_APPROVE
+
+UC_USERS ..> UC_APPROVE : <<include>>
+
+note right of UC_COMPARE
+  Cross-point comparison is a should-have.
+  Every point has to work on its own first.
+end note
+
+note bottom of UC_SETTINGS
+  Per-point configuration covers storage
+  hours, notification rules and location
+  layout. Fee rules are still undecided.
+end note
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+title Sequence Diagram(Login And Role Guard)
+autonumber
+
+actor "User" as User
+participant "Login Page" as Login
+participant "Auth Store" as Store
+participant "Route Guard" as Guard
+participant "AuthController" as AC
+participant "AuthService" as AS
+database "PostgreSQL" as DB
+
+User -> Login : Enter username and password
+Login -> AC : POST /auth/login
+activate AC
+AC -> AS : authenticate(username, password)
+activate AS
+AS -> DB : select User by username
+DB --> AS : user row
+AS -> AS : verify the password hash
+AS -> AS : reject when the account is disabled
+AS --> AC : token and roles
+deactivate AS
+AC --> Login : 200 OK
+deactivate AC
+Login -> Store : save the token and roles
+Store --> Login : saved
+Login --> User : Redirect by role
+
+User -> Guard : Navigate to a page
+activate Guard
+Guard -> Store : read the token and roles
+activate Store
+Store --> Guard : token and roles
+deactivate Store
+alt there is no token
+  Guard --> User : redirect to /login
+else the role is not permitted
+  Guard --> User : redirect to /403
+else permitted
+  Guard --> User : allow the route
+end
+deactivate Guard
+
+note over Guard
+  Resident lands on /my-parcels.
+  Staff, Owner and Administrator land on /dashboard.
+  An API 401 clears the store and returns to /login.
+end note
+
+note over AC
+  One endpoint serves all four roles.
+  The role decides the landing page, not the login form.
+end note
+@enduml

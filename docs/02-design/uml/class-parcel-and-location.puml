@@ -1,0 +1,154 @@
+@startuml
+title Class Diagram(Parcel and Storage Location)
+hide empty methods
+skinparam classAttributeIconSize 0
+
+enum UserRole {
+  resident
+  staff
+  owner
+  admin
+}
+
+enum ParcelStatus {
+  registered
+  in_storage
+  ready_for_pickup
+  out_for_delivery
+  picked_up
+  returned
+  exception
+}
+
+enum ParcelSize {
+  small
+  medium
+  large
+}
+
+enum LocationStatus {
+  available
+  reserved
+  occupied
+  disabled
+}
+
+enum PickupCodeStatus {
+  active
+  used
+  expired
+  revoked
+}
+
+enum HandoverResult {
+  collected
+  returned
+  exception
+}
+
+enum ParcelExceptionType {
+  overdue
+  damaged
+  wrong_recipient
+  other
+}
+
+enum ParcelExceptionStatus {
+  open
+  processing
+  resolved
+}
+
+class User {
+  id : UUID
+  username : String
+  passwordHash : String
+  fullName : String
+  phone : String
+  active : boolean
+  createdAt : Instant
+  updatedAt : Instant
+}
+
+class Parcel {
+  id : UUID
+  trackingNo : String
+  carrier : String
+  recipientName : String
+  recipientPhone : String
+  expectedVersion : long
+  createdAt : Instant
+  updatedAt : Instant
+}
+
+class Location {
+  id : UUID
+  code : String
+  zone : String
+  updatedAt : Instant
+}
+
+class PickupCode {
+  id : UUID
+  code : String
+  expiresAt : Instant
+  usedAt : Instant
+  createdAt : Instant
+}
+
+class Handover {
+  id : UUID
+  createdAt : Instant
+}
+
+class ParcelException {
+  id : UUID
+  note : String
+  resolvedAt : Instant
+  createdAt : Instant
+}
+
+class AuditLog {
+  id : UUID
+  action : String
+  targetType : String
+  targetId : UUID
+  before : jsonb
+  after : jsonb
+  createdAt : Instant
+}
+
+class Setting {
+  id : UUID
+  key : String
+  value : String
+  description : String
+  updatedAt : Instant
+}
+
+User "1" --> "0..N" Parcel : registeredBy
+User "1" --> "0..N" Handover : operatedBy
+User "1" --> "0..N" AuditLog : actor
+User "1" --> "0..N" ParcelException : assignee
+User "1" --> "0..N" Setting : updatedBy
+Location "1" --> "0..1" Parcel : currently holds
+Parcel "1" --> "0..1" PickupCode : issued
+PickupCode "1" --> "0..1" Handover : confirmed by
+Handover "0..N" --> "1" AuditLog : recorded in
+Parcel "1" --> "0..N" ParcelException : raised for
+
+User --> UserRole
+Parcel --> ParcelStatus
+Parcel --> ParcelSize
+Location --> LocationStatus
+PickupCode --> PickupCodeStatus
+Handover --> HandoverResult
+ParcelException --> ParcelExceptionType
+ParcelException --> ParcelExceptionStatus
+
+note bottom of ParcelException
+  ERD.md names this entity Exception.
+  Exception cannot be used as a Java class
+  name because it clashes with java.lang.Exception.
+end note
+@enduml

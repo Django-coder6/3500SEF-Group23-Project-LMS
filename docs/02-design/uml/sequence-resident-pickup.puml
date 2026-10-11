@@ -1,0 +1,62 @@
+@startuml
+title Sequence Diagram(Resident Pickup Handover)
+autonumber
+
+actor "Resident" as Resident
+actor "Staff" as Staff
+participant "Web Client" as Web
+participant "PickupController" as PKC
+participant "PickupService" as PKS
+participant "AuditService" as AS
+database "PostgreSQL" as DB
+
+Resident -> Staff : Shows the pickup code
+Staff -> Web : Enter the code
+Web -> PKC : POST /pickup/verify
+activate PKC
+PKC -> PKS : verify(code)
+activate PKS
+PKS -> DB : select PickupCode by code
+DB --> PKS : code row
+PKS -> PKS : reject unless the code is active and unexpired
+PKS --> PKC : parcel and storage location
+deactivate PKS
+PKC --> Web : 200 OK
+deactivate PKC
+
+Web --> Staff : Shows the parcel and where it is
+Staff -> Web : Confirm the handover
+Web -> PKC : POST /pickup/confirm
+activate PKC
+PKC -> PKS : confirm(pickupCodeId)
+activate PKS
+PKS -> DB : begin transaction
+PKS -> DB : lock the PickupCode row
+PKS -> DB : PickupCode status to used
+PKS -> DB : Parcel status to picked_up
+PKS -> DB : Location status to available
+PKS -> DB : insert Handover with result collected
+PKS -> AS : record HANDOVER_CONFIRMED
+PKS -> DB : commit
+PKS --> PKC : HandoverSummary
+deactivate PKS
+PKC --> Web : 201 Created
+deactivate PKC
+
+Web --> Staff : Handover recorded
+Staff --> Resident : Gives the parcel
+
+note over PKS
+  Confirming the same code twice returns the
+  original handover instead of creating a
+  second one. Handover is idempotent by
+  pickupCodeId, and the code is single use.
+end note
+
+note over DB
+  One transaction covers the code, the parcel,
+  the location and the handover row so that a
+  failure cannot leave a parcel marked as
+  collected while its location is still occupied.
+end note
+@enduml

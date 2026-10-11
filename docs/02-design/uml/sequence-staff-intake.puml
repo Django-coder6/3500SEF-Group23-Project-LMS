@@ -1,0 +1,70 @@
+@startuml
+title Sequence Diagram(Staff Intake And Shelving)
+autonumber
+
+actor "Staff" as Staff
+participant "Web Client" as Web
+participant "ParcelController" as PC
+participant "ParcelService" as PS
+participant "LocationService" as LS
+participant "AuditService" as AS
+participant "NotificationService" as NS
+database "PostgreSQL" as DB
+
+Staff -> Web : Open the intake form
+Web -> PC : POST /parcels
+activate PC
+PC -> PS : register(command)
+activate PS
+PS -> DB : reject a duplicate tracking number
+DB --> PS : unique constraint holds
+PS -> DB : insert Parcel with status registered
+DB --> PS : parcel id
+PS -> DB : insert PickupCode with status active
+PS -> AS : record PARCEL_REGISTERED
+PS --> PC : ParcelSummary
+deactivate PS
+PC --> Web : 201 Created
+deactivate PC
+
+Web -> PC : POST /locations/recommend
+activate PC
+PC -> LS : recommend(size)
+activate LS
+LS -> DB : list available locations in zone priority order
+DB --> LS : candidates
+LS --> PC : suggested location
+deactivate LS
+PC --> Web : 200 OK
+deactivate PC
+
+Staff -> Web : Accept or override the suggestion
+Web -> PC : PATCH /parcels/{id}/status set to in_storage
+activate PC
+PC -> PS : shelve(parcelId, locationId, expectedVersion)
+activate PS
+PS -> DB : optimistic lock on expectedVersion
+PS -> DB : update Location status to occupied
+PS -> DB : update Parcel status to in_storage
+PS -> AS : record PARCEL_SHELVED
+PS -> NS : notify(recipient, pickupCode)
+NS --> PS : accepted for delivery
+PS --> PC : ParcelSummary
+deactivate PS
+PC --> Web : 200 OK
+deactivate PC
+Web --> Staff : Parcel is on the shelf
+
+note over LS
+  The recommender only ever suggests.
+  Staff keep the final decision, which is
+  why the suggestion is a separate call and
+  not applied inside register().
+end note
+
+note over NS
+  The notice must reach the resident within
+  five minutes as the design target, and
+  within one hour as the accepted limit.
+end note
+@enduml
