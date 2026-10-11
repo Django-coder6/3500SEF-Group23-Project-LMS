@@ -1,22 +1,32 @@
-# Personas (Questionnaire interview)
+# Personas
+
+## Community Parcel Collection Point Management System
 
 | Item | Detail |
 |---|---|
 | Task | T-10-04 |
 | Owner | R2 |
-| Version | v0.1 (draft) |
-| Source | AI-simulated personas, agreed with R3. To be validated against R3's questionnaire results and real interviews (T-10-02). |
+| Version | v1.0 |
+| Status | Complete for Sprint 1 |
+| Source | Derived from the four role questionnaires, see [Survey Results](Survey-Results.md) |
+| Method | Composite personas. Each persona combines the answer patterns that appeared in the corresponding questionnaire group. |
 
-> These personas are fictional and represent typical users of a community parcel collection point.
-> **Project terminology:** collection point, storage location, shelving, handover.
+> These personas are composites, not real individuals. The name, age and
+> occupation are illustrative, but every goal and pain point below is traceable
+> to at least one answer in the survey of that role. Where the survey and an
+> earlier draft of this document disagreed, the survey answer was used.
+>
+> **Project terminology:** collection point, storage location, shelving,
+> handover, pickup code.
 
 ## Overview
 
-| Persona | System role | Age | Primary goal |
+| Persona | System role | Survey base | Primary goal |
 |---|---|---|---|
-| Emily Chen | Resident | 34 | Pick up parcels quickly, at any time, without confusion |
-| Daniel Wu | Staff | 27 | Shelve and hand over parcels fast and without errors |
-| Linda Zhang | Owner | 45 | Understand daily operations and keep the collection point profitable |
+| Emily Chen | Resident | 11 responses | Know quickly that a parcel has arrived, and where it is, without queueing |
+| Daniel Wu | Staff | 7 responses | Register a batch fast, and hand over with a reliable record |
+| Linda Zhang | Owner | 7 responses | See overdue parcels and staff activity across all owned points |
+| Alex Ho | System administrator | 4 responses | Keep accounts, access control and point configuration under control |
 
 ---
 
@@ -26,27 +36,56 @@
 |---|---|
 | Name | Emily Chen |
 | Age | 34 |
-| Occupation | Product designer at a tech company |
-| Living situation | Apartment community with one collection point near the entrance |
-| Tech comfort | High (uses mobile apps daily) |
+| Occupation | Office worker in the city |
+| Living situation | Apartment block with one collection point at the entrance |
+| Tech comfort | High. Uses a phone for almost everything. |
+| Receives parcels | A few times a month, not weekly |
 
-> *"I just want to know when my parcel arrives and where it is. I don't want to queue or dig through shelves."*
+> *"I do not mind collecting it. I mind not knowing that it has arrived, and not
+> knowing where it is when I get there."*
+
+### What the survey tells us about this persona
+
+| Finding | Responses |
+|---|---|
+| She uses a phone, not a desktop | 9 of 11 |
+| She receives parcels monthly or less often | 6 of 11 |
+| Her biggest problem is late or missing notification | 4 of 11 |
+| She expects notice within an hour, and ideally within five minutes | 9 of 11, of which 6 wanted five minutes |
+| Her most chosen function is in-system notification | 4 of 11 |
+| She accepts a collection journey of up to ten minutes | 11 of 11 |
 
 ### Daily scenario
-Emily leaves for work at 8:30 and gets home around 19:30. She shops online 6 to 8 times a month. During the day she often receives a courier text message that does not say which storage location holds her parcel. After work she reaches the collection point, which is crowded in the evening, shows a pickup code or phone number, and waits while staff search the shelves.
+
+Emily orders online two or three times a month. On the delivery day she has no
+idea whether the parcel has reached the collection point. Sometimes she gets a
+message the next day, and it does not say where the parcel is stored. She goes
+to the point after work, joins a short queue, and waits while staff look for her
+parcel.
 
 ### Goals
-- Be notified as soon as a parcel is shelved at the collection point.
-- Know the storage location and pickup code before leaving home.
-- Complete the handover in under one minute.
-- See the status of all her parcels in one place.
+
+- Receive a clear notice as soon as the parcel is shelved, ideally within five
+  minutes.
+- Be able to see, before leaving home, the status of every parcel addressed to
+  her.
+- Spend no more than three to five minutes at the counter.
+- Not have to learn an interface she uses only a few times a month.
 
 ### Pain points
-- Notifications arrive late or not at all.
-- Parcels are hard to find because the storage location is not communicated.
-- Long queues at the collection point in the evening.
-- Worry about collection deadlines when she travels.
-- Fear that her parcel was handed over to the wrong person.
+
+- Notices arrive late, or never.
+- She does not know where the parcel is stored, so she cannot judge whether it
+  is worth walking over.
+- Queueing at peak times, although in this sample queueing was the least
+  chosen problem.
+- The current interface is not designed for a phone.
+
+### Out of character
+
+Emily did **not** ask for a delegated collection code. In the survey nobody
+chose it. The team has therefore reduced its priority rather than assume she
+needs it.
 
 ---
 
@@ -57,26 +96,53 @@ Emily leaves for work at 8:30 and gets home around 19:30. She shops online 6 to 
 | Name | Daniel Wu |
 | Age | 27 |
 | Occupation | Full-time staff member at a community collection point |
-| Work situation | 10-hour shifts, serving about 1,500 households |
-| Tech comfort | Medium (comfortable with smartphones, dislikes complex software) |
+| Work situation | Serves a small residential point, a few dozen parcels on a typical day, with occasional large batches |
+| Tech comfort | Medium. Comfortable with a phone, intolerant of slow software. |
 
-> *"When 200 parcels arrive at once, I need to shelve them fast and never lose one."*
+> *"When a courier drops off a whole trolley at once, I need to get them
+> registered and on the shelf without losing one, and without standing at the
+> computer for an hour."*
+
+### What the survey tells us about this persona
+
+| Finding | Responses |
+|---|---|
+| Batch registration is his main source of delay | 4 of 7 |
+| Searching the shelves was **not** named as a delay by anyone | 0 of 7 |
+| His most important functions are pickup code verification and handover confirmation | 3 and 3 of 7 |
+| Location recommendation was chosen by nobody | 0 of 7 |
+| He wants to keep manual control of the location, or does not want suggestions | 4 of 7 |
+| He accepts up to three minutes per handover | 6 of 7 |
+| He already records parcels digitally, using a spreadsheet, existing software or chat | 7 of 7 |
 
 ### Daily scenario
-Daniel opens the collection point at 8:00. Couriers deliver two or three batches a day, each with 100 to 250 parcels. He registers every parcel, assigns a storage location, and shelves it. In the evening peak, residents arrive continuously and he must find each parcel, verify identity, and complete the handover. He keeps a paper notebook as a backup because the current process is error-prone.
+
+Daniel opens the point in the morning. A courier arrives with a trolley and
+Daniel works through it on the counter, entering each parcel and putting it on
+a shelf. In the evening residents come in one after another. He takes a pickup
+code, fetches the parcel and completes the handover. When something is
+disputed, he has no dependable record of who handled the parcel.
 
 ### Goals
-- Shelve large batches quickly with minimal manual typing.
-- Always know exactly where each parcel is stored.
-- Complete handovers accurately and keep a clear record.
-- Handle problem parcels (wrong address, damaged, overdue) quickly.
+
+- Register a courier batch in one operation rather than one parcel at a time.
+- Verify the collector and record the handover accurately and quickly.
+- Be able to find the answer to "is my parcel here?" without leaving the
+  counter.
+- Keep control over where a parcel actually goes, because he knows the shelves.
 
 ### Pain points
-- Manual entry is slow and causes typing mistakes.
-- Searching crowded shelves wastes time during peak hours.
-- Wrong-person handovers lead to complaints.
-- Residents keep asking "Is my parcel here?" and he has no quick answer.
-- Switching between several apps and a paper notebook is tiring.
+
+- Registering a large batch parcel by parcel is the slowest part of the day.
+- A disputed handover cannot be resolved because the record is incomplete.
+- Being asked to change his way of working by software that does not match the
+  shape of the counter.
+
+### Out of character
+
+Daniel did **not** ask the system to choose the storage location for him. The
+recommendation feature is therefore delivered as a suggestion he can accept or
+ignore, never as an automatic assignment.
 
 ---
 
@@ -86,25 +152,120 @@ Daniel opens the collection point at 8:00. Couriers deliver two or three batches
 |---|---|
 | Name | Linda Zhang |
 | Age | 45 |
-| Occupation | Owner of a convenience store that also runs a collection point |
-| Business situation | Manages two collection points and three staff members |
-| Tech comfort | Low to medium (uses a smartphone for chat and payment, prefers simple screens) |
+| Occupation | Runs a small retail business and operates collection points alongside it |
+| Business situation | Manages more than one collection point, and a staff group of six or more across them |
+| Tech comfort | Medium. Uses a phone for messaging and payment, prefers short screens with clear numbers. |
 
-> *"I need to see at a glance how much is coming in, what is stuck, and whether my staff is doing it right."*
+> *"I do not need a dashboard full of charts. I need to know what is stuck on my
+> shelves and whether my staff are handling things properly."*
+
+### What the survey tells us about this persona
+
+| Finding | Responses |
+|---|---|
+| She manages more than one collection point | 6 of 7 |
+| Her most important report is overdue parcels | 6 of 7 |
+| She wants to compare across points | 6 of 7 |
+| Her most important permission is viewing reports | 4 of 7 |
+| She wants the audit log grouped by parcel or storage location, not by time | 4 of 7 |
+| She manages a staff group of six or more | 4 of 7 |
 
 ### Daily scenario
-Linda spends most of the day in her store and checks the collection point only briefly. She earns a handling fee per parcel, so throughput and low complaint rates matter to her. At the end of each day she asks staff for numbers and reconstructs them by hand. She cannot easily tell how many parcels have been uncollected for several days, or which staff member handled a disputed parcel.
+
+Linda spends most of the day in her shop and visits each collection point
+briefly. She earns a handling fee per parcel, so throughput and complaint rates
+matter. At the end of the day she asks staff for the numbers and writes them
+down herself. She cannot quickly say how many parcels have been sitting for
+several days, or which staff member handled a parcel that a resident is
+disputing.
 
 ### Goals
-- See daily and monthly volumes of incoming and handed-over parcels.
-- Monitor overdue parcels and reduce shelf pressure.
-- Trace who handled a parcel and when, to resolve disputes.
-- Manage staff accounts and permissions simply.
-- Keep complaints and lost-parcel claims low.
+
+- See overdue parcels at a glance, across every point she owns.
+- Trace a disputed parcel to the staff member and the time it was handled.
+- Compare the activity of her points without collecting numbers by hand.
+- Manage staff accounts for her own points.
 
 ### Pain points
-- No reliable statistics; daily numbers are collected by hand.
-- Hard to prove what happened when a resident claims a parcel was lost.
-- Overdue parcels occupy shelf space and nobody follows up systematically.
-- Staff turnover means constant retraining.
-- Cannot supervise remotely when she is away.
+
+- Daily figures are assembled by hand and are always a little out of date.
+- Overdue parcels occupy shelf space, and nobody follows them up
+  systematically.
+- A lost-parcel claim cannot be answered with evidence.
+- Staff turnover means she has to keep setting up accounts.
+
+### Out of character
+
+Linda was not asked for, and did not ask for, control over fee or overdue
+rules. Nobody in the survey chose fee configuration. Those settings are
+therefore kept as an administrator responsibility, with a per-point default.
+
+---
+
+## Persona 4: Alex Ho (System Administrator)
+
+| Field | Detail |
+|---|---|
+| Name | Alex Ho |
+| Age | 31 |
+| Occupation | Part-time technical support for the collection point operator |
+| Situation | Maintains accounts, access control and configuration for a small group of collection points |
+| Tech comfort | High |
+
+> *"My job is to keep the accounts and the access rules straight, and to make
+> sure that when someone leaves, their access goes with them."*
+
+### What the survey tells us about this persona
+
+The administrator group returned only four responses, so these findings are
+indicative and are used only where they agree with decisions already taken.
+
+| Finding | Responses |
+|---|---|
+| Accounts should be self-registered and then approved | 3 of 4 |
+| The most important administration functions are user and collection point management | 2 and 2 of 4 |
+| The most important security control is role-based access control | 2 of 4 |
+| Data should be separated between points by a site identifier in a shared database | 3 of 4 |
+| Fee and overdue rule configuration was chosen by nobody | 0 of 4 |
+
+### Daily scenario
+
+Alex sets up a new collection point, creates the owner account, and adds the
+first staff accounts. When somebody leaves, Alex disables the account rather
+than deleting it, so that historical records keep their author. Alex also
+handles enquiries when a resident disputes a handover and the point has to show
+what happened.
+
+### Goals
+
+- Create, approve, disable and delete accounts for all roles.
+- Set up a new collection point, including its zones and storage locations.
+- Keep data for different points separated while running one deployment.
+- Rely on role-based access control as the primary defence.
+
+### Pain points
+
+- Account lifecycles are handled informally, so leaving staff keep access.
+- Setting up a new point means entering many storage locations by hand.
+- Investigation across points is difficult when data is not clearly separated.
+
+### Out of character
+
+Alex was not asked to design the interface for others, and takes no part in the
+day-to-day parcel workflow.
+
+---
+
+## How these personas are used
+
+| Use | Where |
+|---|---|
+| Deciding which requirements are must-have | SRS Chapter 3, MoSCoW priorities |
+| Naming the main actor of a use case | SRS Chapter 5 |
+| Writing test scenarios in the language of the user | `docs/04-testing/` |
+| Justifying scope reductions in the report | Report Chapter 3 |
+
+The persona who most often decides a requirement is Emily Chen, because the
+resident group had the largest number of responses. Where a decision would
+affect staff time, Daniel Wu's needs take precedence, because staff are the
+users who will spend the most time in the system.
