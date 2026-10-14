@@ -3,7 +3,7 @@
 - GitHub: [RavenG7]
 - Role: R9 Documentation Specialist
 - Modules: Documentation & Glossary
-- Period covered: W01-W16
+- Period covered: W01-W8
 
 ## Weekly log
 
