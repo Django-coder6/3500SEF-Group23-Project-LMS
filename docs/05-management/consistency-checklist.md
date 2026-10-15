@@ -66,3 +66,9 @@
 | Version | Date | Change | Author |
 |---|---|---|---|
 | v1.0 | 2026-10-15 | Initial checklist, created from four repeated consistency failures and R4's 14 caught issues | R9 |
+
+## Revision history
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| v1.0 | 2026-10-15 | Initial checklist, created from four repeated consistency failures and R4's 14 caught issues | R9 |
