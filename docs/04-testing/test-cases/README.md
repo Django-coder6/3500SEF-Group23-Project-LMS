@@ -1,4 +1,4 @@
-# Test case templates
+# Test case conventions
 
 All test cases must use the standard 11-column format. Copy the Markdown table below when creating a new test case:
 
@@ -22,7 +22,7 @@ All test cases must use the standard 11-column format. Copy the Markdown table b
 
 
 ## Test Template
-Every test case must use the following 11-column format. Copy this table when creating new cases
+Every test case must use the following 12-column format. Copy this table when creating new cases
 
 | Field | Meaning |
 |---|---|
@@ -42,7 +42,7 @@ Every test case must use the following 11-column format. Copy this table when cr
 
 
 ## Five Testing Dimensions Checklist
-To ensure comprehensive testing coverage, the following fi|ve aspects must be checked before each test and acceptance:
+To ensure comprehensive testing coverage, the following five aspects must be checked before each test and acceptance:
 
 | Done | # | Dimension | What to check | Who checks | Evidence location |
 |---|---|---|---|---|---|
