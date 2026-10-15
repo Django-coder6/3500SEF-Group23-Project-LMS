@@ -40,6 +40,3 @@ Therefore, this is an empty "defect report template", but it ensures that bug ma
 
 
 
-
-
-
