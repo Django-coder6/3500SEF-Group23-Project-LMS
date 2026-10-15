@@ -1,10 +1,13 @@
 # Consistency Checklist
 
-- **Task:** T-00-08
-- **Owner:** R9 (Documentation & Quality)
-- **Version:** v1.0
-- **Status:** Active
-- **Purpose:** Run this before opening a pull request that touches a document. It turns consistency from something we have to remember into something we can check.
+| Item | Detail |
+|---|---|
+| Task | T-00-08 |
+| Owner | R9 (Documentation & Quality) |
+| Version | v1.0 |
+| Status | Active |
+
+**Purpose:** Run this before opening a pull request that touches a document. It turns consistency from something we have to remember into something we can check.
 
 > **Why this exists:** This project has already hit the same consistency problem four times (glossary, change-log, risk-register). R4 alone caught 14 consistency issues. This checklist is the process improvement that prevents a fifth.
 
@@ -58,11 +61,3 @@
 - [ ] PR title includes the task ID
 - [ ] PR description links the relevant issue (`Closes #<n>`)
 - [ ] At least one non-author has been requested to review
-
----
-
-## Revision history
-
-| Version | Date | Change | Author |
-|---|---|---|---|
-| v1.0 | 2026-10-15 | Initial checklist, created from four repeated consistency failures and R4's 14 caught issues | R9 |
