@@ -34,9 +34,3 @@ Therefore, this is an empty "defect report template", but it ensures that bug ma
 - **Closed** – QA verified the failed test case now passes.
 
 **Closing Rule**: A defect is closed **only when a test case that failed now passes**. The test case ID must be referenced in the closing evidence (for example, `TC-PARC-001`).
-
-
-
-
-
-
