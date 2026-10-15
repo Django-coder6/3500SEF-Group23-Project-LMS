@@ -10,5 +10,5 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | W01 |  2026-10-7 | T-00-05 | Read CONTRIBUTING.md and completed the first pull request | 20:00-20:30 | 0.5 | done | https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/22#issue-5732319882 | - | - | The branch and pull request workflow was new |
 | W02 |  2026-10-15 | T-50-19 | Create a Form for the Defect Reporting System | 00:00-1:27 | 1.27 | done | docs/04-testing/defect-log.md | - | - | - |
-| W02 |  2026-10-16 | T-50-19 | add the defect log and test-case index, and rebuild the logbook | 00:00-02.00 | 2 | done | https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/152#issue-5871154392 | R1 | - | - |
+| W02 |  2026-10-16 | T-50-19 | Add the defect log and test-case index, and rebuild the logbook | 00:00-02.00 | 2 | done | https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/152#issue-5871154392 | R1 | - | - |
 ---
