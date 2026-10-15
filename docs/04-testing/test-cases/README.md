@@ -1,4 +1,4 @@
-# Test case templates
+# Test case template
 
 All test cases must use the standard 11-column format. Copy the Markdown table below when creating a new test case:
 
