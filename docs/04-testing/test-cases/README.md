@@ -1,6 +1,6 @@
 # Test case conventions
 
-All test cases must use the standard 11-column format. Copy the Markdown table below when creating a new test case:
+All test cases must use the standard 12-column format. Copy the Markdown table below when creating a new test case:
 
 ## Naming Convention
 ### Test Case ID
