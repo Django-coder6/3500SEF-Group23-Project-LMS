@@ -6,7 +6,7 @@
 |---|---|
 | Document ID | SRS |
 | Task | T-10-05, T-10-06, T-10-07 |
-| Version | v0.4 (draft, Chapters 1 to 4) |
+| Version | v0.5 (draft, Chapters 1 to 4) |
 | Author | R2 |
 | Status | Draft, pending team review |
 | Related documents | [personas.md](../elicitation/Personas.md), [user-journey-maps.md](../elicitation/user-journey-maps.md) |
@@ -341,7 +341,8 @@ seven are new and are numbered here for the first time.
 **These are design targets supported by a convenience sample, not population values.**
 Seven of the fourteen take their number from `survey-results.md` section 7, which
 records the answers of 11 residents, 7 staff members and 4 administrators: `NFR-1`,
-`NFR-2`, `NFR-3`, `NFR-6`, `NFR-8`, `NFR-9` and `NFR-10`. That sample is small and
+`NFR-2`, `NFR-3`, `NFR-4`, `NFR-6`, `NFR-7`, `NFR-8`, `NFR-9`, `NFR-10`, `NFR-11`
+and `NFR-12`. That sample is small and
 self-selected, so a target states what the design must achieve to satisfy these
 respondents, and not what every user in the population requires. The other seven come
 from `test-plan.md` section 6, `ADR-002`, `ADR-005`, `CONTRIBUTING.md` or the scope
@@ -358,7 +359,7 @@ allocation, and `docs/04-testing/test-cases/README.md` defines the naming conven
 |---|---|---|---|---|
 | NFR-1 | The system shall notify a resident that a parcel has arrived within a bounded delay of the parcel being shelved. | **Within 5 minutes** as the design target; **within 60 minutes** as the acceptable limit | `survey-results.md` section 7, row 1 (Resident R4, 6 of 11) | Record the shelving timestamp and the timestamp the notification first becomes readable; compare the difference over a sample of arrivals. `test-plan.md` section 6, notification delay. |
 | NFR-2 | The system shall let a resident complete the collection journey, from opening the parcel list to confirming that a pickup code exists, within a bounded time. | **3 to 5 minutes** as the design target; **10 minutes** as the acceptable limit | `survey-results.md` section 7, row 2 (Resident R6) | Time a scripted journey on a 375 px viewport with a prepared resident account, from the list view to the detail view showing the code. |
-| NFR-3 | The system shall be usable on a 375 px viewport, with a single column layout, no horizontal scrolling of the page, and every control reachable. | **Binary** — no horizontal scroll at 375 px, and every control reachable | `survey-results.md` section 7, row 6 (Resident R2, 9 of 11) | Render each page at 375 px and assert that the document width does not exceed the viewport; walk the keyboard focus order and assert that no control is skipped. |
+| NFR-9 | The system shall state every error in terms a resident or staff member can act on, naming what failed and what to do next, and shall not surface a bare status code or a stack trace. | **Binary** — every error message names an action, and no response exposes an internal detail | Scope boundaries in section 3.0; `survey-results.md` section 8, which records that residents were not asked about failure handling | Trigger each documented failure response and read the message; assert that it names an action and contains no status code, no exception name and no file path. |
 
 ### 4.2 Reliability and data integrity — 3 requirements
 
@@ -372,16 +373,16 @@ allocation, and `docs/04-testing/test-cases/README.md` defines the naming conven
 
 | ID | Requirement statement | Target | Source | Verification method |
 |---|---|---|---|---|
+| NFR-3 | The system shall authorise every endpoint by the role of the authenticated session, and shall not rely on a hidden control in the interface as a security control. | **Binary** — every endpoint enforces its permitted roles and refuses others | `survey-results.md` section 7, row 4 (Administrator A4); `FR-45` | Call every endpoint with each of the four roles and assert the permitted and refused sets; assert that a refused call changes no data. |
 | NFR-6 | The system shall take the handover operator identity from the authenticated session and never from the request, and shall record it with the handover so the operation log is reliable. | **Binary** — no request carries an operator identity, and every handover records the actor from the session | `openapi.yaml` line 14 and line 426; `change-log.md` `CR-007`, whose Reason column names this requirement; `FR-22`, `FR-25` | Send `POST /pickup/confirm` with an `operatorId` field and assert that it is ignored; confirm a handover as one staff account and assert that the recorded actor is that account and that one audit entry names it. |
 | NFR-8 | The system shall keep the data of one collection point separate from another within one shared database, by associating every collection-point-scoped record with a collection point identifier. | **Binary** — every scoped record carries a collection point identifier, and reads are filtered by it | `survey-results.md` section 7, row 5 (Administrator A5), consistent with `ADR-002`; `FR-46` | Inspect the schema for the identifier on every scoped table, then query as one collection point and assert that no row from another is returned. Depends on `FR-46`, which is open as issue #127. |
-| NFR-9 | The system shall record an audit entry for every sensitive operation, holding the actor, the action, the target and the time, and shall mask a resident's phone number wherever it is displayed. | **Binary** — no sensitive operation without an audit entry; no unmasked phone number in any response | `FR-25`, `FR-47`; `survey-results.md` section 7, row 4 (phone masking) | Perform each sensitive operation and assert one audit row; scan every response body for an unmasked phone number. |
-| NFR-11 | The system shall authorise every endpoint by the role of the authenticated session, and shall not rely on a hidden control in the interface as a security control. | **Binary** — every endpoint enforces its permitted roles and refuses others | `survey-results.md` section 7, row 4 (Administrator A4); `FR-45` | Call every endpoint with each of the four roles and assert the permitted and refused sets; assert that a refused call changes no data. |
+| NFR-11 | The system shall record an audit entry for every sensitive operation, holding the actor, the action, the target and the time, and shall mask a resident's phone number wherever it is displayed. | **Binary** — no sensitive operation without an audit entry; no unmasked phone number in any response | `FR-25`, `FR-47`; `survey-results.md` section 7, row 4 (phone masking) | Perform each sensitive operation and assert one audit row; scan every response body for an unmasked phone number. |
 
 ### 4.4 Usability and accessibility — 1 requirement
 
 | ID | Requirement statement | Target | Source | Verification method |
 |---|---|---|---|---|
-| NFR-10 | The system shall state every error in terms a resident or staff member can act on, naming what failed and what to do next, and shall not surface a bare status code or a stack trace. | **Binary** — every error message names an action, and no response exposes an internal detail | Scope boundaries in section 3.0; `survey-results.md` section 8, which records that residents were not asked about failure handling | Trigger each documented failure response and read the message; assert that it names an action and contains no status code, no exception name and no file path. |
+| NFR-10 | The system shall be usable on a 375 px viewport, with a single column layout, no horizontal scrolling of the page, and every control reachable. | **Binary** — no horizontal scroll at 375 px, and every control reachable | `survey-results.md` section 7, row 6 (Resident R2, 9 of 11) | Render each page at 375 px and assert that the document width does not exceed the viewport; walk the keyboard focus order and assert that no control is skipped. |
 
 ### 4.5 Maintainability and portability — 3 requirements
 
@@ -393,12 +394,13 @@ allocation, and `docs/04-testing/test-cases/README.md` defines the naming conven
 
 ### 4.6 Identifier note and open dependencies
 
-**The order of these identifiers is not the order the document was written in.**
-Two documents and the change log already cite `NFR-6` for the audit requirement, so
-`NFR-6` carries that meaning even though it appears in the third group rather than the
-second. Data separation, which the first draft had put at `NFR-6`, takes `NFR-8`
-instead. Every other identifier runs in order. A reader who needs the audit requirement
-should look for `NFR-6`.
+**Three identifiers do not sit in numeric order, and the reason is the same each time: another document already cited them, so their meaning was kept.**
+
+- `NFR-6` carries the audit requirement because `CR-007` and `openapi.yaml` already cite it there.
+- `NFR-10` carries mobile viewport usability because `test-plan.md` section 6 already cites it there.
+- `NFR-3` carries endpoint authorisation, and `NFR-9` the error message requirement, because neither identifier was cited anywhere else, so both were free.
+
+A reader who needs the audit requirement should look for `NFR-6`, and a reader who needs the mobile viewport target should look for `NFR-10`.
 
 **Two of the fourteen cannot be verified until another task lands.**
 
@@ -410,7 +412,7 @@ should look for `NFR-6`.
 
 **Confirmation before this chapter is frozen.** R2 to confirm the MoSCoW-style priority
 of each target and whether any is a Should rather than a Must. R6 to confirm that
-`NFR-5`, `NFR-8` and `NFR-9` are achievable in the data model as designed, in particular
+`NFR-3`, `NFR-5`, `NFR-6`, `NFR-8` and `NFR-11` are achievable in the data model as designed, in particular
 that the single-active-parcel-per-location rule is enforceable by a database constraint
 rather than only in application code, and that the collection point identifier can be
 added to every scoped table. R8 to confirm that each of the fourteen can be mapped to at
@@ -431,4 +433,5 @@ cite them, and a requirement that is never stated cannot be verified.
 | v0.2 | Week 2 | Chapter 3: 47 functional requirements grouped by role, with MoSCoW and proposed verification | R3 |
 | v0.3 | Week 2 | Added chapter 4, the 14 non-functional requirements. Seven identifiers were reserved by section 3.5 and six of their meanings were fixed by `test-plan.md` section 6; those are kept. Seven targets come from `survey-results.md` section 7 and are stated as design targets supported by a convenience sample | R3, R1 |
 | v0.4 | Week 2 | Corrected `NFR-6` to the audit requirement that the handover operator identity comes from the authenticated session. Raised by R3, who spotted that `CR-007`, `openapi.yaml` line 14 and `openapi.yaml` line 426 all cite `NFR-6` for that meaning, which the first draft of chapter 4 had assigned to collection point data separation instead | R1 |
+| v0.5 | Week 2 | Kept the NFR identifiers that other documents already cite: mobile viewport usability returns to `NFR-10` because `test-plan.md` section 6 cites it there, the error message requirement takes `NFR-9`, endpoint authorisation takes `NFR-3`, and the audit entry and phone masking take `NFR-11`. An audit of every requirement citation in the repository found this as the only mismatch | R1 |
 
