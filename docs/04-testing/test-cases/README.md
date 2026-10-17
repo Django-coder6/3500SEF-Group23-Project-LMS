@@ -51,3 +51,18 @@ To ensure comprehensive testing coverage, the following five aspects must be che
 | [ ] | 3 | **Accuracy of input and output** | - Are fee calculations rounded correctly?<br>- Is input data saved exactly as entered? | Developer / R8 | `docs/04-testing/reports/` (Test data logs) |
 | [ ] | 4 | **Handling of abnormal input** | - Are missing fields rejected?<br>- Are duplicate waybill numbers blocked?<br>- Are expired codes rejected? | R8 | `docs/04-testing/test-cases/` (Verdict = Fail/Pass) |
 | [ ] | 5 | **Implementation of business rules** | - Does the recommender follow rules?<br>- Is the retention period enforced?<br>- Is the overdue fee correct? | R8 | `docs/04-testing/reports/` (Acceptance/Performance reports) |
+
+## Reserved test case identifiers
+
+| ID | Requirement | Level | What it verifies | Written in |
+|---|---|---|---|---|
+| TC-AUTH-001 | FR-1 | Slice | A registered resident signs in and receives a session | Sprint 2 |
+| TC-AUTH-002 | FR-45 | Slice | A resident is refused an admin-only route | Sprint 2 |
+| TC-AUTH-003 | NFR-11 | Component | Every endpoint refuses a role it does not permit | Sprint 2 |
+| TC-PARC-001 | FR-12 | Integration | A single arriving parcel is registered | Sprint 2 |
+| TC-PARC-002 | FR-17 | Integration | A duplicate waybill number is rejected | Sprint 2 |
+| TC-PARC-003 | FR-18 | Integration | A batch of 50 is registered in one operation | Sprint 2 |
+| TC-PICK-001 | FR-21 | Integration | An active pickup code is verified | Sprint 2 |
+| TC-PICK-002 | NFR-7 | Integration | A used code is refused a second handover | Sprint 2 |
+| TC-PICK-003 | NFR-4 | Integration | Two concurrent confirmations write one handover | Sprint 2 |
+| … | … | … | … | … |
