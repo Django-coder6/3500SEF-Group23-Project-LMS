@@ -70,6 +70,19 @@ jobs:
         run: docker compose --profile full up -d --build --wait --wait-timeout 300
       - name: Verify the backend health endpoint
         run: curl --fail --silent --show-error http://localhost:8080/api/health
+      - name: Verify that a seeded account can sign in
+        run: |
+          curl --fail --silent --show-error -X POST http://localhost:8080/api/auth/login \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"demo_staff_1","password":"password"}' > /tmp/login.json
+          grep -q '"token"' /tmp/login.json
+          grep -q '"roles":\["staff"\]' /tmp/login.json
+      - name: Verify that a wrong password is refused
+        run: |
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -X POST http://localhost:8080/api/auth/login \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"demo_staff_1","password":"wrong"}')" = "401"
       - name: Verify that all four services are running
         run: test "$(docker compose --profile full ps --status running --services | wc -l)" -eq 4
       - name: Show service logs on failure
