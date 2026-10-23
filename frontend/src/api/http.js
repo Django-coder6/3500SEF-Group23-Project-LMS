@@ -13,6 +13,8 @@ import axios from 'axios'
 //   failure  the payload is wrapped as { error: { code, message, requestId } }.
 
 const TOKEN_KEY = 'auth.token'
+const USER_KEY = 'auth.user'
+const EXPIRY_KEY = 'auth.expiry'
 
 // Base path follows ADR-003: the browser calls /api and the Vite dev server
 // proxies /api to the backend (see vite.config.js), so local development does
@@ -66,7 +68,8 @@ http.interceptors.response.use(
       // interceptor, and a full reload avoids a circular import between the
       // router, the store and this file.
       localStorage.removeItem(TOKEN_KEY)
-      localStorage.removeItem('auth.user')
+      localStorage.removeItem(USER_KEY)
+      localStorage.removeItem(EXPIRY_KEY)
       if (window.location.pathname !== '/login') {
         window.location.assign('/login')
       }
@@ -84,5 +87,5 @@ http.interceptors.response.use(
   },
 )
 
-export { TOKEN_KEY }
+export { TOKEN_KEY, USER_KEY, EXPIRY_KEY }
 export default http
