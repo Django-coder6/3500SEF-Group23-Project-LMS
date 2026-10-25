@@ -5,7 +5,7 @@
 | Task | T-20-14 |
 | Owner | R1 |
 | Status | Outline trimmed; chapters 1 and 2 drafted |
-| Version | v0.2 |
+| Version | v0.3 |
 | Deadline | 2026-12-08 |
 | Limit | Not more than 1000 words, source code excluded |
 | Submitted by | the leader only, as a PDF through the OLE assignment link |
@@ -27,20 +27,22 @@ Course rubric, Project Report (15 per cent):
 The 12 per cent evaluates whether the team used software engineering deliberately. Every section names the artefact that evidences it, so the writing points at something rather than asserts.
 
 ## Word budget
-1000 words is not much. This split leaves about 100 words for the conclusion.
+1000 words is not much. This split leaves 60 words for the conclusion, and the
+nine section figures below add to 980 rather than the 1130 they added to before this
+revision, because the earlier table was 150 words over its own limit.
 
 | Section | Words | Rubric concept | Evidence to cite |
 |---|---|---|---|
 | Title block and repository link | 20 | - | README.md |
-| 1. The problem and the context | 80 | requirement engineering | SRS 1.2, 1.3; survey-results.md |
+| 1. The problem and the context | 130 | requirement engineering | SRS 1.2, 1.3; survey-results.md |
 | 2. Process | 150 | software processes | PLAN.md; team-charter.md; the sprint minutes |
-| 3. Requirements engineering | 150 | requirement engineering | SRS; survey-results.md; personas; user-journey-maps.md; change-log.md CR-002 |
-| 4. System modeling | 120 | system modeling | the twelve .puml sources; uml/README.md |
-| 5. Architectural and database design | 100 | architectural design | ADR-002 to ADR-005; ERD.md; backend-state-machines.md |
-| 6. Design and implementation | 150 | design and implementation | design-system.md; tokens.css; openapi.yaml; the frontend skeleton |
-| 7. Testing and validation | 120 | software testing | test-plan.md; 29 backend and 68 frontend tests; RTM.md |
-| 8. Software evolution | 180 | software evolution | change-log.md; risk-register.md; the cases below |
-| 9. Conclusion and reflection | 80 | - | - |
+| 3. Requirements engineering | 115 | requirement engineering | SRS; survey-results.md; personas; user-journey-maps.md; change-log.md CR-002 |
+| 4. System modeling | 90 | system modeling | the twelve .puml sources; uml/README.md |
+| 5. Architectural and database design | 75 | architectural design | ADR-002 to ADR-005; ERD.md; backend-state-machines.md |
+| 6. Design and implementation | 100 | design and implementation | design-system.md; tokens.css; openapi.yaml; the frontend skeleton |
+| 7. Testing and validation | 95 | software testing | test-plan.md; 29 backend and 68 frontend tests; RTM.md |
+| 8. Software evolution | 165 | software evolution | change-log.md; risk-register.md; the cases below |
+| 9. Conclusion and reflection | 60 | - | - |
 
 ## Section notes
 
@@ -94,3 +96,4 @@ The team would freeze requirements before design and write the traceability matr
 |---|---|---|---|
 | v0.1 | Week 2 | First version recorded. Skeleton, over limit at 1123 words. | R1 |
 | v0.2 | Week 3 | Trimmed redundant text to bring the outline body under the 1000-word limit while preserving section structure. Clarified that the limit applies to the submitted report, not metadata. | R9 |
+| v0.3 | Week 3 | The word budget table added to **1150 against a limit of 1000**, and the sentence above it promised "about 100 words for the conclusion" while the table gave the conclusion 80. Chapter 1 is raised from 80 to 130 because it now cites the resident and staff pain points with their counts, which is what the requirement engineering criterion asks for, and cutting it back would turn evidence into assertion. The 150 words come from chapters 3 to 9, and chapter 8 keeps the largest single share because this outline itself calls it the section that distinguishes the report. Chapter 2 keeps 150, so its drafted 176 words need a 26-word trim rather than a budget change | R1 |
