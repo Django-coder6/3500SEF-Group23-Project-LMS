@@ -1,7 +1,7 @@
 # 2. Process
 
-The project runs eight weeks in five sprints: Sprint 0 and Sprint 1 one week each, then three two-week sprints. Every task carries an identifier, an owner and a folder in `PLAN.md`, so a task cannot be started without an owner and cannot be called done without an artefact.
+The project spans eight weeks across five sprints: Sprint 0 and Sprint 1 are one week each, followed by three two-week sprints. Every task is assigned an identifier, an owner, and a folder in `PLAN.md`. This ensures that a task cannot begin without an owner and cannot be marked complete without a corresponding artefact.
 
-The cadence that actually ran is recorded in `team-charter.md` and the sprint minutes: a Wednesday checkpoint, a Sunday logbook deadline, one non-author approval before any merge, and protected `main` and `develop` branches. A change that is not in `change-log.md` did not happen — that rule is what makes the evolution section of this report possible.
+The cadence that actually ran is documented in `team-charter.md` and the sprint minutes: a Wednesday checkpoint, a Sunday logbook deadline, mandatory non-author approval before merging, and protected `main` and `develop` branches. A core rule of this repository is that a change not recorded in `change-log.md` did not happen. This rule is what enables the Software Evolution section of this report.
 
-The honest sentence is that the process held for design work and slipped for requirements. Design artefacts were reviewed and revised on schedule; the requirements documents were still being corrected in week 3, after code had started. `risk-register.md` records it as RSK-01, still open, with the mitigation rather than a claim that it was avoided.
+While design work adhered to the schedule, the requirements phase experienced slippage. Requirements documents were still being revised in week 3, after coding had already commenced. This delay was anticipated by `RSK-01`, which warned that the compressed eight-week timeline left no buffer, meaning any Sprint 1 slippage would inevitably spill into the build sprints. This risk materialized exactly as predicted.
