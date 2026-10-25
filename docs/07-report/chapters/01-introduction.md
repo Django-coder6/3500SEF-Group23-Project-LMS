@@ -1,6 +1,6 @@
 # 1. The Problem and the Context
 
-As the final step of e-commerce delivery, community collection points receive bulk parcels from couriers for local residents to pick up. However, current tracking methods are decentralized: among the seven staff respondents, three rely on spreadsheets, two use existing software, and two use chat histories. Because of this fragmentation, staff cannot reliably answer two critical questions: where a parcel is currently located, and who collected it.
+As the final step of e-commerce delivery, community collection points receive bulk parcels from couriers for local residents to pick up. Staff already use digital tools to manage these parcels: among the seven staff respondents, three rely on spreadsheets, two use existing software, and two use chat histories. Because these records are fragmented, staff cannot reliably answer two critical questions: where a parcel is currently located, and who collected it. However, since they already use digital tools, transitioning to this system will not represent a major change in habit.
 
 According to two questionnaires (29 responses in total, documented in `survey-results.md`), the primary pain points differ by role. Among the 11 resident respondents, the most cited problem was notification arriving late or not at all (4 of 11). For the 7 staff respondents, the main source of delay was batch registration (4 of 7).
 
