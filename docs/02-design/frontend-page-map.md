@@ -3,8 +3,8 @@
 | Item | Detail |
 |---|---|
 | Status | Active (aligned with the router, issue #82) |
-| Version | v1.1 |
-| Revised | 2026-10-23 |
+| Version | v1.2 |
+| Revised | 2026-10-25 |
 | Task | T-30-04 |
 | Owners | R4 Frontend Lead, R5 Frontend Developer |
 | Assumption | the frontend workstream has two students; R4 owns architecture and R5 implements pages under that structure. |
@@ -31,9 +31,9 @@ one file, change the other.
 | P0 | `/my-parcels` | `MyParcelListView.vue` | Resident | View own parcels, status and pickup code | R5 | placeholder |
 | P0 | `/my-parcels/:id` | `MyParcelDetailView.vue` | Resident | View one parcel and its storage location | R5 | placeholder |
 | P0 | `/parcels` | `ParcelListView.vue` | Staff, Owner, Admin | Search, filter and review parcels | R5 | placeholder |
-| P0 | `/parcels/new` | `ParcelCreateView.vue` | Staff | Register an incoming parcel | R5 | placeholder |
+| P0 | `/parcels/new` | `ParcelCreateView.vue` | Staff | Register an incoming parcel | R5 | implemented with mock API |
 | P0 | `/parcels/:id` | `ParcelDetailView.vue` | Staff, Owner, Admin | View parcel status and handling history | R5 | placeholder |
-| P0 | `/locations` | `LocationBoardView.vue` | Staff, Owner, Admin | View and manage storage locations | R4 | placeholder |
+| P0 | `/locations` | `LocationBoardView.vue` | Staff, Owner, Admin | View and manage storage locations | R4 | implemented with mock API |
 | P0 | `/pickup` | `PickupVerifyView.vue` | Staff | Verify a pickup code and confirm handover | R4 | implemented with mock API |
 | P1 | `/exceptions` | `ExceptionListView.vue` | Staff, Owner, Admin | Register and process abnormal parcels | R5 | placeholder |
 | P1 | `/reports` | `ReportView.vue` | Owner, Admin | View parcel-volume and overdue reports | R4 | placeholder |
@@ -91,3 +91,4 @@ means `admin`, the System Administrator role.
 |---|---|---|---|
 | v1.0 | Week 2 | First version recorded in this file. The route list, aligned with `frontend/src/router/index.js`. Any earlier edit is not listed: this file had no revision history until week 3, so records of those edits do not exist here. | R1 |
 | v1.1 | Week 3 | Marked `/pickup` implemented with the mock-backed API boundary and recorded the page's verification and handover states | R4 |
+| v1.2 | Week 3 | Marked `/parcels/new` and `/locations` implemented with their mock-backed API boundaries after PR #205 | R4 |

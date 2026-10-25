@@ -4,7 +4,7 @@
 |---|---|
 | Task | T-10-13 |
 | Owner | R2 |
-| Version | v1.5 |
+| Version | v1.6 |
 | Status | Complete for Sprint 1 |
 | Related | #79, `20261016_requirements-walkthrough.md`, `ui-prototype.md` |
 
@@ -383,20 +383,20 @@ For the resident side, three to five minutes was judged fine.
 ## Findings verified against the repository
 
 The respondents\' observations were checked against the files rather than accepted as written.
-Fourteen held. The seven findings assigned to R4 have now been addressed in `ui-prototype.md`;
-the R5 findings and the R6/R2 contract questions remain open. A contradiction is listed as a
-defect rather than a preference, because a document that disagrees with itself is wrong regardless
-of who noticed.
+Fourteen held. Findings 1 to 10 have been addressed in the prototype or the mock-backed Sprint 2
+pages. Finding 11 remains an R6 contract decision, and findings 12 to 14 were resolved by CR-023,
+CR-024 and CR-025. A contradiction is listed as a defect rather than a preference, because a
+document that disagrees with itself is wrong regardless of who noticed.
 
 ### Contradictions inside the prototype
 
 | # | Finding | Where | Raised by | Outcome |
 |:--:|---|---|---|---|
-| 1 | The third card in the resident list is `shelved` but carries **no pickup code, no days held and no open action**, while the prototype requires all six elements on every card | `ui-prototype.md` §5.1 | 1, 2, 3 | Open — R5 |
+| 1 | The third card in the resident list is `shelved` but carries **no pickup code, no days held and no open action**, while the prototype requires all six elements on every card | `ui-prototype.md` §5.1 | 1, 2, 3 | Fixed by R5 in v1.2 |
 | 2 | `last: 4821 handed over 19:14 by staff1` puts a pseudonymous staff identifier on a screen that claims "No person is named on any screen" | `ui-prototype.md` §5.6 | 1, 2, 3 | Fixed by R4 in v1.1 |
 | 3 | `Resident lost the code? Use identity` is drawn as a live action, while the fallback needs a contract decision (`CD-2`) before it can be built | `ui-prototype.md` §5.6 | 1, 2 | Fixed by R4 in v1.1; fallback marked unavailable |
 | 4 | The `delegated code` state is described as available, while `FR-9` and `FR-10` are future work under `CR-005` | `ui-prototype.md` §5.6 | 1, 2, 3 | Fixed by R4 in v1.1; removed from the current state list |
-| 5 | The overdue card is described as "marked", but only the text changes: no colour, border or icon is specified | `ui-prototype.md` §5.1 | 1, 3 | Open — R5 |
+| 5 | The overdue card is described as "marked", but only the text changes: no colour, border or icon is specified | `ui-prototype.md` §5.1 | 1, 3 | Fixed by R5 in v1.2 |
 | 6 | `keyboard or scanner` is a note to the developer rendered inside the interface | `ui-prototype.md` §5.6 | 1 | Fixed by R4 in v1.1 |
 | 7 | The `Result` block is drawn in the idle state with nothing under it | `ui-prototype.md` §5.6 | 1 | Fixed by R4 in v1.1 |
 
@@ -404,18 +404,18 @@ of who noticed.
 
 | # | Finding | Where | Raised by | Outcome |
 |:--:|---|---|---|---|
-| 8 | The resident list shows no collection point, opening hours or return-to-sender date. `FR-38` holds the retention period and `FR-39` the overdue calculation, so the data exists and is not surfaced | `ui-prototype.md` §5.1 | 1, 2, 3 | Open — R5 |
-| 9 | No state covers a valid code whose parcel is not physically on the shelf — wrong bin, or collected and not marked. The states cover invalid, expired and already-used only | `ui-prototype.md` §5.6 | 1 | Specified by R4 in v1.1; API representation remains with R6/R2 |
-| 10 | A scanner ends with Enter, but the flow requires a separate `Verify` click, which staff will skip | `ui-prototype.md` §5.6 | 1 | Specified by R4 in v1.1; implementation is part of `T-42-05` |
+| 8 | The resident list shows no collection point, opening hours or return-to-sender date. `FR-38` holds the retention period and `FR-39` the overdue calculation, so the data exists and is not surfaced | `ui-prototype.md` §5.1 | 1, 2, 3 | Fixed by R5 in v1.2 |
+| 9 | No state covers a valid code whose parcel is not physically on the shelf — wrong bin, or collected and not marked. The states cover invalid, expired and already-used only | `ui-prototype.md` §5.6 | 1 | Implemented in the mock-backed `T-42-05`; API representation remains with R6/R2 |
+| 10 | A scanner ends with Enter, but the flow requires a separate `Verify` click, which staff will skip | `ui-prototype.md` §5.6 | 1 | Implemented in `T-42-05` |
 | 11 | No path for a resident collecting several parcels: each needs its own verify and confirm | `openapi.yaml` pickup paths | 1, 2, 3 | Open — R6 contract decision |
 
 ### Open questions about scope
 
 | # | Question | Where | Raised by | Outcome |
 |:--:|---|---|---|---|
-| 12 | The suggestion panel conflicts with its own survey evidence (S4 recorded **0 of 7** staff asking for a recommendation) and, per two respondents, adds latency in single mode. Should `FR-19` and `FR-20` be reduced further? | §5.4 vs `CR-004` | 1, 2, 3 | Open — R2 scope decision and CR |
-| 13 | A full shelf with no `shelve later` leaves no honest option. Same gap as `#98` | §5.4, contract | 1 | Open — R6 contract decision |
-| 14 | A batch over 50 returns `400` with no way to register the valid 50 and queue the rest | §5.4 | 1 | Open — R6 contract decision and CR |
+| 12 | The suggestion panel conflicts with its own survey evidence (S4 recorded **0 of 7** staff asking for a recommendation) and, per two respondents, adds latency in single mode. Should `FR-19` and `FR-20` be reduced further? | §5.4 vs `CR-004` | 1, 2, 3 | Resolved by CR-023 |
+| 13 | A full shelf with no `shelve later` leaves no honest option. Same gap as `#98` | §5.4, contract | 1 | Resolved by CR-024 |
+| 14 | A batch over 50 returns `400` with no way to register the valid 50 and queue the rest | §5.4 | 1 | Resolved by CR-025 |
 
 **The three-minute handover target was challenged with a number**, not an opinion: one respondent
 estimated a competent worker at about 30 seconds for ten parcels, against a three-minute budget.
@@ -513,3 +513,4 @@ Show one screen at a time from `ui-prototype.md`, then ask:
 | v1.3 | Week 3 | Added the three respondent interviews and the findings table, and split the findings into seven prototype contradictions, four gaps against existing requirements and three scope questions. Corrected the Method and Limitations sections, which still described the record as having no respondents | R1 |
 | v1.4 | Week 3 | Status changed from draft to complete for Sprint 1 | R1 |
 | v1.5 | Week 3 | Added an outcome column and recorded the R4 corrections from `#170`; R5 and R6/R2 items remain explicitly open | R4 |
+| v1.6 | Week 3 | Recorded the R5 fixes, the mock-backed T-42-05 implementation and the CR-023 to CR-025 resolutions; finding 11 remains with R6 | R4 |
