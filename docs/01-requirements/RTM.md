@@ -1,6 +1,6 @@
 # Requirements Traceability Matrix
 
-| Version | v0.4 |
+| Version | v0.5 |
 |---|---|
 | Date | 2026-10-19 |
 | Owner | R8 Wu Kehao |
