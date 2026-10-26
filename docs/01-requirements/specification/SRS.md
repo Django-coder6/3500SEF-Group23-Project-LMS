@@ -6,7 +6,7 @@
 |---|---|
 | Document ID | SRS |
 | Task | T-10-05, T-10-06, T-10-07 |
-| Version | v0.7 (Chapters 1 to 4) |
+| Version | v0.8 (Chapters 1 to 4) |
 | Author | R2 |
 | Status | Complete for Sprint 1 |
 | Related documents | [personas.md](../elicitation/Personas.md), [user-journey-maps.md](../elicitation/user-journey-maps.md) |
@@ -262,9 +262,9 @@ Only the role-based persona identifiers are used: **Resident persona**, **Staff 
 | FR-15 | The system shall display the current availability status of storage locations at a staff member's assigned collection point. | Allows manual selection of an appropriate location. | S5 (4/7 preferred manual/no suggestion); frontend-page-map `/locations` | Must (proposed) | UI test: current location availability is displayed accurately. |
 | FR-16 | The system shall allow a staff member to select a storage location manually for a parcel. | Preserves staff control over shelving. | S5 (4/7 preferred manual/no suggestion); CR-004 | Must (proposed) | Workflow test: manually chosen location persists after shelving. |
 | FR-17 | The system shall reject registration of a parcel when its waybill number already exists as a parcel record. | Prevents duplicate intake records. | `test-plan.md` §6 (FR-17); SRS IS-2 | Must (proposed) | Duplicate-waybill API test: second registration rejected. |
-| FR-18 | The system shall allow an authenticated staff member to register a batch of up to 50 arriving parcels in one intake operation. | Batch intake is the most frequently selected staff bottleneck and the first Sprint 2 staff feature. | **S3: 4/7**; **CR-003** | Must (approved — CR-003) | Batch intake test: up to 50 valid parcels registered in one operation. |
-| FR-19 | The system should display an optional storage location suggestion for a parcel; the suggestion shall never be applied automatically. | Permits a deterministic aid without reducing staff control. | **S4: 0/7** chose it; **CR-004** | Should (approved — CR-004) | UI/integration test: suggestion shown without changing stored allocation. |
-| FR-20 | The system should allow the staff member to ignore a storage location suggestion and complete shelving using a manually selected location; the suggestion shall never be applied automatically. | Makes optional recommendations explicitly overridable. | **S5: 4/7** preferred manual/no suggestion; **CR-004** | Should (approved — CR-004) | Workflow test: ignoring suggestion allows manual assignment and no automatic change. |
+| FR-18 | The system shall allow an authenticated staff member to register a batch of 1 to 50 arriving parcels in one intake operation. A request containing more than 50 entries shall be rejected with HTTP `400` without creating any parcels; staff shall split the batch and resubmit. No overflow queue is provided in Sprint 2. | Supports efficient batch intake while maintaining the approved hard limit. | S3 (4/7); CR-003; CR-025 | Must (approved — CR-003, CR-025) | Submit 1 and 50 valid parcels and verify successful registration; submit 51 parcels and verify HTTP `400` and zero created records; split and resubmit to verify successful processing. |
+| FR-19 | The system could display an optional storage location suggestion for a parcel in a future release. The suggestion shall never be applied automatically. The recommendation panel is deferred from Sprint 2. | Retains a possible future aid without delaying the manual shelving workflow. | S4 (0/7 selected recommendation); CR-004 superseded by CR-023 | Could (approved — CR-023) | Future UI test: the suggestion is optional and never changes the stored allocation automatically. Sprint 2 test: manual selection works without a recommendation panel. |
+| FR-20 | The system could allow staff to ignore an optional storage location suggestion and manually select a location if the recommendation feature is implemented in a future release. | Preserves staff control while keeping recommendations outside Sprint 2 scope. | S5 (4/7 preferred manual/no suggestion); CR-004 superseded by CR-023 | Could (approved — CR-023) | Future workflow test: a suggestion can be ignored and manual shelving completed without automatic assignment. |
 | FR-21 | The system shall allow staff to verify an active pickup code before a parcel handover. | Code verification is a top staff priority. | **S4: 3/7**; frontend-page-map `/pickup` | Must (proposed) | Verification test: valid active code accepted; invalid/used code rejected. |
 | FR-22 | The system shall record a confirmed parcel handover with the staff operator identity obtained from the authenticated session. | Creates a reliable, attributable handover record. | **S4: 3/7**; **CR-007** | Must (proposed) | Handover integration test: operator matches authenticated session. |
 | FR-23 | The system shall allow staff to register a parcel exception using exactly one of the approved types: `overdue`, `damaged`, `wrong_recipient`, `refused`, or `lost`. | Keeps exception recording deterministic and aligned with design. | **CR-010; CR-011**; SRS IS-8 | Should (proposed) | Validation test: five supported exception types accepted; unsupported type rejected. |
@@ -312,6 +312,8 @@ Only the role-based persona identifiers are used: **Resident persona**, **Staff 
 
 **No current implementation promise for deferred items:** `FR-9` and `FR-10` remain future work under `CR-005`. Staff location suggestions `FR-19` and `FR-20` are optional only, may be ignored, and are **never automatically applied** (`CR-004`). Exception types follow the five approved glossary values (`CR-010` / `CR-011`); parcel lifecycle is `registered`, `shelved`, `collected` (`CR-006`). The system can calculate overdue fees (`FR-39`) but does not take online payments (`SRS OS-3`).
 
+**Sprint 2 shelving scope (CR-024):** The `shelve later` workflow is deferred and is not part of Sprint 2. Staff shall use the existing full-shelf failure path when no suitable storage location is available. No delayed location-assignment workflow or new API route is promised for this sprint. `FR-14` and `FR-15` remain unchanged.
+
 ### 3.6 Verification approach
 
 Verification entries indicate **proposed tests**, not tests that have already been created or executed. R8 owns final test-case ID allocation and execution status. Time and coverage targets are defined separately in Chapter 4 and the existing test plan; this chapter does not claim those tests have passed.
@@ -342,6 +344,8 @@ Verification entries indicate **proposed tests**, not tests that have already be
 - **when** it is submitted,
 - **then** it is refused with `400` before any entry is examined,
 - **and** no parcel is created.
+
+**Overflow handling (CR-025):** A batch containing more than 50 parcels is rejected as a whole with HTTP `400`, and no parcels from that request are registered. Staff must manually split the parcels into separate requests of at most 50 entries and resubmit them. The system does not automatically accept the first 50 entries, queue the remainder, or provide an overflow mechanism in Sprint 2.
 
 **Why per-entry rather than all-or-nothing**
 
@@ -475,4 +479,4 @@ cite them, and a requirement that is never stated cannot be verified.
 | v0.5 | Week 2 | Kept the NFR identifiers that other documents already cite: mobile viewport usability returns to `NFR-10` because `test-plan.md` section 6 cites it there, the error message requirement takes `NFR-9`, endpoint authorisation takes `NFR-3`, and the audit entry and phone masking take `NFR-11`. An audit of every requirement citation in the repository found this as the only mismatch | R1 |
 | v0.6 | Week 3 | Added section 3.7, the acceptance criteria and failure behaviour for `FR-18`: the correct batch, the partly bad batch, the batch invalid as a whole, why per-entry rather than all-or-nothing, and the duplicate-waybill case left for R6 to rule. Added by `#168`, which did not bump the version; this row records it | R3 |
 | v0.7 | Week 3 | Status changed from draft to complete for Sprint 1, and the word "draft" removed from the version. The chapter range is unchanged at chapters 1 to 4, which is what this document was scoped to; `PLAN.md` asked for 1 to 7 and has been corrected to match, so the two documents now agree | R1 |
-
+| v0.8 | Week 3 | Updated FR-19 and FR-20 from Should to Could and deferred the recommendation panel (CR-023); confirmed that `shelve later` is outside Sprint 2 (CR-024); clarified FR-18's 50-parcel hard limit, HTTP 400 rejection and manual splitting in section 3.7 (CR-025). | R3 |
