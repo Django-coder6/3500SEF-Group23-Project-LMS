@@ -14,6 +14,7 @@ All test cases must use the standard 12-column format. Copy the Markdown table b
 - **`<MODULE>`**: 4 uppercase letters representing the module (e.g., `PARC` for Parcel, `PICK` for Pickup).
 - **`<nnn>`**: 3-digit sequential number starting from `001`.
 - **Examples**: `TC-PARC-001`, `TC-PICK-007`.
+- **Note**:`TC-AUTH-001`–`TC-AUTH-004` are implemented by `AuthSecurityIntegrationTest`. Its test methods are named after the behaviour under test rather than after the reserved TC IDs. The RTM records the traceability mapping.
 
 
 ### Defect ID
