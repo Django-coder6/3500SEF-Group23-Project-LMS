@@ -158,9 +158,7 @@ Progress is reported in `docs/04-testing/reports/`, in three forms:
 
 1. A defect list, updated continuously, with severity and status.
 
-2. A coverage report. JaCoCo produces `jacoco.xml` and an HTML rendering at
-`backend/target/site/jacoco/`, which the same artefact upload step collects.
-The target is the line coverage figure in section 3
+2. A coverage report — not yet produced. JaCoCo is named as the tool and backend/target/site/jacoco/ as the path, but no JaCoCo plugin is bound to verify in backend/pom.xml and no CI step collects the report. The 60 per cent target in section 3 is therefore not measured, and no figure is claimed here until it is.
 
 3. A test report at the end of Sprint 4, containing the results, the defects
    found and closed, the coverage figures, and an insight and recommendation
