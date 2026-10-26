@@ -5,7 +5,7 @@
 | Task | T-20-14 |
 | Owner | R1 |
 | Status | Outline trimmed; chapters 1 and 2 drafted |
-| Version | v0.3 |
+| Version | v0.4 |
 | Deadline | 2026-12-08 |
 | Limit | Not more than 1000 words, source code excluded |
 | Submitted by | the leader only, as a PDF through the OLE assignment link |
@@ -14,7 +14,9 @@
 The course requires the GitHub link on the first line of the report:
 https://github.com/Django-coder6/3500SEF-Group23-Project-LMS
 
-It must also carry a guide to install and run the project. `README.md` holds the guide; it is not yet runnable, because `backend/pom.xml` and the Maven wrapper arrive with issue #137.
+It must also carry a guide to install and run the project. `README.md` holds the complete setup
+and run guide. The backend, Maven wrapper, Flyway migrations, seeded data and full Docker Compose
+stack are now available through `T-30-02`, `T-30-03` and the related Sprint 2 work.
 
 ## How the report is marked
 Course rubric, Project Report (15 per cent):
@@ -83,13 +85,13 @@ The team would freeze requirements before design and write the traceability matr
 - Count the words before submitting. 1000 is a hard limit.
 - The PDF is submitted by the leader only. Put the repository link on line one.
 
-## What is still missing before this can be written
-| Section | Waiting on | Issue |
+## Current drafting status
+
+| Section | Status | Source |
 |---|---|---|
-| 3, 7, 9 | SRS chapters 3 and 4, and the traceability matrix | #76, #77 |
-| 3 | the product backlog and acceptance criteria | #78 |
-| 6 | the backend skeleton, so implementation can be described as running | #137 |
-| 7 | the test cases and the defect log | #78 depends on the matrix |
+| 1. The problem and context | Drafted; needs reduction to its 130-word allocation | `01-introduction.md` |
+| 2. Process | Drafted; needs reduction to its 150-word allocation | `02-process.md` |
+| 3-9 | Outline and section notes only; the referenced evidence is available | `00-outline.md` and the cited project artefacts |
 
 ## Revision history
 | Version | Week | Change | Author |
@@ -97,3 +99,4 @@ The team would freeze requirements before design and write the traceability matr
 | v0.1 | Week 2 | First version recorded. Skeleton, over limit at 1123 words. | R1 |
 | v0.2 | Week 3 | Trimmed redundant text to bring the outline body under the 1000-word limit while preserving section structure. Clarified that the limit applies to the submitted report, not metadata. | R9 |
 | v0.3 | Week 3 | The word budget table added to **1150 against a limit of 1000**, and the sentence above it promised "about 100 words for the conclusion" while the table gave the conclusion 80. Chapter 1 is raised from 80 to 130 because it now cites the resident and staff pain points with their counts, which is what the requirement engineering criterion asks for, and cutting it back would turn evidence into assertion. The 150 words come from chapters 3 to 9, and chapter 8 keeps the largest single share because this outline itself calls it the section that distinguishes the report. Chapter 2 keeps 150, so its drafted 176 words need a 26-word trim rather than a budget change | R1 |
+| v0.4 | Week 3 | Corrected the stale runnable-state note now that the backend and full Compose stack are delivered. Replaced the obsolete missing-artefact table, whose issues are closed, with the current drafting status; found that both drafted chapters still need trimming to their budget | R4 |
