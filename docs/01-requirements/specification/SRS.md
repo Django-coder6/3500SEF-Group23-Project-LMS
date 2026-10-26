@@ -312,7 +312,7 @@ Only the role-based persona identifiers are used: **Resident persona**, **Staff 
 
 **No current implementation promise for deferred items:** `FR-9` and `FR-10` remain future work under `CR-005`. Staff location suggestions `FR-19` and `FR-20` are optional only, may be ignored, and are **never automatically applied** (`CR-004`). Exception types follow the five approved glossary values (`CR-010` / `CR-011`); parcel lifecycle is `registered`, `shelved`, `collected` (`CR-006`). The system can calculate overdue fees (`FR-39`) but does not take online payments (`SRS OS-3`).
 
-**Sprint 2 shelving scope (CR-024):** The `shelve later` workflow is deferred and is not part of Sprint 2. Staff shall use the existing full-shelf failure path when no suitable storage location is available. No delayed location-assignment workflow or new API route is promised for this sprint. `FR-14` and `FR-15` remain unchanged.
+**Sprint 2 shelving scope (CR-024):** The `shelve later` workflow is deferred and is not part of Sprint 2. **No defined fallback exists when no suitable storage location is available:** the gap is recorded as `#98` gap 1 and the behaviour is to be decided as `CR-027`. Sprint 2 promises neither a `shelve later` route nor a temporary holding area nor an overflow queue. `FR-14` and `FR-15` remain unchanged.
 
 ### 3.6 Verification approach
 
