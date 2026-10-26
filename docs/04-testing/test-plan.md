@@ -50,6 +50,10 @@ aspirations: the build reports them, and a shortfall is recorded as a defect.
 | Area | Target |
 |---|---|
 | Line coverage overall | At least 60 per cent |
+> **Coverage target status (week 3).** The JaCoCo report is now produced by `mvn verify`
+> (`backend/target/site/jacoco/`) and collected as the `jacoco-report` CI artefact. The
+> **60 per cent target above has not yet been compared against a measured figure**;
+> no figure is claimed here until that comparison is recorded.
 | Handover service | At least 80 per cent |
 | Storage location recommender | At least 80 per cent |
 | Overdue fee engine | At least 80 per cent |
