@@ -36,12 +36,22 @@ jobs:
           PUSH_BRANCH: ${{ github.ref_name }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
+            if [ -z "$PR_BASE" ] || [ -z "$PR_HEAD" ]; then
+              echo "::error::the pull request base or head is empty, so there is nothing to range over"
+              exit 1
+            fi
             npm run commitlint -- --from "$PR_BASE" --to "$PR_HEAD" --verbose
           else
-            # Exclude the previous tip and history already on integration branches.
-            # This also handles a new branch without linting imported old commits.
+            # Lint what this push adds, and nothing else.
+            #
+            # The base is the previous tip of the pushed ref. It is all zeroes on a branch's first
+            # push, and it can name a commit that no longer exists after a force push. A base that
+            # cannot be resolved must not reach `--not`: git exits with `fatal: bad revision`. And an
+            # exclusion list that ends up empty degenerates to `git rev-list HEAD --not`, which lists
+            # every commit in the repository, so a branch push would be judged against history that
+            # predates these rules.
             exclusions=()
-            if ! [[ "$PUSH_BASE" =~ ^0+$ ]]; then
+            if ! [[ "$PUSH_BASE" =~ ^0+$ ]] && git cat-file -e "$PUSH_BASE^{commit}" 2>/dev/null; then
               exclusions+=("$PUSH_BASE")
             fi
             for branch in main develop; do
@@ -50,8 +60,26 @@ jobs:
                 exclusions+=("refs/remotes/origin/$branch")
               fi
             done
-            git rev-list "$PUSH_HEAD" --not "${exclusions[@]}" > "$RUNNER_TEMP/commitlint-commits"
+
+            if [ ${#exclusions[@]} -eq 0 ]; then
+              # Nothing to exclude, so lint the head commit alone rather than the whole repository.
+              # That checks less than it should, so say so: a silent fallback is how a check that
+              # stopped working looks the same as a check that passes.
+              echo "::warning::no base could be resolved and no integration branch is available, so only the head commit is checked"
+              printf '%s\n' "$PUSH_HEAD" > "$RUNNER_TEMP/commitlint-commits"
+            else
+              # --no-merges: a merge commit's message is composed by GitHub, not written by a member,
+              # and commitlint cannot rewrite it.
+              git rev-list --no-merges "$PUSH_HEAD" --not "${exclusions[@]}" \
+                > "$RUNNER_TEMP/commitlint-commits"
+            fi
+
+            # Say what is being checked. Without this a job that lints four hundred commits looks
+            # exactly like a job that lints one and rejects it.
+            count=$(wc -l < "$RUNNER_TEMP/commitlint-commits")
+            echo "Checking $count commit(s):"
             while IFS= read -r commit; do
+              echo "  $commit $(git log -1 --format=%s "$commit")"
               git show -s --format=%B "$commit" | npm run commitlint -- --verbose
             done < "$RUNNER_TEMP/commitlint-commits"
           fi
