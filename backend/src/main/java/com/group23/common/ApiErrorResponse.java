@@ -6,6 +6,5 @@ public record ApiErrorResponse(ApiError error) {
         return new ApiErrorResponse(new ApiError(code, message, requestId));
     }
 
-    public record ApiError(String code, String message, String requestId) {
-    }
+    public record ApiError(String code, String message, String requestId) {}
 }

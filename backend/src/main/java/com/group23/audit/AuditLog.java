@@ -4,14 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
-
+/** Maps an immutable, collection-point-scoped audit entry to its database row. */
 @Entity
 @Immutable
 @Table(name = "audit_logs")
@@ -46,8 +46,7 @@ public class AuditLog {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    protected AuditLog() {
-    }
+    protected AuditLog() {}
 
     private AuditLog(AuditLogEntry entry) {
         this.id = UUID.randomUUID();

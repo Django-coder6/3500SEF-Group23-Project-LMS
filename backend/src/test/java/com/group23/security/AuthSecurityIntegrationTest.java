@@ -1,5 +1,14 @@
 package com.group23.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group23.auth.AuthController;
 import com.group23.auth.AuthService;
@@ -11,7 +20,14 @@ import com.group23.config.SecurityConfig;
 import com.group23.user.User;
 import com.group23.user.UserRepository;
 import com.group23.user.UserRole;
-import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,66 +45,45 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(controllers = {AuthController.class, HealthController.class})
 @Import({
-        SecurityConfig.class,
-        JwtAuthenticationFilter.class,
-        RestAuthenticationEntryPoint.class,
-        RestAccessDeniedHandler.class,
-        AuthSecurityIntegrationTest.JwtTestConfiguration.class
+    SecurityConfig.class,
+    JwtAuthenticationFilter.class,
+    RestAuthenticationEntryPoint.class,
+    RestAccessDeniedHandler.class,
+    AuthSecurityIntegrationTest.JwtTestConfiguration.class
 })
 class AuthSecurityIntegrationTest {
 
     private static final String ISSUER = "collection-point-backend-test";
     private static final String SECRET = "test-only-collection-point-jwt-secret-32-bytes";
     private static final UUID STAFF_ID = UUID.fromString("20000000-0000-4000-8000-000000000002");
-    private static final UUID COLLECTION_POINT_ID =
-            UUID.fromString("10000000-0000-4000-8000-000000000001");
+    private static final UUID COLLECTION_POINT_ID = UUID.fromString("10000000-0000-4000-8000-000000000001");
 
     private static final List<ProtectedEndpoint> PROTECTED_ENDPOINTS = List.of(
-            new ProtectedEndpoint(HttpMethod.GET, "/api/parcels",
-                    Set.of(UserRole.staff, UserRole.owner, UserRole.admin)),
+            new ProtectedEndpoint(
+                    HttpMethod.GET, "/api/parcels", Set.of(UserRole.staff, UserRole.owner, UserRole.admin)),
             new ProtectedEndpoint(HttpMethod.POST, "/api/parcels", Set.of(UserRole.staff)),
             new ProtectedEndpoint(HttpMethod.POST, "/api/parcels/batch", Set.of(UserRole.staff)),
-            new ProtectedEndpoint(HttpMethod.PATCH,
+            new ProtectedEndpoint(
+                    HttpMethod.PATCH,
                     "/api/parcels/40000000-0000-4000-8000-000000000001/status",
                     Set.of(UserRole.staff)),
             new ProtectedEndpoint(HttpMethod.GET, "/api/my-parcels", Set.of(UserRole.resident)),
-            new ProtectedEndpoint(HttpMethod.GET,
-                    "/api/my-parcels/40000000-0000-4000-8000-000000000001",
-                    Set.of(UserRole.resident)),
-            new ProtectedEndpoint(HttpMethod.GET,
+            new ProtectedEndpoint(
+                    HttpMethod.GET, "/api/my-parcels/40000000-0000-4000-8000-000000000001", Set.of(UserRole.resident)),
+            new ProtectedEndpoint(
+                    HttpMethod.GET,
                     "/api/my-parcels/40000000-0000-4000-8000-000000000001/pickup-code",
                     Set.of(UserRole.resident)),
-            new ProtectedEndpoint(HttpMethod.GET, "/api/locations",
-                    Set.of(UserRole.staff, UserRole.owner, UserRole.admin)),
-            new ProtectedEndpoint(HttpMethod.POST, "/api/locations/recommend",
-                    Set.of(UserRole.staff)),
+            new ProtectedEndpoint(
+                    HttpMethod.GET, "/api/locations", Set.of(UserRole.staff, UserRole.owner, UserRole.admin)),
+            new ProtectedEndpoint(HttpMethod.POST, "/api/locations/recommend", Set.of(UserRole.staff)),
             new ProtectedEndpoint(HttpMethod.POST, "/api/pickup/verify", Set.of(UserRole.staff)),
-            new ProtectedEndpoint(HttpMethod.POST, "/api/pickup/confirm", Set.of(UserRole.staff))
-    );
+            new ProtectedEndpoint(HttpMethod.POST, "/api/pickup/confirm", Set.of(UserRole.staff)));
 
     @Autowired
     private MockMvc mockMvc;
@@ -115,13 +110,13 @@ class AuthSecurityIntegrationTest {
         UUID userId = UUID.randomUUID();
         when(authService.login("demo_resident_1", "password"))
                 .thenReturn(new LoginResponse(
-                        "signed-token",
-                        new UserSummary(userId, "demo_resident_1", List.of("resident"))
-                ));
+                        "signed-token", new UserSummary(userId, "demo_resident_1", List.of("resident"))));
 
-        mockMvc.perform(request(HttpMethod.POST, "/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+        mockMvc.perform(
+                        request(HttpMethod.POST, "/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        """
                                 {
                                   "username": "demo_resident_1",
                                   "password": "password",
@@ -143,13 +138,14 @@ class AuthSecurityIntegrationTest {
 
     @Test
     void invalidLoginUsesTheSharedUnauthorizedErrorShape() throws Exception {
-        when(authService.login(anyString(), anyString()))
-                .thenThrow(new InvalidCredentialsException());
+        when(authService.login(anyString(), anyString())).thenThrow(new InvalidCredentialsException());
 
-        mockMvc.perform(request(HttpMethod.POST, "/api/auth/login")
-                        .header("X-Request-Id", "request-123")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+        mockMvc.perform(
+                        request(HttpMethod.POST, "/api/auth/login")
+                                .header("X-Request-Id", "request-123")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        """
                                 {"username":"missing","password":"wrong"}
                                 """))
                 .andExpect(status().isUnauthorized())
@@ -169,8 +165,8 @@ class AuthSecurityIntegrationTest {
 
     @Test
     void completeRoleMatrixIsAllowedOrForbiddenForEveryFrozenEndpoint() throws Exception {
-        Map<UserRole, String> tokens = Arrays.stream(UserRole.values())
-                .collect(Collectors.toMap(role -> role, this::tokenForRole));
+        Map<UserRole, String> tokens =
+                Arrays.stream(UserRole.values()).collect(Collectors.toMap(role -> role, this::tokenForRole));
 
         for (ProtectedEndpoint endpoint : PROTECTED_ENDPOINTS) {
             for (UserRole role : UserRole.values()) {
@@ -193,8 +189,7 @@ class AuthSecurityIntegrationTest {
 
     @Test
     void malformedAndDisabledUserTokensAreRejected() throws Exception {
-        mockMvc.perform(request(HttpMethod.GET, "/api/parcels")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer not-a-jwt"))
+        mockMvc.perform(request(HttpMethod.GET, "/api/parcels").header(HttpHeaders.AUTHORIZATION, "Bearer not-a-jwt"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
     }
@@ -206,8 +201,7 @@ class AuthSecurityIntegrationTest {
         when(user.isActive()).thenReturn(false);
         when(userRepository.findById(STAFF_ID)).thenReturn(Optional.of(user));
 
-        mockMvc.perform(request(HttpMethod.GET, "/api/parcels")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+        mockMvc.perform(request(HttpMethod.GET, "/api/parcels").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -223,18 +217,14 @@ class AuthSecurityIntegrationTest {
         assertThat(claims.collectionPointId()).isEqualTo(COLLECTION_POINT_ID);
 
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(
-                jwtService,
-                userRepository,
-                new RestAuthenticationEntryPoint(new ObjectMapper())
-        );
+                jwtService, userRepository, new RestAuthenticationEntryPoint(new ObjectMapper()));
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/parcels");
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         filter.doFilter(request, response, new MockFilterChain());
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         assertThat(authentication.getPrincipal()).isInstanceOf(AuthenticatedUser.class);
         AuthenticatedUser principal = (AuthenticatedUser) authentication.getPrincipal();
         assertThat(principal.userId()).isEqualTo(STAFF_ID);
@@ -249,10 +239,7 @@ class AuthSecurityIntegrationTest {
                 .filter(mapping -> mapping.contains(" /api/"))
                 .collect(Collectors.toSet());
 
-        assertThat(mappings).containsExactlyInAnyOrder(
-                "GET /api/health",
-                "POST /api/auth/login"
-        );
+        assertThat(mappings).containsExactlyInAnyOrder("GET /api/health", "POST /api/auth/login");
     }
 
     private java.util.stream.Stream<String> mappingStrings(RequestMappingInfo info) {
@@ -262,8 +249,7 @@ class AuthSecurityIntegrationTest {
         if (methods.isEmpty()) {
             return patterns.stream().map(pattern -> "* " + pattern);
         }
-        return methods.stream()
-                .flatMap(method -> patterns.stream().map(pattern -> method + " " + pattern));
+        return methods.stream().flatMap(method -> patterns.stream().map(pattern -> method + " " + pattern));
     }
 
     private String tokenForRole(UserRole role) {
@@ -279,17 +265,11 @@ class AuthSecurityIntegrationTest {
         when(user.getUsername()).thenReturn("user-" + role);
         when(user.getRole()).thenReturn(role);
         when(user.isActive()).thenReturn(active);
-        when(user.getCollectionPointId())
-                .thenReturn(role == UserRole.staff ? COLLECTION_POINT_ID : null);
+        when(user.getCollectionPointId()).thenReturn(role == UserRole.staff ? COLLECTION_POINT_ID : null);
         return user;
     }
 
-    private record ProtectedEndpoint(
-            HttpMethod method,
-            String path,
-            Set<UserRole> allowedRoles
-    ) {
-    }
+    private record ProtectedEndpoint(HttpMethod method, String path, Set<UserRole> allowedRoles) {}
 
     @TestConfiguration
     static class JwtTestConfiguration {

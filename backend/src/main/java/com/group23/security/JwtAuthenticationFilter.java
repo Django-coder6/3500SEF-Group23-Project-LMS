@@ -7,6 +7,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,10 +18,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
+/** Authenticates bearer tokens and populates the request security context. */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -31,19 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public JwtAuthenticationFilter(
             JwtService jwtService,
             UserRepository userRepository,
-            RestAuthenticationEntryPoint authenticationEntryPoint
-    ) {
+            RestAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
@@ -59,7 +55,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             JwtService.JwtClaims claims = jwtService.parse(token);
-            User user = userRepository.findById(claims.userId())
+            User user = userRepository
+                    .findById(claims.userId())
                     .filter(User::isActive)
                     .orElse(null);
             if (user == null) {
@@ -73,12 +70,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     principal,
                     null,
                     List.of(new SimpleGrantedAuthority(
-                            "ROLE_" + principal.role().name().toUpperCase(Locale.ROOT)
-                    ))
-            );
-            authentication.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
+                            "ROLE_" + principal.role().name().toUpperCase(Locale.ROOT))));
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (JwtException | IllegalArgumentException exception) {

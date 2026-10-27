@@ -1,16 +1,15 @@
 package com.group23.common;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.UUID;
 
+/** Resolves request identifiers for consistent API error tracing. */
 public final class RequestIds {
 
     private static final String ATTRIBUTE = RequestIds.class.getName();
     private static final String HEADER = "X-Request-Id";
 
-    private RequestIds() {
-    }
+    private RequestIds() {}
 
     public static String getOrCreate(HttpServletRequest request) {
         Object existing = request.getAttribute(ATTRIBUTE);
@@ -19,9 +18,8 @@ public final class RequestIds {
         }
 
         String supplied = request.getHeader(HEADER);
-        String requestId = supplied == null || supplied.isBlank()
-                ? UUID.randomUUID().toString()
-                : supplied;
+        String requestId =
+                supplied == null || supplied.isBlank() ? UUID.randomUUID().toString() : supplied;
         request.setAttribute(ATTRIBUTE, requestId);
         return requestId;
     }

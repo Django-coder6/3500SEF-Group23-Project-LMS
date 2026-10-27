@@ -6,10 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.stereotype.Component;
-
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -17,25 +13,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.stereotype.Component;
 
+/** Redacts sensitive fields from audit snapshots before they are persisted. */
 @Component
 public class AuditPayloadSanitizer {
 
-    private static final Pattern CHINESE_MOBILE_NUMBER =
-            Pattern.compile("(?<!\\d)(1[3-9]\\d{9})(?!\\d)");
+    private static final Pattern CHINESE_MOBILE_NUMBER = Pattern.compile("(?<!\\d)(1[3-9]\\d{9})(?!\\d)");
 
-    private static final Set<String> REDACTED_KEY_PARTS = Set.of(
-            "password",
-            "token",
-            "authorization",
-            "pickupcode",
-            "actorid",
-            "operatorid"
-    );
+    private static final Set<String> REDACTED_KEY_PARTS =
+            Set.of("password", "token", "authorization", "pickupcode", "actorid", "operatorid");
 
     private final ObjectMapper objectMapper;
-    private final ParameterNameDiscoverer parameterNameDiscoverer =
-            new DefaultParameterNameDiscoverer();
+    private final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
     public AuditPayloadSanitizer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -49,9 +41,8 @@ public class AuditPayloadSanitizer {
             if (isInfrastructureValue(argument)) {
                 continue;
             }
-            String name = parameterNames != null && parameterNames.length > index
-                    ? parameterNames[index]
-                    : "arg" + index;
+            String name =
+                    parameterNames != null && parameterNames.length > index ? parameterNames[index] : "arg" + index;
             result.put(name, sanitizeValue(argument));
         }
         return result;
@@ -64,11 +55,7 @@ public class AuditPayloadSanitizer {
 
         JsonNode sanitized = sanitizeNode(toJson(value), "");
         if (sanitized.isObject()) {
-            return objectMapper.convertValue(
-                    sanitized,
-                    new TypeReference<LinkedHashMap<String, Object>>() {
-                    }
-            );
+            return objectMapper.convertValue(sanitized, new TypeReference<LinkedHashMap<String, Object>>() {});
         }
         return Map.of("value", objectMapper.convertValue(sanitized, Object.class));
     }
@@ -137,14 +124,11 @@ public class AuditPayloadSanitizer {
         if (digits.length() < 7) {
             return "***";
         }
-        return digits.substring(0, 3)
-                + "****"
-                + digits.substring(digits.length() - 4);
+        return digits.substring(0, 3) + "****" + digits.substring(digits.length() - 4);
     }
 
     private static String maskEmbeddedPhoneNumbers(String value) {
-        return CHINESE_MOBILE_NUMBER.matcher(value)
-                .replaceAll(match -> maskPhone(match.group(1)));
+        return CHINESE_MOBILE_NUMBER.matcher(value).replaceAll(match -> maskPhone(match.group(1)));
     }
 
     private static boolean isInfrastructureValue(Object value) {

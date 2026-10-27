@@ -5,16 +5,16 @@ import com.group23.user.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+/** Issues and validates signed JWTs for collection point users. */
 @Service
 public class JwtService {
 
@@ -25,8 +25,7 @@ public class JwtService {
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.issuer}") String issuer,
-            @Value("${app.jwt.token-lifetime}") Duration tokenLifetime
-    ) {
+            @Value("${app.jwt.token-lifetime}") Duration tokenLifetime) {
         if (issuer == null || issuer.isBlank()) {
             throw new IllegalArgumentException("JWT issuer must not be blank");
         }
@@ -66,10 +65,8 @@ public class JwtService {
         return new JwtClaims(
                 UUID.fromString(claims.getSubject()),
                 UserRole.valueOf(claims.get("role", String.class)),
-                collectionPointId == null ? null : UUID.fromString(collectionPointId)
-        );
+                collectionPointId == null ? null : UUID.fromString(collectionPointId));
     }
 
-    public record JwtClaims(UUID userId, UserRole role, UUID collectionPointId) {
-    }
+    public record JwtClaims(UUID userId, UserRole role, UUID collectionPointId) {}
 }

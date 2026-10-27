@@ -2,10 +2,9 @@ package com.group23.audit;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
-
 import java.util.Objects;
 import java.util.UUID;
+import org.springframework.stereotype.Repository;
 
 /**
  * Append-only persistence boundary for audit rows.

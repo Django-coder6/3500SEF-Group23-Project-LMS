@@ -28,6 +28,81 @@ This document defines the collaboration rules for COMP 3500SEF Group 23. All mem
    git pull origin develop
    ```
 
+### Install quality checks and Git hooks (T-30-05)
+
+Use Node.js 24, npm, Git Bash on Windows, and JDK 17. From the repository root,
+install the repository hooks with one command:
+
+```bash
+npm ci
+```
+
+The root package's `prepare` script installs Husky automatically. Verify the
+installation with `git config --get core.hooksPath`; it should print `.husky/_`.
+Repeat `npm ci` after root dependency updates, or `npm run prepare` to reinstall
+hooks. Do not commit generated `.husky/_` or `node_modules/` files. Installing only
+frontend dependencies does not install the repository hooks.
+
+Install frontend dependencies separately with `npm --prefix frontend ci`.
+
+- `commit-msg` runs `@commitlint/config-conventional` without custom header rules.
+  The team's scope and task-ID convention below remains the recommended project
+  format. The machine also accepts conventional messages without a scope or
+  task ID, such as `chore: refresh dependencies`, and the preset's standard
+  merge/revert exemptions. GitHub editor defaults such as `Update README.md` are
+  not conventional: replace them with a message such as
+  `docs: update readme [T-30-05]` before saving.
+- `pre-push` reads the pushed ref pairs and runs frontend ESLint only when the
+  pushed changes include `frontend/`. Changes under `backend/` or to
+  `checkstyle.xml` run the tracked Maven wrapper's `verify` command. New branches
+  inspect commits not yet present on the destination remote; deleted branches
+  skip checks. Missing dependencies or unavailable comparison commits reject
+  the push. Fetch the destination branch if its old tip is missing locally.
+- Local checks run against the current working tree. Review unrelated edits and
+  check out the branch being pushed before running them.
+- CI runs on every branch push and on PRs targeting `main` or `develop`, even
+  when local hooks are absent. It retains the backend, frontend, sanity, and
+  Docker smoke jobs and adds commitlint. Commitlint checks only the changed
+  commit range; pushes exclude history already on the other integration branches
+  and the previous remote tip, including when a feature branch is new. CI reports
+  failures after a push, while hooks reject
+  local commands immediately.
+
+Run the tooling tests and check a message without creating a commit:
+
+```bash
+npm run test:tooling
+printf '%s\n' 'chore(tooling): add quality checks [T-30-05]' | npm run commitlint
+printf '%s\n' 'update files' | npm run commitlint # must fail
+```
+
+Run Java checks or fix formatting using the existing wrapper:
+
+```bash
+cd backend
+./mvnw -B verify
+./mvnw spotless:apply
+./mvnw -B verify
+```
+
+Both Checkstyle and Spotless are bound to `verify`, matching the existing backend
+CI job. Spotless uses pinned Palantir Java Format with four-space indentation,
+following the PR #230 review, and checks production and test sources. Checkstyle
+enforces unused imports, wildcard imports, braces on control blocks, and Javadoc
+on public classes. Spotless removes trailing whitespace. There are no additional
+Javadoc requirements on methods or package-private test classes.
+
+**Integration note:** issue #177 was written before the backend existed. The
+current implementation extends the existing Spring Boot POM and retains its
+dependencies, JaCoCo, Flyway, and application plugins, Maven wrapper, and all
+existing CI jobs. New tooling must be integrated against current `develop`; do
+not recreate a minimal backend POM or restore the old commented CI jobs.
+
+Before merging, tell the team to run root `npm ci` and use `spotless:apply` for
+Java formatting. Test hook installation in a fresh clone using the command
+above; invoke `sh .husky/_/commit-msg <message-file>` with an invalid message to
+confirm rejection without creating a commit.
+
 ### Branch model
 
 | Branch | Purpose | Protection |

@@ -1,5 +1,5 @@
 # Continuous integration.
-# Four jobs: sanity checks the repository itself, backend builds and tests the Java
+# Five jobs: commitlint validates new commit messages; sanity checks the repository itself, backend builds and tests the Java
 # service, frontend lints, tests and builds the Vue application, and docker-smoke
 # starts the complete Compose stack and checks its health endpoints.
 
@@ -7,11 +7,56 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: ['**']
   pull_request:
     branches: [main, develop]
 
 jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+        env:
+          HUSKY: '0'
+      - name: Check commit messages in this change
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+          PUSH_HEAD: ${{ github.sha }}
+          PUSH_BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            npm run commitlint -- --from "$PR_BASE" --to "$PR_HEAD" --verbose
+          else
+            # Exclude the previous tip and history already on integration branches.
+            # This also handles a new branch without linting imported old commits.
+            exclusions=()
+            if ! [[ "$PUSH_BASE" =~ ^0+$ ]]; then
+              exclusions+=("$PUSH_BASE")
+            fi
+            for branch in main develop; do
+              if [ "$PUSH_BRANCH" != "$branch" ] &&
+                 git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+                exclusions+=("refs/remotes/origin/$branch")
+              fi
+            done
+            git rev-list "$PUSH_HEAD" --not "${exclusions[@]}" > "$RUNNER_TEMP/commitlint-commits"
+            while IFS= read -r commit; do
+              git show -s --format=%B "$commit" | npm run commitlint -- --verbose
+            done < "$RUNNER_TEMP/commitlint-commits"
+          fi
+      - run: npm run test:tooling
+
   sanity:
     runs-on: ubuntu-latest
     steps:

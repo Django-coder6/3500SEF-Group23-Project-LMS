@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** Exposes the credential-based sign-in endpoint. */
 @RestController
 @RequestMapping(path = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {

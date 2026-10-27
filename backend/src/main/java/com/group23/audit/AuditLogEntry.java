@@ -11,8 +11,7 @@ public record AuditLogEntry(
         UUID targetId,
         Map<String, Object> before,
         Map<String, Object> after,
-        UUID collectionPointId
-) {
+        UUID collectionPointId) {
 
     public AuditLogEntry {
         Objects.requireNonNull(actorId, "actorId must not be null");

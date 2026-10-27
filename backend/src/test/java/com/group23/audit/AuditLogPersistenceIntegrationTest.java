@@ -1,8 +1,15 @@
 package com.group23.audit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group23.security.AuthenticatedUser;
 import com.group23.user.UserRole;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,33 +35,21 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @Import({
-        AuditLogPersistenceIntegrationTest.AuditTestConfiguration.class,
-        AuditLogPersistenceIntegrationTest.AuditTestController.class
+    AuditLogPersistenceIntegrationTest.AuditTestConfiguration.class,
+    AuditLogPersistenceIntegrationTest.AuditTestController.class
 })
 class AuditLogPersistenceIntegrationTest {
 
-    private static final UUID SESSION_ACTOR_ID =
-            UUID.fromString("20000000-0000-4000-8000-000000000002");
-    private static final UUID FORGED_ACTOR_ID =
-            UUID.fromString("20000000-0000-4000-8000-000000000003");
-    private static final UUID COLLECTION_POINT_ID =
-            UUID.fromString("10000000-0000-4000-8000-000000000001");
+    private static final UUID SESSION_ACTOR_ID = UUID.fromString("20000000-0000-4000-8000-000000000002");
+    private static final UUID FORGED_ACTOR_ID = UUID.fromString("20000000-0000-4000-8000-000000000003");
+    private static final UUID COLLECTION_POINT_ID = UUID.fromString("10000000-0000-4000-8000-000000000001");
 
     @Container
-    static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>("postgres:16-alpine");
+    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
     @DynamicPropertySource
     static void databaseProperties(DynamicPropertyRegistry registry) {
@@ -74,14 +69,9 @@ class AuditLogPersistenceIntegrationTest {
 
     @BeforeEach
     void authenticateStaff() {
-        AuthenticatedUser principal = new AuthenticatedUser(
-                SESSION_ACTOR_ID,
-                UserRole.staff,
-                COLLECTION_POINT_ID
-        );
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(principal, null, List.of())
-        );
+        AuthenticatedUser principal = new AuthenticatedUser(SESSION_ACTOR_ID, UserRole.staff, COLLECTION_POINT_ID);
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(principal, null, List.of()));
     }
 
     @AfterEach
@@ -92,11 +82,7 @@ class AuditLogPersistenceIntegrationTest {
     @Test
     @DisplayName("TC-PICK-005: confirming a handover writes exactly one masked audit entry")
     void confirmingHandoverWritesExactlyOneEntry() throws Exception {
-        ForgedHandover request = new ForgedHandover(
-                UUID.randomUUID(),
-                FORGED_ACTOR_ID,
-                "13812345678"
-        );
+        ForgedHandover request = new ForgedHandover(UUID.randomUUID(), FORGED_ACTOR_ID, "13812345678");
 
         mockMvc.perform(post("/test/audit/handover")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,8 +92,7 @@ class AuditLogPersistenceIntegrationTest {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM audit_logs WHERE action = 'handover.confirm' AND target_id = ?",
                 Integer.class,
-                request.getTargetId()
-        );
+                request.getTargetId());
         assertThat(count).isEqualTo(1);
 
         Map<String, Object> row = jdbcTemplate.queryForMap(
@@ -119,8 +104,7 @@ class AuditLogPersistenceIntegrationTest {
                 FROM audit_logs
                 WHERE action = 'handover.confirm' AND target_id = ?
                 """,
-                request.getTargetId()
-        );
+                request.getTargetId());
 
         assertThat(row.get("actor_id")).isEqualTo(SESSION_ACTOR_ID);
         assertThat(row.get("collection_point_id")).isEqualTo(COLLECTION_POINT_ID);
@@ -144,14 +128,9 @@ class AuditLogPersistenceIntegrationTest {
                 action = "handover.confirm",
                 targetType = "parcel",
                 targetIdExpression = "#result.targetId",
-                collectionPointIdExpression = "#result.collectionPointId"
-        )
+                collectionPointIdExpression = "#result.collectionPointId")
         public HandoverAuditResult confirmHandover(ForgedHandover request) {
-            return new HandoverAuditResult(
-                    request.targetId,
-                    COLLECTION_POINT_ID,
-                    request.getRecipientPhone()
-            );
+            return new HandoverAuditResult(request.targetId, COLLECTION_POINT_ID, request.getRecipientPhone());
         }
     }
 

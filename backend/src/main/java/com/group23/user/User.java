@@ -8,12 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import java.time.Instant;
+import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.Instant;
-import java.util.UUID;
-
+/** Maps a user account and its collection point membership to the database. */
 @Entity
 @Table(name = "users")
 public class User {
@@ -50,8 +50,7 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    protected User() {
-    }
+    protected User() {}
 
     private User(
             UUID id,
@@ -61,8 +60,7 @@ public class User {
             UserRole role,
             String phone,
             boolean active,
-            UUID collectionPointId
-    ) {
+            UUID collectionPointId) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -73,22 +71,8 @@ public class User {
         this.collectionPointId = collectionPointId;
     }
 
-    public static User pendingResident(
-            String username,
-            String passwordHash,
-            String fullName,
-            String phone
-    ) {
-        return new User(
-                UUID.randomUUID(),
-                username,
-                passwordHash,
-                fullName,
-                UserRole.resident,
-                phone,
-                false,
-                null
-        );
+    public static User pendingResident(String username, String passwordHash, String fullName, String phone) {
+        return new User(UUID.randomUUID(), username, passwordHash, fullName, UserRole.resident, phone, false, null);
     }
 
     public void activate() {

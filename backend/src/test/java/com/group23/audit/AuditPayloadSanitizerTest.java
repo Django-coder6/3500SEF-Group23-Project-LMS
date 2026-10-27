@@ -1,11 +1,10 @@
 package com.group23.audit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 class AuditPayloadSanitizerTest {
 
@@ -40,15 +39,12 @@ class AuditPayloadSanitizerTest {
 
     @Test
     void masksShortSyntheticPhoneNumbersAsWell() {
-        assertThat(sanitizer.sanitizeResult(Map.of("phone", "00000001")))
-                .containsEntry("phone", "000****0001");
+        assertThat(sanitizer.sanitizeResult(Map.of("phone", "00000001"))).containsEntry("phone", "000****0001");
     }
 
     @Test
     void masksPhoneNumbersEmbeddedInFreeText() {
-        assertThat(sanitizer.sanitizeResult(Map.of(
-                "note",
-                "Call 13812345678 before collection."
-        ))).containsEntry("note", "Call 138****5678 before collection.");
+        assertThat(sanitizer.sanitizeResult(Map.of("note", "Call 13812345678 before collection.")))
+                .containsEntry("note", "Call 138****5678 before collection.");
     }
 }

@@ -1,6 +1,9 @@
 package com.group23.audit;
 
 import com.group23.security.AuthenticatedUser;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.UUID;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,10 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Applies audit writes to service methods annotated with {@link Audited}.
@@ -55,48 +54,31 @@ public class AuditLogAspect {
     private final AuditPayloadSanitizer payloadSanitizer;
     private final TransactionTemplate transactionTemplate;
     private final ExpressionParser expressionParser = new SpelExpressionParser();
-    private final ParameterNameDiscoverer parameterNameDiscoverer =
-            new DefaultParameterNameDiscoverer();
+    private final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
     public AuditLogAspect(
             AuditLogRepository auditLogRepository,
             AuditPayloadSanitizer payloadSanitizer,
-            PlatformTransactionManager transactionManager
-    ) {
+            PlatformTransactionManager transactionManager) {
         this.auditLogRepository = auditLogRepository;
         this.payloadSanitizer = payloadSanitizer;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Around("@annotation(audited)")
-    public Object writeAuditTrail(
-            ProceedingJoinPoint joinPoint,
-            Audited audited
-    ) throws Throwable {
+    public Object writeAuditTrail(ProceedingJoinPoint joinPoint, Audited audited) throws Throwable {
         AuthenticatedUser actor = currentActor();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        Map<String, Object> before =
-                payloadSanitizer.sanitizeArguments(method, joinPoint.getArgs());
+        Map<String, Object> before = payloadSanitizer.sanitizeArguments(method, joinPoint.getArgs());
 
         try {
             return transactionTemplate.execute(status -> {
                 try {
                     Object result = joinPoint.proceed();
-                    UUID targetId = evaluateUuid(
-                            audited.targetIdExpression(),
-                            joinPoint,
-                            method,
-                            result,
-                            "targetId"
-                    );
+                    UUID targetId = evaluateUuid(audited.targetIdExpression(), joinPoint, method, result, "targetId");
                     UUID collectionPointId = evaluateUuid(
-                            audited.collectionPointIdExpression(),
-                            joinPoint,
-                            method,
-                            result,
-                            "collectionPointId"
-                    );
+                            audited.collectionPointIdExpression(), joinPoint, method, result, "collectionPointId");
                     auditLogRepository.append(new AuditLogEntry(
                             actor.userId(),
                             audited.action(),
@@ -104,8 +86,7 @@ public class AuditLogAspect {
                             targetId,
                             before,
                             payloadSanitizer.sanitizeResult(result),
-                            collectionPointId
-                    ));
+                            collectionPointId));
                     return result;
                 } catch (RuntimeException | Error exception) {
                     throw exception;
@@ -119,12 +100,7 @@ public class AuditLogAspect {
     }
 
     private UUID evaluateUuid(
-            String expression,
-            ProceedingJoinPoint joinPoint,
-            Method method,
-            Object result,
-            String fieldName
-    ) {
+            String expression, ProceedingJoinPoint joinPoint, Method method, Object result, String fieldName) {
         StandardEvaluationContext context = new StandardEvaluationContext(joinPoint.getTarget());
         String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
         Object[] arguments = joinPoint.getArgs();
@@ -146,9 +122,7 @@ public class AuditLogAspect {
         if (value instanceof String text && !text.isBlank()) {
             return UUID.fromString(text);
         }
-        throw new IllegalStateException(
-                "audited operation must resolve a non-null " + fieldName
-        );
+        throw new IllegalStateException("audited operation must resolve a non-null " + fieldName);
     }
 
     private static AuthenticatedUser currentActor() {

@@ -1,8 +1,16 @@
 package com.group23.audit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group23.security.AuthenticatedUser;
 import com.group23.user.UserRole;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,28 +21,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 class AuditLogAspectTest {
 
-    private static final UUID SESSION_ACTOR_ID =
-            UUID.fromString("20000000-0000-4000-8000-000000000002");
-    private static final UUID FORGED_ACTOR_ID =
-            UUID.fromString("20000000-0000-4000-8000-000000000003");
-    private static final UUID COLLECTION_POINT_ID =
-            UUID.fromString("10000000-0000-4000-8000-000000000001");
+    private static final UUID SESSION_ACTOR_ID = UUID.fromString("20000000-0000-4000-8000-000000000002");
+    private static final UUID FORGED_ACTOR_ID = UUID.fromString("20000000-0000-4000-8000-000000000003");
+    private static final UUID COLLECTION_POINT_ID = UUID.fromString("10000000-0000-4000-8000-000000000001");
 
     private final AuditLogRepository repository = mock(AuditLogRepository.class);
-    private final PlatformTransactionManager transactionManager =
-            mock(PlatformTransactionManager.class);
+    private final PlatformTransactionManager transactionManager = mock(PlatformTransactionManager.class);
 
     @BeforeEach
     void setUp() {
@@ -42,14 +36,9 @@ class AuditLogAspectTest {
                 .thenReturn(new SimpleTransactionStatus());
         when(repository.append(any())).thenReturn(UUID.randomUUID());
 
-        AuthenticatedUser principal = new AuthenticatedUser(
-                SESSION_ACTOR_ID,
-                UserRole.staff,
-                COLLECTION_POINT_ID
-        );
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(principal, null, List.of())
-        );
+        AuthenticatedUser principal = new AuthenticatedUser(SESSION_ACTOR_ID, UserRole.staff, COLLECTION_POINT_ID);
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(principal, null, List.of()));
     }
 
     @AfterEach
@@ -59,34 +48,29 @@ class AuditLogAspectTest {
 
     @Test
     void oneMutationWritesOneRowUsingTheSessionActorAndMaskedSnapshots() {
-        AuditPayloadSanitizer sanitizer =
-                new AuditPayloadSanitizer(new ObjectMapper().findAndRegisterModules());
-        AuditLogAspect aspect =
-                new AuditLogAspect(repository, sanitizer, transactionManager);
+        AuditPayloadSanitizer sanitizer = new AuditPayloadSanitizer(new ObjectMapper().findAndRegisterModules());
+        AuditLogAspect aspect = new AuditLogAspect(repository, sanitizer, transactionManager);
         AspectJProxyFactory factory = new AspectJProxyFactory(new TestMutationService());
         factory.addAspect(aspect);
         TestMutationService service = factory.getProxy();
 
-        ForgedMutation request = new ForgedMutation(
-                FORGED_ACTOR_ID,
-                "13812345678"
-        );
+        ForgedMutation request = new ForgedMutation(FORGED_ACTOR_ID, "13812345678");
         MutationResult result = service.confirmHandover(request);
 
         assertThat(result.getTargetId()).isNotNull();
         assertThat(result.getCollectionPointId()).isEqualTo(COLLECTION_POINT_ID);
-        verify(repository).append(org.mockito.ArgumentMatchers.argThat(entry ->
-                entry.actorId().equals(SESSION_ACTOR_ID)
-                        && entry.targetId().equals(result.getTargetId())
-                        && entry.collectionPointId().equals(COLLECTION_POINT_ID)
-                        && entry.action().equals("handover.confirm")
-                        && entry.targetType().equals("parcel")
-                        && entry.before().toString().contains("138****5678")
-                        && entry.before().toString().contains("[REDACTED]")
-                        && !entry.before().toString().contains("13812345678")
-                        && !entry.before().toString().contains(FORGED_ACTOR_ID.toString())
-                        && entry.after().toString().contains("138****5678")
-        ));
+        verify(repository)
+                .append(org.mockito.ArgumentMatchers.argThat(
+                        entry -> entry.actorId().equals(SESSION_ACTOR_ID)
+                                && entry.targetId().equals(result.getTargetId())
+                                && entry.collectionPointId().equals(COLLECTION_POINT_ID)
+                                && entry.action().equals("handover.confirm")
+                                && entry.targetType().equals("parcel")
+                                && entry.before().toString().contains("138****5678")
+                                && entry.before().toString().contains("[REDACTED]")
+                                && !entry.before().toString().contains("13812345678")
+                                && !entry.before().toString().contains(FORGED_ACTOR_ID.toString())
+                                && entry.after().toString().contains("138****5678")));
     }
 
     static class TestMutationService {
@@ -95,14 +79,9 @@ class AuditLogAspectTest {
                 action = "handover.confirm",
                 targetType = "parcel",
                 targetIdExpression = "#result.targetId",
-                collectionPointIdExpression = "#result.collectionPointId"
-        )
+                collectionPointIdExpression = "#result.collectionPointId")
         public MutationResult confirmHandover(ForgedMutation request) {
-            return new MutationResult(
-                    UUID.randomUUID(),
-                    COLLECTION_POINT_ID,
-                    request.getRecipientPhone()
-            );
+            return new MutationResult(UUID.randomUUID(), COLLECTION_POINT_ID, request.getRecipientPhone());
         }
     }
 
