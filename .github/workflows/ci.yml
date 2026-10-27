@@ -11,6 +11,37 @@ on:
     branches: [main, develop]
 
 jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+        env:
+          HUSKY: '0'
+      - name: Check commit messages in this change
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+          PUSH_HEAD: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            npm run commitlint -- --from "$PR_BASE" --to "$PR_HEAD" --verbose
+          elif [[ "$PUSH_BASE" =~ ^0+$ ]]; then
+            git log -1 --format=%B "$PUSH_HEAD" | npm run commitlint
+          else
+            npm run commitlint -- --from "$PUSH_BASE" --to "$PUSH_HEAD" --verbose
+          fi
+      - run: npm run test:tooling
+
   sanity:
     runs-on: ubuntu-latest
     steps:

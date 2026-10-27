@@ -28,6 +28,87 @@ This document defines the collaboration rules for COMP 3500SEF Group 23. All mem
    git pull origin develop
    ```
 
+### Install quality checks and Git hooks (T-30-05)
+
+Use Node.js 20 or later, npm, Git, and JDK 17 (ADR-005). On Windows, use Git
+Bash for the commands below and configure VS Code to use the same JDK. Until
+R6 supplies `backend/mvnw` in #137, also install Maven 3.9 or later and put
+`mvn` on `PATH`.
+
+Run these commands from the repository root after cloning:
+
+```bash
+npm ci
+npm --prefix frontend ci
+git config --get core.hooksPath
+npm run test:tooling
+```
+
+The root `npm ci` runs `prepare` and installs Husky automatically. The hooks path
+must be `.husky/_`. Installing only the frontend dependencies does not install
+the repository hooks. Repeat `npm ci` after root dependency changes. If hooks
+need reinstalling, run `npm run prepare`. Do not commit the generated `.husky/_`
+directory or `node_modules/`.
+
+- `commit-msg` rejects messages that do not follow the format below. Both
+  `[TASK-012]` (existing examples) and `[T-30-05]` (current Backlog IDs) are
+  accepted. `Week3-3` is an issue label, not a Backlog task ID. English imperative
+  wording remains a reviewer responsibility; the automated check validates
+  structure, printable English characters, lower case, and punctuation.
+- `pre-push` reads Git's pushed ref pairs. Frontend lint runs only when the
+  pushed changes include `frontend/`. Backend changes or `checkstyle.xml` run
+  Maven `verify`. New branches inspect commits absent from the destination
+  remote; deleted branches skip checks. Multiple pushed refs are combined.
+  Missing dependencies or an unavailable comparison commit stop the push with
+  an error. Fetch the destination branch if its old tip is missing locally.
+- Checks run against the current working tree. Review or stash unrelated edits
+  before pushing, and push the branch whose files you have checked out.
+- The commitlint CI job validates the PR commit range or the commits introduced
+  by a push to `main`/`develop`. Standard Git merge/revert messages retain
+  commitlint's default exemptions. Local hooks are not a replacement for CI.
+
+Check a message without creating a commit:
+
+```bash
+printf '%s\n' 'chore(tooling): add quality checks [T-30-05]' | npm run commitlint
+printf '%s\n' 'update files' | npm run commitlint # must fail
+```
+
+Run Java quality checks and apply formatting from `backend/`:
+
+```bash
+cd backend
+mvn -B verify
+mvn spotless:apply
+mvn -B verify
+```
+
+Once #137 supplies the wrapper, use `./mvnw -B verify` and
+`./mvnw spotless:apply` instead. Both Spotless `check` and Checkstyle `check`
+are bound to `verify`, so unformatted code fails the same lifecycle used by CI.
+Spotless uses Google Java Format's four-space AOSP style, matching the existing
+`.editorconfig`; it checks production and test Java sources. Checkstyle stays
+narrow: wildcard imports, unused/redundant imports, equals/hashCode consistency,
+and switch fall-through. There is no mandatory Javadoc or line-length policy.
+
+The initial `backend/pom.xml` provides only the Java 17 build and quality
+plugins. **R6 integration for #137:** preserve these plugins under
+`build/plugins`, including their `verify` executions, when adding Spring Boot
+dependencies, tests, and the Maven wrapper. Keep `checkstyle.xml` at repository
+root. The existing CI backend job must run with `working-directory: backend`
+and `./mvnw -B verify`; artifact upload still uses the repository-relative
+`backend/target/surefire-reports/`. Do not change the command to
+`./backend/mvnw` inside that working directory. R6 owns enabling this job; it
+remains commented until the application scaffold is ready.
+
+Before merging, notify the team that commit messages and Java formatting are
+now checked, and ask everyone to install the root hooks. Check a fresh clone by
+following the installation commands above, then verify that an invalid message
+is rejected by `sh .husky/commit-msg <message-file>`. To check formatting
+enforcement, add an intentionally unformatted temporary Java class under
+`backend/src/main/java/`, confirm `verify` fails, run `spotless:apply`, confirm
+`verify` succeeds, and remove the temporary class before committing.
+
 ### Branch model
 
 | Branch | Purpose | Protection |

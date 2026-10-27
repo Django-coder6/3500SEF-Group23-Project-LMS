@@ -1,0 +1,17 @@
+{
+  "name": "group23-repository-tools",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "commitlint": "commitlint",
+    "test:tooling": "node --test scripts/tooling.test.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "19.8.1",
+    "@commitlint/config-conventional": "19.8.1",
+    "husky": "9.1.7"
+  }
+}
