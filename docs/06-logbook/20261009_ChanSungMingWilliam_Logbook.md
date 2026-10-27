@@ -40,6 +40,6 @@ calendar week do not line up in this project.
 | Week | Dates covered | Hours |
 |---|---|---|
 | W01 | 2026-10-02 to 2026-10-11 | 0.6 |
-| W02 | 2026-10-12 to 2026-10-19 | 4.25 |
+| W02 | 2026-10-12 to 2026-10-19 | 7.0 |
 | W03 | 2026-10-20 to 2026-10-25 | 19.67 |
 | **Total to date** | | **24.52** |
