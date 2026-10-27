@@ -8,7 +8,7 @@
 |---|---|
 | Task | T-00-06 |
 | Owner | R1, with process sections maintained by R2 |
-| Version | v1.13 |
+| Version | v1.14 |
 | Status | Active |
 
 ## 1. What this log records
@@ -46,6 +46,20 @@ with the reason stated.
 | Raised by | The member who raised it |
 | Implementing sprint | Which sprint carries the work |
 | Status | Proposed, approved, rejected, implemented or closed |
+
+### 1.3 How a record number is taken
+
+**A number is taken when it appears in the table in section 2**, not when it is mentioned in an
+issue, a comment or a review.
+
+A number written into an issue is a *reservation*: a suggestion to whoever writes next. It is
+courteous to honour it, and this team has honoured it every time it noticed, but **the table is what
+decides**. Three collisions have already come from treating a reservation as a claim — `CR-018`,
+`CR-026` and `CR-027` — and each was resolved the same way: the record that exists keeps the number
+and the reservation moves.
+
+**So when two records reach for the same number**, the one already in the table keeps it. The other
+takes the next free one, and the issue or comment holding the reservation is edited to say so.
 
 ## 2. Change records
 
@@ -108,3 +122,4 @@ it shows the option was weighed.
 | v1.11 | Week 3 | Added CR-023, CR-024 and CR-025 for the week 3 adjudication: the recommendation panel is demoted, the full-shelf fallback is deferred, and the 50-parcel batch cap is kept without a queue | R2 |
 | v1.12 | Week 3 | Added CR-026, making `Setting.key` unique within a collection point rather than globally. The schema already did this and `overdue-fee-rules.md` section 8 already asked for it, so `ERD.md` moves to v1.4 and `overdue-fee-rules.md` to v1.1 for the same decision, and `V1__baseline.sql` is untouched | R1 |
 | v1.13 | Week 4 | Recorded CR-027 for the PR #230 tooling correction: replace the obsolete pre-scaffold assumption with additive integration, preserve current CI, and adopt the reviewed formatting and commitlint configuration | R10 |
+| v1.14 | Week 4 | Added section 1.3, which says a record number is taken when it appears in the section 2 table rather than when it is mentioned in an issue. Three collisions came from the other reading — `CR-018`, `CR-026` and `CR-027` — and `CR-027` is the one still live: `#98` reserved it for the full-shelf answer while `#230` wrote it for the tooling, so the full-shelf record moves to `CR-028` | R1 |
