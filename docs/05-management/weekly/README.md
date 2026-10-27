@@ -75,6 +75,7 @@ than a discrepancy to chase.
 |---|---|---|---|
 | W01 | `20261012_contributors-1.jpg`, `20261012_contributors-2.jpg` | 2026-10-12 | 2026-09-28 to 2026-10-12 |
 | W02 | `20261021_contributors-1.jpg`, `20261021_contributors-2.jpg` | 2026-10-21 | 2026-10-12 to 2026-10-19 |
+| W03 | `20261028_contributors-1.jpg`, `20261028_contributors-2.jpg` | 2026-10-28 | 2026-10-19 to 2026-10-28 |
 
 ### What the W01 screenshot records
 
@@ -188,6 +189,109 @@ than last.
 - **Nothing here says the person who committed is the person who did the thinking.** The logbooks
   are the record of that, and the two are meant to be read together: this folder is the
   independent half.
+
+### What the W03 screenshot records
+
+Captured on **2026-10-28**, covering **2026-10-19 to 2026-10-28**. Two images again, one session.
+
+| Rank | Account | Member | Commits in the period shown | Insertions | Deletions |
+|---|---|---|---|---|---|
+| 1 | fannaodawang | R8 Wu Kehao | 37 | 233 | 124 |
+| 2 | Django-coder6 | R1 Liu JiaHao | 19 | 1,634 | 237 |
+| 3 | ohcyc246 | R2 Chan Yin Cho | 18 | 283 | 197 |
+| 4 | RavenG7 | R9 Guo Yuhui | 14 | 98 | 116 |
+| 5 | RookieVENENO | R4 Yuan Chong Jun | 9 | 1,504 | 165 |
+| 6 | 123dvfj123 | R6 Hu Qing Kai | 5 | 2,134 | 9 |
+| 7 | Kennethli13 | R3 Li Cheuk Fung | 4 | 76 | 11 |
+| 8 | smcheese9731-sys | R10 Chan Sung Ming | 1 | 2,047 | 0 |
+| 9 | Christine049 | R5 Tan Yuan Ting | 1 | 11 | 5 |
+| — | **Allen06914** | **R7 Huang Wei Jia** | **does not appear** | — | — |
+
+**Totals for the nine rows above: 108 commits, 8,020 insertions, 864 deletions.**
+
+#### Nine of ten appear, and that is the honest reading
+
+**This is the first week where the screenshot does not show all ten members.** The previous two
+sections both end by saying every member appears; this one cannot. R7 is not on the panel at all —
+not a low count, no row.
+
+**That is not a statement about R7's contribution.** He merged eight pull requests, two of them in
+week 3 and both substantial: `#198` the Flyway baseline and seed data (`T-30-03`) and `#206` the
+audit interceptor and phone masking (`T-41-03`). `git log` on `develop` records thirteen commits
+under his work.
+
+**He is missing because of how the commits are authored, not because the work is not there.** Git
+carries these two identities, and neither email is one GitHub attributes to `@Allen06914`:
+
+| Author name in git | Author email | Commits | Attributed to `@Allen06914`? |
+|---|---|---:|---|
+| `Momoka17` | `hwj914@outlook.com` | 11 | no — the email is not on the account |
+| `HWeijia` | `hwj@HWeijiadeMacBook-Pro.local` | 2 | **never** — a machine-local address cannot be verified |
+
+#### The same problem is understating three other members' rows
+
+The panel attributes a commit only when the author email matches an address on the GitHub account.
+Two members used a `users.noreply.github.com` address, and those rows are complete. The rest are
+partial, and the gap is visible in `git log`:
+
+| Member | Panel | Author identities in git | What the gap is |
+|---|---:|---|---|
+| R7 | **absent** | `Momoka17` 11, `HWeijia` 2 | neither email is on the account |
+| R5 | 1 | `Christine049` 13, `Christine-tan49` 10 | two identities under two addresses |
+| R6 | 5 | `Hu Qingkae` 23 | the name differs from the account; the email is the question |
+| R1 | 19 | `Django` 45, `Django-coder6` 23 | one address, two display names — this one does attribute |
+
+**Do not read these rows as the contribution.** R5's single commit and eleven insertions on the panel
+sit beside `#202` (login, JWT session and route guards, +812) and `#205` (location board and staff
+intake, +1,912), both of which she merged herself. The panel is counting the commits it can attribute,
+and it cannot attribute most of them.
+
+#### The fix, and what it cannot fix
+
+**The fix is one setting per person**, and it applies backwards: GitHub recomputes attribution from
+the commit email, so adding the address to the account fills in the history that is already there.
+
+1. Each member opens **Settings**, then **Emails**, and adds the address they commit with.
+2. For the future, commit with the `users.noreply.github.com` address, which is always attributed.
+
+**Two commits cannot be recovered.** `hwj@HWeijiadeMacBook-Pro.local` is a machine-local address, not
+a mailbox, so it can never be added to an account. The eleven `hwj914@outlook.com` commits can be
+attributed the moment that address is added, and the two `.local` ones will stay unattributed.
+
+**By the rule at the foot of this file, nothing here is reconstructed.** The screenshots are what the
+panel showed on the 28th, including the missing row.
+
+#### This capture is three days late, and the same reasoning applies as for W02
+
+The logbook deadline was Sunday 25 October at 21:00. The screenshots were taken on Wednesday 28
+October. The bars labelled 19 and 26 October are closed buckets and cannot gain commits afterwards,
+so reading them late reads the same numbers that reading them on the 25th would have. What the rule
+requires is that the real capture date is recorded, which it is.
+
+**And the process gap is now two weeks running.** The screenshot exists to check the logbooks against
+an independent record, and it only does that if it is captured before the deadline it checks. Two
+consecutive late captures is the thing to raise at the week 4 stand-up; the figures are unaffected,
+the independence is.
+
+#### Week 3 delivered work, by pull request
+
+The panel counts commits; the delivery is better read from the pull requests each member merged.
+
+| Member | Week 3 pull requests | What they carried |
+|---|---|---|
+| **R1** Liu JiaHao | `#219`, `#220`, `#231` | the week 3 logbook, `RSK-11` closed with the `docker-smoke` evidence, and the close-out that deferred `T-42-02` and settled the record-number rule |
+| **R2** Chan Yin Cho | `#226` | the missing W03 scope-ruling row, after `#196` |
+| **R3** Li Cheuk Fung | `#222`, `#223` | the week 1–2 logbook records, and `CR-023`–`CR-025` applied to the SRS |
+| **R4** Yuan Chong Jun | `#207`, `#221` | the Sprint 2 finding outcomes reconciled, and the report's delivered-status correction |
+| **R5** Tan Yuan Ting | `#202`, `#205`, `#218` | login, JWT session and route guards; the location board and the staff intake screen; the week 3 logbook |
+| **R6** Hu Qing Kai | `#197`, `#201` | the backend and full-stack CI jobs, and login, JWT and four-role RBAC |
+| **R7** Huang Wei Jia | `#198`, `#206` | the Flyway baseline and seed data, and the audit interceptor with phone masking |
+| **R8** Wu Kehao | `#229` | JaCoCo bound to `verify`, the `jacoco-report` artefact, and `RTM.md` to v0.5 |
+| **R9** Guo Yuhui | `#224`, `#227`, `#228` | chapter 1 at 128 words, chapter 2 at 146, and the W03 logbook rows |
+| **R10** Chan Sung Ming | `#230` | Checkstyle, Spotless, commitlint, the hooks and the `commitlint` CI job |
+
+**Every one of the ten merged at least one pull request in week 3**, which is a stronger statement
+than any row of the panel.
 
 ## A note on not re-taking an old screenshot
 
