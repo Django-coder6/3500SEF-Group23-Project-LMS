@@ -1,11 +1,14 @@
 # Overdue Fee Rules
 
-- Status: Proposed
-- Date: 2026-10-15
-- Task: T-20-16
-- Owner: R7 Backend Developer
-- Reviewers: R2 for rule values and scope, R6 for persistence and API impact, R8 for the 20 test cases
-- Related: SRS FR-39, FR-38 and FR-44; SRS OS-3; `docs/glossary.md`; `docs/04-testing/test-plan.md`; `docs/02-design/database/ERD.md`
+| Item | Detail |
+|---|---|
+| Status | Complete for Sprint 1 |
+| Version | v1.1 |
+| Date | 2026-10-15 |
+| Task | T-20-16 |
+| Owner | R7 Backend Developer |
+| Reviewers | R2 for rule values and scope, R6 for persistence and API impact, R8 for the 20 test cases |
+| Related | SRS FR-39, FR-38 and FR-44; SRS OS-3; `docs/glossary.md`; `docs/04-testing/test-plan.md`; `docs/02-design/database/ERD.md` |
 
 ## 1. Purpose
 
@@ -216,11 +219,10 @@ explainable later.
 
 ## 8. Configuration and persistence dependency
 
-The current `Setting` entity has a globally unique `key` and no collection
-point identifier. It therefore cannot store different retention or fee values
-for different collection points. The current ERD also has no `CollectionPoint`
-entity, so T-30-03 has to add that site record before either a point-scoped
-setting or a typed rule table can reference it.
+`CR-021` added the collection point identifier to `Setting` and created the `CollectionPoint`
+entity this section said `T-30-03` would need, and `CR-026` records that `key` is unique
+**within** a collection point rather than globally. Both preconditions this section set are
+therefore met.
 
 R6 must resolve this before T-30-03 creates the schema. The preferred shape is
 a typed `OverdueFeeRule` table because the values have different types and
@@ -243,6 +245,13 @@ The generic `Setting` entity can be extended instead, but then the unique key
 must become unique per collection point and the value remains an untyped
 string. Either choice is acceptable only if it supports a per-point rule and
 returns the same inputs to the pure function.
+
+**The second shape was chosen and built in `T-30-03`.** A typed `OverdueFeeRule` table would
+have covered the four overdue values and left the recommender's two thresholds with nowhere to
+live, because `location_recommender.cold_zone_max_ratio` and
+`location_recommender.hot_zone_min_ratio` are per-collection-point configuration too. Extending
+`Setting` is the shape that serves both feature areas from one rule, which is why it was taken
+over the shape this section preferred at the time.
 
 A dedicated waiver table or an append-only audit event needs at least:
 
@@ -304,3 +313,12 @@ Additional acceptance checks:
       T-44-01 is implemented.
 - [ ] Any screen that displays the result labels it as a calculated amount and
       offers no payment action.
+
+
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 2 | First version recorded in this file. The rule table `T-44-01` implements. The twenty test cases `NFR-12` needs are Sprint 3 work and do not exist yet. Any earlier edit is not listed: this file had no revision history until week 3, so records of those edits do not exist here. | R1 |
+| v1.1 | Week 3 | Section 8 records that both preconditions it set were met (`CR-021`, `CR-026`) and which of the two proposed shapes was built, with the reason it was preferred over the typed rule table | R1 |

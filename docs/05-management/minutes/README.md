@@ -64,9 +64,22 @@ agreed to change.
 | 2026-10-12 | Week 1 summary, review and retrospective | [20261012_week1-summary-review.md](20261012_week1-summary-review.md) |
 | 2026-10-12 | Week 2 stand-up | [20261012_week2-standup.md](20261012_week2-standup.md) |
 | 2026-10-15 | Design review, architecture to API and UI (asynchronous document review) | [20261015_design-review.md](20261015_design-review.md) |
+| 2026-10-21 | Priority review, resident convenience against staff effort (reconstructed record, no meeting) | [20261021_priority-review.md](20261021_priority-review.md) |
+| 2026-10-22 | Sprint 1 review and retrospective (asynchronous review, no meeting) | [20261022_sprint1-review.md](20261022_sprint1-review.md) |
 
 Two files are dated 2026-10-12 because the week 1 summary ran late and the week
 2 stand-up followed it. Both are kept, because they record different meetings.
+
+`20261021_priority-review.md` is dated week 3 for a different reason: the task it
+closes, `T-10-12`, produced two decisions in week 1 that were never written into
+minutes. The file records them and says so in its own header. **It is not minutes
+of a meeting that took place.**
+
+`20261022_sprint1-review.md` records Sprint 1's review in the same form. The sprint
+ended on 19 October and every member had other commitments afterwards, so the review
+was conducted against the repository rather than in a room, and the Sprint 2
+kick-off went out as an individual message to each member. The file states both
+facts in its header and claims no attendee list.
 
 ## Recordings
 

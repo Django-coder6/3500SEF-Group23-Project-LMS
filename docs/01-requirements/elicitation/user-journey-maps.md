@@ -245,3 +245,9 @@ usable on a phone during a shift.
 | Whether an owner in a small point also works as staff | OI-2 in the SRS. The glossary records that the two roles can be combined in one person. |
 | The identification fallback when a resident has lost the pickup code | Not asked in the survey. `survey-results.md` proposes phone number plus surname as a documented fallback. |
 | SRS assumption A4 | It still describes the personas and these maps as AI-simulated. The personas are now derived from the survey, and these maps are derived from the same data, so that line needs updating. |
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 2 | Initial journey maps for the four roles, derived from the survey results and the personas. `CR-013` is the change record that named this file | R4 |

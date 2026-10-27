@@ -1,31 +1,65 @@
-import { afterEach, describe, expect, it } from 'vitest'
-import http from '../../src/api/http.js'
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'vitest'
+import http, {
+  EXPIRY_KEY,
+  TOKEN_KEY,
+  USER_KEY,
+} from '../../src/api/http.js'
 
-// ADR-003 requires one Axios wrapper that turns every failure into the same
-// shape, so that a page never reads an axios error.
-//
-// The contract (OpenAPI v0.2.0-draft) wraps a failure as
-//   { error: { code, message, requestId } }
-// and returns a success payload flat, with no envelope. Both behaviours are
-// pinned by the tests below, because the wrapper is the only file that knows
-// about them.
-
-// Each test replaces the adapter, which is the seam axios offers for exactly
-// this: no network call is made and the error can be shaped by hand.
 const originalAdapter = http.defaults.adapter
+
+beforeEach(() => {
+  window.history.replaceState({}, '', '/login')
+  localStorage.clear()
+  localStorage.setItem(TOKEN_KEY, 'test-token')
+  localStorage.setItem(USER_KEY, JSON.stringify({ role: 'staff' }))
+  localStorage.setItem(EXPIRY_KEY, String(Date.now() + 60_000))
+})
 
 afterEach(() => {
   http.defaults.adapter = originalAdapter
+  localStorage.clear()
 })
 
-describe('http error normalisation', () => {
+describe('http interceptors and error normalisation', () => {
+  it('adds the bearer token to requests', async () => {
+    let authorization
+
+    http.defaults.adapter = async (config) => {
+      authorization = config.headers.get('Authorization')
+
+      return {
+        data: { items: [], total: 0 },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config,
+      }
+    }
+
+    await http.get('/parcels')
+
+    expect(authorization).toBe('Bearer test-token')
+  })
+
   it('flattens the contract error object into { status, code, message, requestId }', async () => {
     http.defaults.adapter = async (config) => {
       const error = new Error('Request failed with status code 422')
       error.config = config
       error.response = {
         status: 422,
-        data: { error: { code: 'VALIDATION', message: 'bad input', requestId: 'req-1' } },
+        data: {
+          error: {
+            code: 'VALIDATION',
+            message: 'bad input',
+            requestId: 'req-1',
+          },
+        },
       }
       throw error
     }
@@ -53,7 +87,35 @@ describe('http error normalisation', () => {
     })
   })
 
-  it('returns a successful response body unchanged, with no envelope to unwrap', async () => {
+  it('clears the complete stored session on 401', async () => {
+    http.defaults.adapter = async (config) => {
+      const error = new Error('Request failed with status code 401')
+      error.config = config
+      error.response = {
+        status: 401,
+        data: {
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Unauthorized',
+            requestId: 'req-401',
+          },
+        },
+      }
+      throw error
+    }
+
+    await expect(http.get('/parcels')).rejects.toMatchObject({
+      status: 401,
+      code: 'UNAUTHORIZED',
+      requestId: 'req-401',
+    })
+
+    expect(localStorage.getItem(TOKEN_KEY)).toBeNull()
+    expect(localStorage.getItem(USER_KEY)).toBeNull()
+    expect(localStorage.getItem(EXPIRY_KEY)).toBeNull()
+  })
+
+  it('returns a successful response body unchanged', async () => {
     http.defaults.adapter = async (config) => ({
       data: { items: [], total: 0 },
       status: 200,
@@ -62,6 +124,9 @@ describe('http error normalisation', () => {
       config,
     })
 
-    await expect(http.get('/parcels')).resolves.toEqual({ items: [], total: 0 })
+    await expect(http.get('/parcels')).resolves.toEqual({
+      items: [],
+      total: 0,
+    })
   })
 })

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: collection-point-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/lms}
+    username: ${SPRING_DATASOURCE_USERNAME:lms}
+    password: ${SPRING_DATASOURCE_PASSWORD:lms_dev_only}
+  jpa:
+    open-in-view: false
+  flyway:
+    locations: classpath:db/migration
+
+server:
+  port: ${SERVER_PORT:8080}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-collection-point-jwt-secret-override-in-deployment}
+    issuer: collection-point-backend
+    token-lifetime: ${JWT_TOKEN_LIFETIME:PT8H}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

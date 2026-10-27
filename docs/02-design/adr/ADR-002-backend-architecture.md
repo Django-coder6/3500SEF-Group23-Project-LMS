@@ -13,6 +13,25 @@ The backend must expose a stable REST API to the Vue frontend and must keep parc
 
 Use a layered architecture inside a single deployable Spring Boot service.
 
+### Deployment model
+
+One shared PostgreSQL database serves one or more collection points. There is no database
+per point and no tenant column pair: a record belongs to a point through
+`collectionPointId`, and a query is filtered by it rather than by connection routing.
+
+The decision is recorded in CR-021 and the entity is in `ERD.md`. It follows from
+`FR-46`, from `survey-results.md` O1 (six of seven owners manage more than one point) and
+from administrator A5, who asked for one system rather than one installation per point.
+
+Two consequences worth stating, because both shape the Sprint 2 code:
+
+- Every repository query that reads a scoped record must filter by `collectionPointId`.
+  A query that omits the filter returns another point's rows, so the filter belongs in the
+  repository method rather than in the controller, where it can be forgotten once.
+- An owner's access spans several points and an administrator's spans all of them, so
+  authorisation is checked against a set of permitted points rather than against a single
+  identifier on the user row.
+
 ### Layers
 
 1. Controller: HTTP handling, request validation, response mapping.

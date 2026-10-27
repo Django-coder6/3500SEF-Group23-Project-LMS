@@ -1,29 +1,19 @@
 # UI Prototype: Pages for the Four Login Roles
 
-- Status: Proposed
-- Date: 2026-10-13
-- Revision: 3, after the two reviews of 2026-10-13: the R4 page review (P1.1,
-  P1.2, P2.1, P2.2, P2.3, plus the other storage location write actions in CD-1)
-  and the follow-up review (exception types, the audit log page, no personal
-  names, the "suggestion only" wording, batch intake as a must-have)
-- Task: T-20-05 (Sprint 1, week 2)
-- Owner: R5 Frontend Developer
-- Reviewers: R4 Frontend Lead, R9 (usability review, T-20-10), R3 (requirement identifiers)
-- Due: 2026-10-18
-- Depends on: `SRS.md` (section 2.2 exception types, section 2.3 operation log,
-  merged to develop on 2026-10-12), the SRS change log (CR-003, CR-004, CR-006,
-  CR-009), `frontend-page-map.md` (T-30-04), `glossary.md` (T-00-07),
-  `backend-state-machines.md` (T-20-04), `ADR-003` and `ADR-004` (T-30-04),
-  `survey-results.md`, `Personas.md`, `docs/02-design/prototype/` (PR #62),
-  the API contract (OpenAPI)
-- Covers: the in-scope functions of SRS section 1.5.2 (IS-1 to IS-12), the five
-  exception types of SRS section 2.2, and the operation log scope of SRS section
-  2.3 (5.9). Functional requirement identifiers are added once R3 publishes SRS
-  chapter 3 (issue #76); until then every mapping row below carries
-  `FR: pending R3`.
-- Issue: #83. This document answers T-20-05 only. The issue also carries T-20-09
-  (the frontend conventions) and T-20-10 (the R9 usability review), so the pull
-  request does not close the issue on its own.
+| Item | Detail |
+|---|---|
+| Status | Complete for Sprint 1 |
+| Version | v1.2 |
+| Date | 2026-10-13 |
+| Revised | 2026-10-23 |
+| Revision | 5, completing the R5 corrections for `#170` findings 1, 5 and 8 in section 5.1 |
+| Task | T-20-05 (Sprint 1, week 2) |
+| Owner | R5 Frontend Developer |
+| Reviewers | R4 Frontend Lead, R9 (usability review, T-20-10), R3 (requirement identifiers) |
+| Due | 2026-10-18 |
+| Depends on | `SRS.md` (section 2.2 exception types, section 2.3 operation log, merged to develop on 2026-10-12), the SRS change log (CR-003, CR-004, CR-006, CR-009), `frontend-page-map.md` (T-30-04), `glossary.md` (T-00-07), `backend-state-machines.md` (T-20-04), `ADR-003` and `ADR-004` (T-30-04), `survey-results.md`, `Personas.md`, `docs/02-design/prototype/` (PR #62), the API contract (OpenAPI) |
+| Covers | the in-scope functions of SRS section 1.5.2 (IS-1 to IS-12), the five exception types of SRS section 2.2, and the operation log scope of SRS section 2.3 (5.9). Functional requirement identifiers are added once R3 publishes SRS chapter 3 (issue #76); until then every mapping row below carries `FR: pending R3`. |
+| Issue | #83. This document answers T-20-05 only. The issue also carries T-20-09 (the frontend conventions) and T-20-10 (the R9 usability review), so the pull request does not close the issue on its own. |
 
 ## 1. Purpose
 
@@ -164,12 +154,15 @@ phone, and mobile support is specified as usable from 375 px.
 ```
 ┌────────────────────────────────────────┐
 │ My parcels           [ All statuses v] │
+│ Pickup point  Community Parcel Point   │
+│ Hours         Mon–Sat 09:00–19:00      │
 ├────────────────────────────────────────┤
 │ ┌────────────────────────────────────┐ │
 │ │ SF1234567890        [ Shelved    ] │ │
 │ │ Storage  A-03-2                    │ │
 │ │ Pickup code  4821                  │ │
 │ │ Held 1 day                         │ │
+│ │ Return to sender  25 Oct 2026      │ │
 │ │                        [ Open  ]   │ │
 │ └────────────────────────────────────┘ │
 │ ┌────────────────────────────────────┐ │
@@ -177,24 +170,35 @@ phone, and mobile support is specified as usable from 375 px.
 │ │ Storage  B-01-4                    │ │
 │ │ Pickup code  7154                  │ │
 │ │ Held 2 days                        │ │
+│ │ Return to sender  24 Oct 2026      │ │
 │ │                        [ Open  ]   │ │
 │ └────────────────────────────────────┘ │
 │ ┌────────────────────────────────────┐ │
 │ │ JD5566778899        [ Shelved    ] │ │
-│ │ Storage  A-01-3   Overdue 4 days   │ │
+│ │ ⚠ Overdue 4 days                   │ │
+│ │ Storage  A-01-3                    │ │
+│ │ Pickup code  6382                  │ │
+│ │ Held 7 days                        │ │
+│ │ Return to sender  19 Oct 2026      │ │
+│ │                        [ Open  ]   │ │
 │ └────────────────────────────────────┘ │
 └────────────────────────────────────────┘
 ```
 
-Both `shelved` cards carry a code, as the element table below requires; a parcel
+Every `shelved` card carries a code, as the element table below requires; a parcel
 that is still `registered` shows "shown when ready" instead, as in 5.2.
 
 | Element | Detail |
 |---|---|
-| One card per parcel | waybill, status pill, storage location, pickup code, days held, open action |
+| One card per parcel | waybill, status pill, storage location, pickup code, days held, return-to-sender date, open action |
 | Pickup code | shown only when the parcel is `shelved`; otherwise the line reads "shown when ready" |
 | Filter | one status filter, default all |
 | Sort | newest first |
+| Collection point | displayed once above the list; mock value: Community Parcel Point |
+| Opening hours | displayed below the collection point; mock value: Mon–Sat, 09:00–19:00 |
+| Return-to-sender date | shown on every shelved parcel card |
+| Overdue treatment | danger-toned overdue marker with a warning icon, a 2 px danger border and the text Overdue N days |
+| Open action | available on every parcel card |
 
 States:
 
@@ -203,8 +207,7 @@ States:
   priority resident function)
 - loading: three skeleton cards
 - error: `ErrorState` with the API message and a retry action
-- overdue: the card of an overdue parcel is marked and shows the days held, so
-  the resident does not need to open it to notice
+- overdue: the card uses a danger-coloured overdue marker with a warning icon, a 2 px danger-coloured card border and the text "Overdue N days"; the days held remain visible, so the resident does not need to open the parcel to notice
 
 Steps to the pickup code: 2 (open the list, open the parcel). Target duration for
 the whole collection task, including the counter handover: 3 to 5 minutes.
@@ -253,8 +256,9 @@ States:
   `shelved` shows the code and the validity; `collected` shows a completed
   progress row and the handover time; an open exception ticket replaces the code
   block with a message that the site will contact the resident
-- overdue: adds the days held and states whether a fee applies, or that no fee
-  rule is active yet
+- overdue: the card uses a danger-toned overdue marker with a warning icon,
+  a 2 px danger border and the text "Overdue N days"; the days held remain
+  visible, so the resident does not need to open the parcel to notice
 
 Steps to read the code: 1 (the code is above the fold). The fallback path uses
 the survey decision "phone number plus surname, recorded as an alternative
@@ -465,21 +469,16 @@ must finish a handover in three minutes or less.
 ┌───────────────────────────────────────────────────────────────┐
 │ Verify a pickup code                                          │
 │  ┌─────────────────────────────┐                              │
-│  │ 4 8 2 1                     │   keyboard or scanner        │
+│  │ 4 8 2 1                     │                              │
 │  └─────────────────────────────┘                              │
-│  [ Verify ]         Resident lost the code? Use identity      │
-├───────────────────────────────────────────────────────────────┤
-│ Result                                                        │
-│ SF1234567890 · resident · Zone A · A-03-2                     │
-│ [ Confirm handover ]                                          │
-├───────────────────────────────────────────────────────────────┤
-│ last: 4821 handed over 19:14 by staff1                        │
+│  [ Verify ]                                                   │
 └───────────────────────────────────────────────────────────────┘
 ```
 
-No person is named on any screen. The result row shows the role and the facts,
+No person is named on any screen. The result view shows the role and the facts,
 not a person, because the ethics statement promises that nobody who took part in
-the survey is identified (CR-009).
+the survey is identified (CR-009). The Result region appears only after a
+successful verification; the idle screen does not draw an empty result block.
 
 States:
 
@@ -490,16 +489,23 @@ States:
 - invalid code: "This code is not recognised", with the attempt count kept low
   and no hint about which digits are wrong
 - expired or already used: the reason is stated and the next action is offered
-  (issue a new code, or hand over after the identity fallback)
-- delegated code: the parcel and the authorised person are shown so staff can
-  confirm the name before the handover
-- identity fallback: phone number plus surname, recorded as an alternative
-  verification method, per the survey decision; the screen says the fallback is
-  recorded in the audit trail. `POST /pickup/verify` accepts only `pickupCode`
-  today, so the fallback needs a contract decision (CD-2) before it can be built
+  (issue a new code); the identity fallback is not available in Sprint 2
+- parcel not on shelf: the code is valid but the parcel is absent from the
+  recorded shelf. Keep the shelf location prominent, disable handover
+  confirmation, and tell staff to re-check that location. The final API
+  representation of this state remains an R6/R2 contract decision.
+- API error: show the normalised message and a retry action without clearing the
+  entered code
 
-Steps: 3 for the happy path (scan or type the code, verify, confirm). Target: three
-minutes or less per handover, and no more than two screens.
+Enter after a scanner or keyboard entry starts verification directly; the
+separate `Verify` button remains available for a mouse or touch interaction.
+
+The delegated-code state is future work under `FR-9` and `FR-10`, so it is not
+drawn or treated as available in Sprint 2. The identity fallback remains
+unavailable until `#98/CD-2` settles the contract.
+
+Steps: 3 for the happy path (scan or type the code, verify, confirm). Target:
+three minutes or less per handover, and no more than two screens.
 
 ### 5.7 Users — `/users` — owner, admin — R5 — IS-11 (FR: pending R3)
 
@@ -766,3 +772,13 @@ Issue #83 also carries acceptance criteria for T-20-09 (the conventions
 document) and T-20-10 (the ten-heuristic usability review by R9). Those two are
 not part of this document and are not claimed here, so the pull request does not
 close the issue on its own.
+
+
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 2 | First version recorded in this file. The nine page prototypes. This is revision 4 of the document: the earlier three are described in the header's own Revision note, because the file had no revision history then. Seven contradictions against this document's own text are recorded in `#170` and are not yet fixed. Any earlier edit is not listed: this file had no revision history until week 3, so records of those edits do not exist here. | R1 |
+| v1.1 | Week 3 | Corrected R4 findings 2, 3, 4, 6 and 7 in the pickup prototype: removed the staff identifier, unavailable identity action, future delegated state, developer note and empty idle result. Added the parcel-not-on-shelf state and Enter-to-verify behaviour for findings 9 and 10 | R4 |
+| v1.2 | Week 3 | Completed R5 findings 1, 5 and 8 in the resident parcel list: completed the third card, defined the overdue treatment, and added collection-point, opening-hours and return-to-sender information | R5 |

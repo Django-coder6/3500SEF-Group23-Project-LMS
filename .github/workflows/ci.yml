@@ -1,12 +1,13 @@
 # Continuous integration.
-# The sanity job always runs. The backend and frontend jobs are enabled in
-# Sprint 2 once backend/pom.xml and frontend/package.json exist.
+# Five jobs: commitlint validates new commit messages; sanity checks the repository itself, backend builds and tests the Java
+# service, frontend lints, tests and builds the Vue application, and docker-smoke
+# starts the complete Compose stack and checks its health endpoints.
 
 name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: ['**']
   pull_request:
     branches: [main, develop]
 
@@ -19,7 +20,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
@@ -32,13 +33,27 @@ jobs:
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
           PUSH_BASE: ${{ github.event.before }}
           PUSH_HEAD: ${{ github.sha }}
+          PUSH_BRANCH: ${{ github.ref_name }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             npm run commitlint -- --from "$PR_BASE" --to "$PR_HEAD" --verbose
-          elif [[ "$PUSH_BASE" =~ ^0+$ ]]; then
-            git log -1 --format=%B "$PUSH_HEAD" | npm run commitlint
           else
-            npm run commitlint -- --from "$PUSH_BASE" --to "$PUSH_HEAD" --verbose
+            # Exclude the previous tip and history already on integration branches.
+            # This also handles a new branch without linting imported old commits.
+            exclusions=()
+            if ! [[ "$PUSH_BASE" =~ ^0+$ ]]; then
+              exclusions+=("$PUSH_BASE")
+            fi
+            for branch in main develop; do
+              if [ "$PUSH_BRANCH" != "$branch" ] &&
+                 git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+                exclusions+=("refs/remotes/origin/$branch")
+              fi
+            done
+            git rev-list "$PUSH_HEAD" --not "${exclusions[@]}" > "$RUNNER_TEMP/commitlint-commits"
+            while IFS= read -r commit; do
+              git show -s --format=%B "$commit" | npm run commitlint -- --verbose
+            done < "$RUNNER_TEMP/commitlint-commits"
           fi
       - run: npm run test:tooling
 
@@ -70,41 +85,78 @@ jobs:
       - name: Check that every markdown table row has as many cells as its header
         run: python3 scripts/check_table_columns.py .
 
-  # Uncomment in Sprint 2, once backend/pom.xml exists.
-  # backend:
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: backend
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-java@v4
-  #       with:
-  #         distribution: temurin
-  #         java-version: '17'
-  #         cache: maven
-  #     - run: ./mvnw -B verify
-  #     - name: Upload test reports
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: surefire-reports
-  #         path: backend/target/surefire-reports/
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - run: ./mvnw -B verify
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: backend/target/surefire-reports/
+      - name: Upload JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: backend/target/site/jacoco/
+          if-no-files-found: warn
+          
+  docker-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start the full stack
+        run: docker compose --profile full up -d --build --wait --wait-timeout 300
+      - name: Verify the backend health endpoint
+        run: curl --fail --silent --show-error http://localhost:8080/api/health
+      - name: Verify that a seeded account can sign in
+        run: |
+          curl --fail --silent --show-error -X POST http://localhost:8080/api/auth/login \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"demo_staff_1","password":"password"}' > /tmp/login.json
+          grep -q '"token"' /tmp/login.json
+          grep -q '"roles":\["staff"\]' /tmp/login.json
+      - name: Verify that a wrong password is refused
+        run: |
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -X POST http://localhost:8080/api/auth/login \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"demo_staff_1","password":"wrong"}')" = "401"
+      - name: Verify that all four services are running
+        run: test "$(docker compose --profile full ps --status running --services | wc -l)" -eq 4
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose --profile full logs
+      - name: Stop the full stack
+        if: always()
+        run: docker compose --profile full down --volumes --remove-orphans
 
-  # Uncomment in Sprint 2, once frontend/package.json exists.
-  # frontend:
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: frontend
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20'
-  #         cache: npm
-  #         cache-dependency-path: frontend/package-lock.json
-  #     - run: npm ci
-  #     - run: npm run lint
-  #     - run: npm run test -- --run
-  #     - run: npm run build
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:run
+      - run: npm run build

@@ -8,8 +8,8 @@
 |---|---|
 | Task | T-50-19 |
 | Owner | R8 |
-| Version | v0.1 (draft for Sprint 1) |
-| Status | Draft, to be completed once the SRS is frozen |
+| Version | v0.3 |
+| Status | Active, extended in Sprint 2 |
 
 ## 1. Purpose and scope
 
@@ -50,6 +50,10 @@ aspirations: the build reports them, and a shortfall is recorded as a defect.
 | Area | Target |
 |---|---|
 | Line coverage overall | At least 60 per cent |
+> **Coverage target status (week 3).** The JaCoCo report is now produced by `mvn verify`
+> (`backend/target/site/jacoco/`) and collected as the `jacoco-report` CI artefact. The
+> **60 per cent target above has not yet been compared against a measured figure**;
+> no figure is claimed here until that comparison is recorded.
 | Handover service | At least 80 per cent |
 | Storage location recommender | At least 80 per cent |
 | Overdue fee engine | At least 80 per cent |
@@ -157,13 +161,25 @@ case is referenced in the closing comment.
 Progress is reported in `docs/04-testing/reports/`, in three forms:
 
 1. A defect list, updated continuously, with severity and status.
-2. A coverage report, produced by the continuous integration pipeline on each build.
+
+2. A coverage report — not yet produced. JaCoCo is named as the tool and backend/target/site/jacoco/ as the path, but no JaCoCo plugin is bound to verify in backend/pom.xml and no CI step collects the report. The 60 per cent target in section 3 is therefore not measured, and no figure is claimed here until it is.
+
 3. A test report at the end of Sprint 4, containing the results, the defects
    found and closed, the coverage figures, and an insight and recommendation
    entry for each significant finding.
+
+  - Raw Surefire reports (XML and text): 'backend/target/surefire-reports/'
+  - HTML summary: 'backend/target/site/surefire-report.html'
+  - CI artifact (published every build): ‘surefire-reports’
+  - Raw report reviewers: R8 and the owning developer
+
+- Sprint 4 consolidated report: ‘docs/04-testing/reports/’
+- Sprint 4 report readers: the team and the progress reviewer
 
 ## Revision history
 
 | Version | Date | Change | Author |
 |---|---|---|---|
 | v0.1 | Week 2 | Initial draft from the plan and the survey findings | R8 |
+| v0.2 | Week 2 | Section 11 states where each report is generated, the format (Surefire XML and text, plus an HTML summary), the CI artefact name, and who reads each one | R8 |
+| v0.3 | Week 3 | Status changed from draft to active. The SRS is frozen for Sprint 2, so the condition this document was waiting on is met; the remaining work is the Sprint 2 test cases, not the plan itself | R1 |

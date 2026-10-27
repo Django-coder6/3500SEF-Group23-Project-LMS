@@ -47,8 +47,8 @@ function main() {
   if (checks.backend) {
     if (!existsSync('backend/pom.xml')) throw new Error('Missing backend/pom.xml')
     console.log('Checking backend changes with Maven verify...')
-    if (existsSync('backend/mvnw')) run('sh', ['./mvnw', '-B', 'verify'], 'backend')
-    else run('mvn', ['-B', 'verify'], 'backend')
+    if (!existsSync('backend/mvnw')) throw new Error('Missing backend/mvnw; restore the tracked Maven wrapper.')
+    run('sh', ['./mvnw', '-B', 'verify'], 'backend')
   }
   if (!checks.frontend && !checks.backend) console.log('No frontend or backend changes to check.')
 }

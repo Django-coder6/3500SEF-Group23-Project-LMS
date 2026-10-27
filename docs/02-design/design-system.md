@@ -1,11 +1,14 @@
 # Frontend Design System
 
-- Status: Proposed
-- Date: 2026-10-13
-- Task: T-20-06
-- Owners: R4 Frontend Lead, R5 Frontend Developer
-- Scope: the resident, staff, owner and administrator Web pages of the community parcel collection point system
-- Related: `docs/02-design/adr/ADR-003-frontend-architecture.md`, `docs/02-design/frontend-page-map.md`, `docs/01-requirements/specification/SRS.md`, `docs/03-api/openapi.yaml`, `docs/02-design/database/ERD.md`, `docs/02-design/backend-state-machines.md`
+| Item | Detail |
+|---|---|
+| Status | Accepted |
+| Version | v1.0 |
+| Date | 2026-10-13 |
+| Task | T-20-06 |
+| Owners | R4 Frontend Lead, R5 Frontend Developer |
+| Scope | the resident, staff, owner and administrator Web pages of the community parcel collection point system |
+| Related | `docs/02-design/adr/ADR-003-frontend-architecture.md`, `docs/02-design/frontend-page-map.md`, `docs/01-requirements/specification/SRS.md`, `docs/03-api/openapi.yaml`, `docs/02-design/database/ERD.md`, `docs/02-design/backend-state-machines.md` |
 
 ## 1. Purpose
 
@@ -368,3 +371,11 @@ need its own record.
 | 9 | `ADR-003`; Element Plus theming guide |
 | 13 | survey section 7 (375 px, 9 of 11); `docs/02-design/ui-prototype.md` |
 | 8, 14 | Primer primitives (motion, states, contrast) |
+
+
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 2 | First version recorded in this file. Colour, type, spacing and component rules, implemented in `frontend/src/styles/tokens.css`. Any earlier edit is not listed: this file had no revision history until week 3, so records of those edits do not exist here. | R1 |

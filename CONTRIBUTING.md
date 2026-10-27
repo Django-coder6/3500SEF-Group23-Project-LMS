@@ -30,84 +30,78 @@ This document defines the collaboration rules for COMP 3500SEF Group 23. All mem
 
 ### Install quality checks and Git hooks (T-30-05)
 
-Use Node.js 20 or later, npm, Git, and JDK 17 (ADR-005). On Windows, use Git
-Bash for the commands below and configure VS Code to use the same JDK. Until
-R6 supplies `backend/mvnw` in #137, also install Maven 3.9 or later and put
-`mvn` on `PATH`.
-
-Run these commands from the repository root after cloning:
+Use Node.js 24, npm, Git Bash on Windows, and JDK 17. From the repository root,
+install the repository hooks with one command:
 
 ```bash
 npm ci
-npm --prefix frontend ci
-git config --get core.hooksPath
-npm run test:tooling
 ```
 
-The root `npm ci` runs `prepare` and installs Husky automatically. The hooks path
-must be `.husky/_`. Installing only the frontend dependencies does not install
-the repository hooks. Repeat `npm ci` after root dependency changes. If hooks
-need reinstalling, run `npm run prepare`. Do not commit the generated `.husky/_`
-directory or `node_modules/`.
+The root package's `prepare` script installs Husky automatically. Verify the
+installation with `git config --get core.hooksPath`; it should print `.husky/_`.
+Repeat `npm ci` after root dependency updates, or `npm run prepare` to reinstall
+hooks. Do not commit generated `.husky/_` or `node_modules/` files. Installing only
+frontend dependencies does not install the repository hooks.
 
-- `commit-msg` rejects messages that do not follow the format below. Both
-  `[TASK-012]` (existing examples) and `[T-30-05]` (current Backlog IDs) are
-  accepted. `Week3-3` is an issue label, not a Backlog task ID. English imperative
-  wording remains a reviewer responsibility; the automated check validates
-  structure, printable English characters, lower case, and punctuation.
-- `pre-push` reads Git's pushed ref pairs. Frontend lint runs only when the
-  pushed changes include `frontend/`. Backend changes or `checkstyle.xml` run
-  Maven `verify`. New branches inspect commits absent from the destination
-  remote; deleted branches skip checks. Multiple pushed refs are combined.
-  Missing dependencies or an unavailable comparison commit stop the push with
-  an error. Fetch the destination branch if its old tip is missing locally.
-- Checks run against the current working tree. Review or stash unrelated edits
-  before pushing, and push the branch whose files you have checked out.
-- The commitlint CI job validates the PR commit range or the commits introduced
-  by a push to `main`/`develop`. Standard Git merge/revert messages retain
-  commitlint's default exemptions. Local hooks are not a replacement for CI.
+Install frontend dependencies separately with `npm --prefix frontend ci`.
 
-Check a message without creating a commit:
+- `commit-msg` runs `@commitlint/config-conventional` without custom header rules.
+  The team's scope and task-ID convention below remains the recommended project
+  format. The machine also accepts conventional messages without a scope or
+  task ID, such as `chore: refresh dependencies`, and the preset's standard
+  merge/revert exemptions. GitHub editor defaults such as `Update README.md` are
+  not conventional: replace them with a message such as
+  `docs: update readme [T-30-05]` before saving.
+- `pre-push` reads the pushed ref pairs and runs frontend ESLint only when the
+  pushed changes include `frontend/`. Changes under `backend/` or to
+  `checkstyle.xml` run the tracked Maven wrapper's `verify` command. New branches
+  inspect commits not yet present on the destination remote; deleted branches
+  skip checks. Missing dependencies or unavailable comparison commits reject
+  the push. Fetch the destination branch if its old tip is missing locally.
+- Local checks run against the current working tree. Review unrelated edits and
+  check out the branch being pushed before running them.
+- CI runs on every branch push and on PRs targeting `main` or `develop`, even
+  when local hooks are absent. It retains the backend, frontend, sanity, and
+  Docker smoke jobs and adds commitlint. Commitlint checks only the changed
+  commit range; pushes exclude history already on the other integration branches
+  and the previous remote tip, including when a feature branch is new. CI reports
+  failures after a push, while hooks reject
+  local commands immediately.
+
+Run the tooling tests and check a message without creating a commit:
 
 ```bash
+npm run test:tooling
 printf '%s\n' 'chore(tooling): add quality checks [T-30-05]' | npm run commitlint
 printf '%s\n' 'update files' | npm run commitlint # must fail
 ```
 
-Run Java quality checks and apply formatting from `backend/`:
+Run Java checks or fix formatting using the existing wrapper:
 
 ```bash
 cd backend
-mvn -B verify
-mvn spotless:apply
-mvn -B verify
+./mvnw -B verify
+./mvnw spotless:apply
+./mvnw -B verify
 ```
 
-Once #137 supplies the wrapper, use `./mvnw -B verify` and
-`./mvnw spotless:apply` instead. Both Spotless `check` and Checkstyle `check`
-are bound to `verify`, so unformatted code fails the same lifecycle used by CI.
-Spotless uses Google Java Format's four-space AOSP style, matching the existing
-`.editorconfig`; it checks production and test Java sources. Checkstyle stays
-narrow: wildcard imports, unused/redundant imports, equals/hashCode consistency,
-and switch fall-through. There is no mandatory Javadoc or line-length policy.
+Both Checkstyle and Spotless are bound to `verify`, matching the existing backend
+CI job. Spotless uses pinned Palantir Java Format with four-space indentation,
+following the PR #230 review, and checks production and test sources. Checkstyle
+enforces unused imports, wildcard imports, braces on control blocks, and Javadoc
+on public classes. Spotless removes trailing whitespace. There are no additional
+Javadoc requirements on methods or package-private test classes.
 
-The initial `backend/pom.xml` provides only the Java 17 build and quality
-plugins. **R6 integration for #137:** preserve these plugins under
-`build/plugins`, including their `verify` executions, when adding Spring Boot
-dependencies, tests, and the Maven wrapper. Keep `checkstyle.xml` at repository
-root. The existing CI backend job must run with `working-directory: backend`
-and `./mvnw -B verify`; artifact upload still uses the repository-relative
-`backend/target/surefire-reports/`. Do not change the command to
-`./backend/mvnw` inside that working directory. R6 owns enabling this job; it
-remains commented until the application scaffold is ready.
+**Integration note:** issue #177 was written before the backend existed. The
+current implementation extends the existing Spring Boot POM and retains its
+dependencies, JaCoCo, Flyway, and application plugins, Maven wrapper, and all
+existing CI jobs. New tooling must be integrated against current `develop`; do
+not recreate a minimal backend POM or restore the old commented CI jobs.
 
-Before merging, notify the team that commit messages and Java formatting are
-now checked, and ask everyone to install the root hooks. Check a fresh clone by
-following the installation commands above, then verify that an invalid message
-is rejected by `sh .husky/commit-msg <message-file>`. To check formatting
-enforcement, add an intentionally unformatted temporary Java class under
-`backend/src/main/java/`, confirm `verify` fails, run `spotless:apply`, confirm
-`verify` succeeds, and remove the temporary class before committing.
+Before merging, tell the team to run root `npm ci` and use `spotless:apply` for
+Java formatting. Test hook installation in a fresh clone using the command
+above; invoke `sh .husky/_/commit-msg <message-file>` with an invalid message to
+confirm rejection without creating a commit.
 
 ### Branch model
 

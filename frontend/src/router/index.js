@@ -115,12 +115,13 @@ const router = createRouter({
 // role that is not permitted goes to 403.
 router.beforeEach((to) => {
   const auth = useAuthStore()
+  const signedIn = auth.ensureValidSession()
 
   if (to.meta.public) {
-    return auth.isAuthenticated ? auth.landingRoute() : true
+    return signedIn ? auth.landingRoute() : true
   }
 
-  if (!auth.isAuthenticated) {
+  if (!signedIn) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
 

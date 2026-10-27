@@ -5,10 +5,10 @@
 | Item | Detail |
 |---|---|
 | Document ID | SRS |
-| Task | T-10-05 |
-| Version | v0.2 (draft, Chapters 1 to 3) |
+| Task | T-10-05, T-10-06, T-10-07 |
+| Version | v0.8 (Chapters 1 to 4) |
 | Author | R2 |
-| Status | Draft, pending team review |
+| Status | Complete for Sprint 1 |
 | Related documents | [personas.md](../elicitation/Personas.md), [user-journey-maps.md](../elicitation/user-journey-maps.md) |
 
 ## Table of Contents
@@ -16,6 +16,7 @@
 - [1. Introduction](#1-introduction)
 - [2. Overall Description](#2-overall-description)
 - [3. Functional Requirements](#3-functional-requirements)
+- [4. Non-Functional Requirements](#4-non-functional-requirements)
 ---
 
 ## 1. Introduction
@@ -261,9 +262,9 @@ Only the role-based persona identifiers are used: **Resident persona**, **Staff 
 | FR-15 | The system shall display the current availability status of storage locations at a staff member's assigned collection point. | Allows manual selection of an appropriate location. | S5 (4/7 preferred manual/no suggestion); frontend-page-map `/locations` | Must (proposed) | UI test: current location availability is displayed accurately. |
 | FR-16 | The system shall allow a staff member to select a storage location manually for a parcel. | Preserves staff control over shelving. | S5 (4/7 preferred manual/no suggestion); CR-004 | Must (proposed) | Workflow test: manually chosen location persists after shelving. |
 | FR-17 | The system shall reject registration of a parcel when its waybill number already exists as a parcel record. | Prevents duplicate intake records. | `test-plan.md` §6 (FR-17); SRS IS-2 | Must (proposed) | Duplicate-waybill API test: second registration rejected. |
-| FR-18 | The system shall allow an authenticated staff member to register a batch of up to 50 arriving parcels in one intake operation. | Batch intake is the most frequently selected staff bottleneck and the first Sprint 2 staff feature. | **S3: 4/7**; **CR-003** | Must (approved — CR-003) | Batch intake test: up to 50 valid parcels registered in one operation. |
-| FR-19 | The system should display an optional storage location suggestion for a parcel; the suggestion shall never be applied automatically. | Permits a deterministic aid without reducing staff control. | **S4: 0/7** chose it; **CR-004** | Should (approved — CR-004) | UI/integration test: suggestion shown without changing stored allocation. |
-| FR-20 | The system should allow the staff member to ignore a storage location suggestion and complete shelving using a manually selected location; the suggestion shall never be applied automatically. | Makes optional recommendations explicitly overridable. | **S5: 4/7** preferred manual/no suggestion; **CR-004** | Should (approved — CR-004) | Workflow test: ignoring suggestion allows manual assignment and no automatic change. |
+| FR-18 | The system shall allow an authenticated staff member to register a batch of 1 to 50 arriving parcels in one intake operation. A request containing more than 50 entries shall be rejected with HTTP `400` without creating any parcels; staff shall split the batch and resubmit. No overflow queue is provided in Sprint 2. | Supports efficient batch intake while maintaining the approved hard limit. | S3 (4/7); CR-003; CR-025 | Must (approved — CR-003, CR-025) | Submit 1 and 50 valid parcels and verify successful registration; submit 51 parcels and verify HTTP `400` and zero created records; split and resubmit to verify successful processing. |
+| FR-19 | The system could display an optional storage location suggestion for a parcel in a future release. The suggestion shall never be applied automatically. The recommendation panel is deferred from Sprint 2. | Retains a possible future aid without delaying the manual shelving workflow. | S4 (0/7 selected recommendation); CR-004 superseded by CR-023 | Could (approved — CR-023) | Future UI test: the suggestion is optional and never changes the stored allocation automatically. Sprint 2 test: manual selection works without a recommendation panel. |
+| FR-20 | The system could allow staff to ignore an optional storage location suggestion and manually select a location if the recommendation feature is implemented in a future release. | Preserves staff control while keeping recommendations outside Sprint 2 scope. | S5 (4/7 preferred manual/no suggestion); CR-004 superseded by CR-023 | Could (approved — CR-023) | Future workflow test: a suggestion can be ignored and manual shelving completed without automatic assignment. |
 | FR-21 | The system shall allow staff to verify an active pickup code before a parcel handover. | Code verification is a top staff priority. | **S4: 3/7**; frontend-page-map `/pickup` | Must (proposed) | Verification test: valid active code accepted; invalid/used code rejected. |
 | FR-22 | The system shall record a confirmed parcel handover with the staff operator identity obtained from the authenticated session. | Creates a reliable, attributable handover record. | **S4: 3/7**; **CR-007** | Must (proposed) | Handover integration test: operator matches authenticated session. |
 | FR-23 | The system shall allow staff to register a parcel exception using exactly one of the approved types: `overdue`, `damaged`, `wrong_recipient`, `refused`, or `lost`. | Keeps exception recording deterministic and aligned with design. | **CR-010; CR-011**; SRS IS-8 | Should (proposed) | Validation test: five supported exception types accepted; unsupported type rejected. |
@@ -311,8 +312,171 @@ Only the role-based persona identifiers are used: **Resident persona**, **Staff 
 
 **No current implementation promise for deferred items:** `FR-9` and `FR-10` remain future work under `CR-005`. Staff location suggestions `FR-19` and `FR-20` are optional only, may be ignored, and are **never automatically applied** (`CR-004`). Exception types follow the five approved glossary values (`CR-010` / `CR-011`); parcel lifecycle is `registered`, `shelved`, `collected` (`CR-006`). The system can calculate overdue fees (`FR-39`) but does not take online payments (`SRS OS-3`).
 
+**Sprint 2 shelving scope (CR-024):** The `shelve later` workflow is deferred and is not part of Sprint 2. **No defined fallback exists when no suitable storage location is available:** the gap is recorded as `#98` gap 1 and the behaviour is to be decided as `CR-027`. Sprint 2 promises neither a `shelve later` route nor a temporary holding area nor an overflow queue. `FR-14` and `FR-15` remain unchanged.
+
 ### 3.6 Verification approach
 
 Verification entries indicate **proposed tests**, not tests that have already been created or executed. R8 owns final test-case ID allocation and execution status. Time and coverage targets are defined separately in Chapter 4 and the existing test plan; this chapter does not claim those tests have passed.
 
+### 3.7 Acceptance criteria and failure behaviour for FR-18
 
+`FR-18` is the only must-have requirement whose request carries more than one record, so it needs more than the one-line statement: a reader has to be able to tell from this document alone what a correct batch does and what a partly bad batch does. The criteria below restate the `/parcels/batch` description in `openapi.yaml` in the vocabulary of a requirement, so that the two documents say one thing rather than two.
+
+**A correct batch**
+
+- **Given** an authenticated staff member assigned to a collection point,
+- **when** they submit between 1 and 50 parcels in one request and every entry carries a waybill number not already recorded, a carrier the waybill prefix identifies, a recipient name, a recipient phone number and a size in `small`, `medium` or `large`,
+- **then** every entry is created with status `registered`, each carrying that member's collection point identifier and that member as `registeredBy`,
+- **and** the response is `201`, with every parcel in `created` and `rejected` empty.
+
+**A partly bad batch**
+
+- **Given** an authenticated staff member and a batch in which some entries are valid,
+- **when** they submit it,
+- **then** the valid entries are created and the invalid ones are not,
+- **and** one bad entry does not discard the rest of the batch,
+- **and** the response is `201`, with the created parcels in `created` and one `rejected` object per refused entry, holding that entry's zero-based `index`, its `trackingNo` where one was supplied, and a `reason` naming the field that failed,
+- **and** a refused entry leaves no partial record behind.
+
+**A batch that is invalid as a whole**
+
+- **Given** a request whose `parcels` array holds fewer than 1 or more than 50 entries,
+- **when** it is submitted,
+- **then** it is refused with `400` before any entry is examined,
+- **and** no parcel is created.
+
+**Overflow handling (CR-025):** A batch containing more than 50 parcels is rejected as a whole with HTTP `400`, and no parcels from that request are registered. Staff must manually split the parcels into separate requests of at most 50 entries and resubmit them. The system does not automatically accept the first 50 entries, queue the remainder, or provide an overflow mechanism in Sprint 2.
+
+**Why per-entry rather than all-or-nothing**
+
+The contract already chose per-entry validation: "Each entry is validated on its own so one bad row does not discard the rest of the batch." The operating situation the survey describes explains why. Staff unload a delivery and record what is in front of them, so a single mistyped phone number should not send forty correct parcels back to the van. All-or-nothing would also make the endpoint's `201` response meaningless, because it could never report a partial result and would have to answer `400` for a batch that was mostly accepted.
+
+**One case this does not decide**
+
+`FR-17` requires that a repeated waybill number be rejected, and the contract validates each entry on its own. That implies the first occurrence in a batch is created and the later ones are rejected. **This is not yet ruled**: the alternative, refusing the whole batch, would contradict the per-entry rule, so the implication is the consistent reading, but R6 should confirm it when the endpoint is implemented and a change record should capture whichever answer is chosen.
+
+**What this section does not change**
+
+No requirement is added, removed or renumbered. `FR-17`'s duplicate rejection applies unchanged inside a batch, `CR-003`'s limit of 50 is restated and not changed, and `openapi.yaml` needs no edit because this section follows it rather than leading it.
+
+
+## 4. Non-Functional Requirements
+
+### 4.0 How these targets were derived and how they are stated
+
+Fourteen non-functional requirements are defined. **Seven of the identifiers were
+already reserved for this chapter by section 3.5.** `docs/04-testing/test-plan.md`
+section 6 fixes what six of them mean by naming each one beside the high priority test
+area that checks it, and two other documents fix the seventh. Every reserved
+identifier therefore keeps the meaning another document already assumes. The remaining
+seven are new and are numbered here for the first time.
+
+| Reserved identifier | Where its meaning was fixed |
+|---|---|
+| `NFR-1` | `test-plan.md` section 6 — notification delay |
+| `NFR-4` | `test-plan.md` section 6 — handover idempotency under concurrency |
+| `NFR-5` | `test-plan.md` section 6 — one storage location cannot hold two parcels |
+| `NFR-6` | `openapi.yaml` line 14 and line 426, and the Reason column of `CR-007`: the handover operator is read from the authenticated session so the operation log stays reliable |
+| `NFR-7` | `test-plan.md` section 6 — pickup code single use and expiry |
+| `NFR-10` | `test-plan.md` section 6 — mobile viewport usability |
+| `NFR-12` | `test-plan.md` section 6 — overdue fee calculation |
+
+**These are design targets supported by a convenience sample, not population values.**
+Seven of the fourteen take their number from `survey-results.md` section 7, which
+records the answers of 11 residents, 7 staff members and 4 administrators: `NFR-1`,
+`NFR-2`, `NFR-3`, `NFR-4`, `NFR-6`, `NFR-7`, `NFR-8`, `NFR-9`, `NFR-10`, `NFR-11`
+and `NFR-12`. That sample is small and
+self-selected, so a target states what the design must achieve to satisfy these
+respondents, and not what every user in the population requires. The other seven come
+from `test-plan.md` section 6, `ADR-002`, `ADR-005`, `CONTRIBUTING.md` or the scope
+boundaries in section 3.0; the Source column marks which is which.
+
+Every target is numeric or binary, so it can be checked without a judgement call, and
+every row names the method used to measure it. Verification entries name the **proposed**
+approach, in the same sense as section 3.6: R8 owns final test-case identifier
+allocation, and `docs/04-testing/test-cases/README.md` defines the naming convention.
+
+### 4.1 Performance and responsiveness — 3 requirements
+
+| ID | Requirement statement | Target | Source | Verification method |
+|---|---|---|---|---|
+| NFR-1 | The system shall notify a resident that a parcel has arrived within a bounded delay of the parcel being shelved. | **Within 5 minutes** as the design target; **within 60 minutes** as the acceptable limit | `survey-results.md` section 7, row 1 (Resident R4, 6 of 11) | Record the shelving timestamp and the timestamp the notification first becomes readable; compare the difference over a sample of arrivals. `test-plan.md` section 6, notification delay. |
+| NFR-2 | The system shall let a resident complete the collection journey, from opening the parcel list to confirming that a pickup code exists, within a bounded time. | **3 to 5 minutes** as the design target; **10 minutes** as the acceptable limit | `survey-results.md` section 7, row 2 (Resident R6) | Time a scripted journey on a 375 px viewport with a prepared resident account, from the list view to the detail view showing the code. |
+| NFR-9 | The system shall state every error in terms a resident or staff member can act on, naming what failed and what to do next, and shall not surface a bare status code or a stack trace. | **Binary** — every error message names an action, and no response exposes an internal detail | Scope boundaries in section 3.0; `survey-results.md` section 8, which records that residents were not asked about failure handling | Trigger each documented failure response and read the message; assert that it names an action and contains no status code, no exception name and no file path. |
+
+### 4.2 Reliability and data integrity — 3 requirements
+
+| ID | Requirement statement | Target | Source | Verification method |
+|---|---|---|---|---|
+| NFR-4 | The system shall make handover confirmation idempotent: confirming the same pickup code more than once shall create exactly one handover record, and a repeat confirmation shall return the same successful answer rather than a conflict. | **Binary** — one handover record per pickup code, under concurrent requests | `test-plan.md` section 6, handover idempotency under concurrency; `CR-007` | Submit two confirmations for one code concurrently and assert that exactly one handover row exists and that both callers receive the same answer. `test-plan.md` section 6. |
+| NFR-5 | The system shall not allow one storage location to hold more than one active parcel at a time. | **Binary** — at most one active parcel per location | `test-plan.md` section 6, one storage location cannot hold two parcels | Attempt the violation deliberately: shelve a second parcel into an occupied location and assert that the write is rejected by the database constraint, not only by application code. |
+| NFR-7 | The system shall treat a pickup code as single use and time limited: a code that has been used or has expired shall not confirm a second handover. | **Binary** — a used or expired code is refused | `test-plan.md` section 6, pickup code single use and expiry; `FR-21` | Replay a used code and assert refusal; advance past the expiry and assert refusal; assert that the parcel state is unchanged in both cases. |
+
+### 4.3 Security, privacy and auditability — 4 requirements
+
+| ID | Requirement statement | Target | Source | Verification method |
+|---|---|---|---|---|
+| NFR-3 | The system shall authorise every endpoint by the role of the authenticated session, and shall not rely on a hidden control in the interface as a security control. | **Binary** — every endpoint enforces its permitted roles and refuses others | `survey-results.md` section 7, row 4 (Administrator A4); `FR-45` | Call every endpoint with each of the four roles and assert the permitted and refused sets; assert that a refused call changes no data. |
+| NFR-6 | The system shall take the handover operator identity from the authenticated session and never from the request, and shall record it with the handover so the operation log is reliable. | **Binary** — no request carries an operator identity, and every handover records the actor from the session | `openapi.yaml` line 14 and line 426; `change-log.md` `CR-007`, whose Reason column names this requirement; `FR-22`, `FR-25` | Send `POST /pickup/confirm` with an `operatorId` field and assert that it is ignored; confirm a handover as one staff account and assert that the recorded actor is that account and that one audit entry names it. |
+| NFR-8 | The system shall keep the data of one collection point separate from another within one shared database, by associating every collection-point-scoped record with a collection point identifier. | **Binary** — every scoped record carries a collection point identifier, and reads are filtered by it | `survey-results.md` section 7, row 5 (Administrator A5), consistent with `ADR-002`; `FR-46` | Inspect the schema for the identifier on every scoped table, then query as one collection point and assert that no row from another is returned. Depends on `FR-46`, which is open as issue #127. |
+| NFR-11 | The system shall record an audit entry for every sensitive operation, holding the actor, the action, the target and the time, and shall mask a resident's phone number wherever it is displayed. | **Binary** — no sensitive operation without an audit entry; no unmasked phone number in any response | `FR-25`, `FR-47`; `survey-results.md` section 7, row 4 (phone masking) | Perform each sensitive operation and assert one audit row; scan every response body for an unmasked phone number. |
+
+### 4.4 Usability and accessibility — 1 requirement
+
+| ID | Requirement statement | Target | Source | Verification method |
+|---|---|---|---|---|
+| NFR-10 | The system shall be usable on a 375 px viewport, with a single column layout, no horizontal scrolling of the page, and every control reachable. | **Binary** — no horizontal scroll at 375 px, and every control reachable | `survey-results.md` section 7, row 6 (Resident R2, 9 of 11) | Render each page at 375 px and assert that the document width does not exceed the viewport; walk the keyboard focus order and assert that no control is skipped. |
+
+### 4.5 Maintainability and portability — 3 requirements
+
+| ID | Requirement statement | Target | Source | Verification method |
+|---|---|---|---|---|
+| NFR-12 | The system shall calculate an overdue fee that agrees with an independent recalculation for every prepared case. | **At least 20 prepared cases**, all agreeing to the cent | `test-plan.md` section 6, overdue fee calculation; `FR-39` | Recalculate each case by hand or in a separate script and compare; a single disagreement fails the target. The rule table is `docs/02-design/overdue-fee-rules.md`. |
+| NFR-13 | The system shall keep the automated test suite passing on every commit to `develop`, and shall treat a red suite as blocking rather than waived. | **Binary** — the pipeline is green on every merge into `develop` | `CONTRIBUTING.md`, the review rule; issue #73 | The continuous integration pipeline runs lint, unit tests and the build for the frontend on every pull request; a red result blocks the merge. |
+| NFR-14 | The system shall start from a clean checkout with one command, and every schema change shall be applied by a versioned migration rather than by hand. | **Binary** — one command starts the stack; no manual schema step | `ADR-005`; `PLAN.md` Sprint 2 | Run the compose command on a clean checkout and assert that all services report healthy; assert that the schema is created only by the migrations under `backend/src/main/resources`. |
+
+### 4.6 Identifier note and open dependencies
+
+**Three identifiers do not sit in numeric order, and the reason is the same each time: another document already cited them, so their meaning was kept.**
+
+- `NFR-6` carries the audit requirement because `CR-007` and `openapi.yaml` already cite it there.
+- `NFR-10` carries mobile viewport usability because `test-plan.md` section 6 already cites it there.
+- `NFR-3` carries endpoint authorisation, and `NFR-9` the error message requirement, because neither identifier was cited anywhere else, so both were free.
+
+A reader who needs the audit requirement should look for `NFR-6`, and a reader who needs the mobile viewport target should look for `NFR-10`.
+
+**Two of the fourteen cannot be verified until another task lands.**
+
+- **`NFR-8`** depends on `FR-46`, each collection-point-scoped record carrying a
+  collection point identifier. That requirement has no implementation yet and is open as
+  issue #127. Until it lands, the schema inspection can only record the gap.
+- **`NFR-12`** depends on `docs/02-design/overdue-fee-rules.md`, which exists, and on the
+  twenty prepared cases, which R8 owns.
+
+**Confirmation before this chapter is frozen.** R2 to confirm the MoSCoW-style priority
+of each target and whether any is a Should rather than a Must. R6 to confirm that
+`NFR-3`, `NFR-5`, `NFR-6`, `NFR-8` and `NFR-11` are achievable in the data model as designed, in particular
+that the single-active-parcel-per-location rule is enforceable by a database constraint
+rather than only in application code, and that the collection point identifier can be
+added to every scoped table. R8 to confirm that each of the fourteen can be mapped to at
+least one test case identifier, which is the input the traceability matrix needs.
+
+**Two targets are deliberately not survey results.** `NFR-13` and `NFR-14` come from
+`CONTRIBUTING.md` and `ADR-005` rather than from `survey-results.md`, and the Source
+column says so. They are included because the report's testing and evolution sections
+cite them, and a requirement that is never stated cannot be verified.
+
+---
+
+## Revision history
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| v0.1 | Week 2 | Chapters 1 and 2: background, problem, goals and scope | R2 |
+| v0.2 | Week 2 | Chapter 3: 47 functional requirements grouped by role, with MoSCoW and proposed verification | R3 |
+| v0.3 | Week 2 | Added chapter 4, the 14 non-functional requirements. Seven identifiers were reserved by section 3.5 and six of their meanings were fixed by `test-plan.md` section 6; those are kept. Seven targets come from `survey-results.md` section 7 and are stated as design targets supported by a convenience sample | R3, R1 |
+| v0.4 | Week 2 | Corrected `NFR-6` to the audit requirement that the handover operator identity comes from the authenticated session. Raised by R3, who spotted that `CR-007`, `openapi.yaml` line 14 and `openapi.yaml` line 426 all cite `NFR-6` for that meaning, which the first draft of chapter 4 had assigned to collection point data separation instead | R1 |
+| v0.5 | Week 2 | Kept the NFR identifiers that other documents already cite: mobile viewport usability returns to `NFR-10` because `test-plan.md` section 6 cites it there, the error message requirement takes `NFR-9`, endpoint authorisation takes `NFR-3`, and the audit entry and phone masking take `NFR-11`. An audit of every requirement citation in the repository found this as the only mismatch | R1 |
+| v0.6 | Week 3 | Added section 3.7, the acceptance criteria and failure behaviour for `FR-18`: the correct batch, the partly bad batch, the batch invalid as a whole, why per-entry rather than all-or-nothing, and the duplicate-waybill case left for R6 to rule. Added by `#168`, which did not bump the version; this row records it | R3 |
+| v0.7 | Week 3 | Status changed from draft to complete for Sprint 1, and the word "draft" removed from the version. The chapter range is unchanged at chapters 1 to 4, which is what this document was scoped to; `PLAN.md` asked for 1 to 7 and has been corrected to match, so the two documents now agree | R1 |
+| v0.8 | Week 3 | Updated FR-19 and FR-20 from Should to Could and deferred the recommendation panel (CR-023); confirmed that `shelve later` is outside Sprint 2 (CR-024); clarified FR-18's 50-parcel hard limit, HTTP 400 rejection and manual splitting in section 3.7 (CR-025). | R3 |

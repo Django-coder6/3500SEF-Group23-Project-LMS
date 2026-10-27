@@ -1,10 +1,13 @@
 # Frontend API Dependencies
 
-- Status: Draft, aligned with OpenAPI v0.3.0-draft (CR-003, CR-004, CR-006, CR-007, CR-013). The two endpoints that are needed by the frontend but are outside the Sprint 2 contract are listed under "Endpoints deferred to Sprint 3" instead of in the P0 list.
-- Task: T-30-04
-- Owners: R4 Frontend Lead, R6 Backend Lead
-- Consumers: R4 and R5 frontend implementation
-- Base URL: `/api`
+| Item | Detail |
+|---|---|
+| Status | Active |
+| Version | v1.0 |
+| Task | T-30-04 |
+| Owners | R4 Frontend Lead, R6 Backend Lead |
+| Consumers | R4 and R5 frontend implementation |
+| Base URL | `/api` |
 
 ## Contract Rules
 
@@ -130,3 +133,11 @@ Until an endpoint is approved, each feature uses a local mock module with the sa
 - Status values and error codes are stable.
 - Pickup confirmation defines idempotency behaviour.
 - Location recommendation defines `recommendedLocation = null` and `reason`.
+
+
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 2 | First version recorded in this file. The endpoint list the frontend depends on, aligned with OpenAPI `v0.3.0-draft`. Any earlier edit is not listed: this file had no revision history until week 3, so records of those edits do not exist here. | R1 |

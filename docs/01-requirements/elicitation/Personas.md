@@ -272,3 +272,9 @@ The persona that most often decides a requirement is the resident persona,
 because the resident group had the largest number of responses. Where a
 decision would affect staff time, the staff persona takes precedence, because
 staff are the users who will spend the most time in the system.
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.2 | Week 2 | Current content: composite personas for the four roles, identified by role only. Revisions before this one were made before the file kept a revision history, so they are not listed; `CR-008` and `CR-009` are the change records that named this file | R2 |

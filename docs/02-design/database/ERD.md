@@ -1,12 +1,25 @@
 # ERD - Community Parcel Collection Point System
 
-- Status: Draft
-- Date: 2026-10-10
-- Owners: R6 Backend Lead, R7 Backend Developer
-- Database: PostgreSQL 16
-- ORM: Spring Data JPA
+| Item | Detail |
+|---|---|
+| Status | Complete for Sprint 1 |
+| Date | 2026-10-19 |
+| Owners | R6 Backend Lead, R7 Backend Developer |
+| Version | v1.4 |
+| Database | PostgreSQL 16 |
+| ORM | Spring Data JPA |
 
 ## Entities
+
+### CollectionPoint
+
+- id: UUID
+- code: string, unique
+- name: string
+- address: string
+- active: boolean
+- createdAt: timestamp
+- updatedAt: timestamp
 
 ### User
 
@@ -17,6 +30,7 @@
 - role: enum(resident, staff, owner, admin)
 - phone: string
 - active: boolean
+- collectionPointId: FK -> CollectionPoint, nullable
 - createdAt: timestamp
 - updatedAt: timestamp
 
@@ -33,6 +47,7 @@
 - registeredById: FK -> User
 - pickupCodeId: FK -> PickupCode
 - expectedVersion: long
+- collectionPointId: FK -> CollectionPoint
 - createdAt: timestamp
 - updatedAt: timestamp
 
@@ -50,6 +65,7 @@ An exception is not a parcel state either; see `ParcelException` below.
 - size: enum(small, medium, large)
 - status: enum(available, reserved, occupied, disabled)
 - parcelId: FK -> Parcel, nullable
+- collectionPointId: FK -> CollectionPoint
 - updatedAt: timestamp
 
 ### PickupCode
@@ -98,19 +114,27 @@ describes the problem, so an exception never adds a value to `Parcel.status`.
 - targetId: UUID
 - before: jsonb
 - after: jsonb
+- collectionPointId: FK -> CollectionPoint
 - createdAt: timestamp
 
 ### Setting
 
 - id: UUID
-- key: string, unique
+- key: string, unique within a collection point: `UNIQUE (collectionPointId, key)`, so each
+  collection point holds its own value for the same key. There is no global default; see `CR-026`
 - value: string
 - description: string
 - updatedById: FK -> User
+- collectionPointId: FK -> CollectionPoint
 - updatedAt: timestamp
 
 ## Relationships
 
+- CollectionPoint 1 --- N Parcel
+- CollectionPoint 1 --- N Location
+- CollectionPoint 1 --- N AuditLog
+- CollectionPoint 1 --- N Setting
+- CollectionPoint 1 --- 0..N User (staff assignment only; see Collection point scope)
 - User 1 --- N Parcel (registeredBy)
 - Location 1 --- 0..1 Parcel (occupied location)
 - Parcel 1 --- 0..1 PickupCode
@@ -118,6 +142,31 @@ describes the problem, so an exception never adds a value to `Parcel.status`.
 - Parcel 1 --- 0..N ParcelException
 - User 1 --- 0..N Handover (operator)
 - User 1 --- 0..N AuditLog
+
+## Collection point scope
+
+`FR-46` requires every collection-point-scoped record to carry a collection point
+identifier. The decision recorded in CR-021 is that Sprint 2 assumes **more than one
+collection point**, because `survey-results.md` O1 records that six of seven owners
+manage more than one point, and because FR-26, FR-27, FR-28, FR-30, FR-34 and FR-47
+already require behaviour that spans more than one point.
+
+The five entities that are scoped directly carry `collectionPointId`. `PickupCode`,
+`Handover` and `ParcelException` reach their collection point through `parcelId`, so they
+do not carry a second copy of it, which keeps the identifier in one place per record.
+
+**Two parts of this are not designed yet and are named rather than guessed:**
+
+- The Flyway migration that adds `CollectionPoint` and the five foreign keys is part of
+  `T-41-01` (Registration, login, JWT, four-role RBAC), which owns the first migration.
+  The partial unique index on `Location.parcelId` from CR-016 must land in the same
+  migration.
+- An owner manages several points and an administrator reads across all of them, so
+  neither can be expressed as a single `User.collectionPointId`. A join table between
+  `User` and `CollectionPoint` is needed for FR-27, FR-28, FR-30, FR-32, FR-33 and
+  FR-34. `User.collectionPointId` is therefore nullable and holds the staff member's
+  assigned point only, and the join table is recorded as Sprint 2 design work against
+  `T-41-01`.
 
 ## Concurrency Notes
 
@@ -158,3 +207,13 @@ The lifecycle of each status value is modelled by these PlantUML sources:
 
 `ParcelException` is a separate record, so its ticket states do not extend
 `Parcel.status`.
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 1 | Initial entity model for the eight entities | R6 |
+| v1.1 | Week 2 | `Parcel.status` reduced to the three values ruled by `CR-006`, and the exception types aligned with the SRS as `CR-010` requires | R6 |
+| v1.2 | Week 3 | `CollectionPoint` added, with `collectionPointId` on the five entities that are scoped directly and a section on what is still open, per `CR-021` | R1 |
+| v1.3 | Week 3 | Status changed from draft to complete for Sprint 1. The nine entities, the ten relationships and the collection point scope are the ones Sprint 2 builds from | R1 |
+| v1.4 | Week 3 | `Setting.key` corrected from `unique` to unique within a collection point (`CR-026`). The schema has always used `UNIQUE (collection_point_id, key)`, and this document's own relationship line already says `CollectionPoint 1 --- N Setting`, so the correction makes the entity match both | R1 |

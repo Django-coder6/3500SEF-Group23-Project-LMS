@@ -45,6 +45,13 @@
 #   lost-code path has no endpoint. Both change the shape of a frozen contract,
 #   so they wait for a scope ruling instead of being closed here.
 
+#
+# Revision history
+#
+# v0.3.0 | Week 2 | First version recorded in this file. The Sprint 2 contract: 12 paths and 16 component schemas, frozen for the frontend. Any earlier edit is
+# not listed: this file had no revision history until week 3, so records of
+# those edits do not exist here.
+
 openapi: 3.0.3
 info:
   title: Community Parcel Collection Point Management System API

@@ -2,37 +2,51 @@
 title Activity Diagram(Parcel Intake And Shelving)
 |Counter (Staff)|
 start
-:Courier delivers a batch;
-:Scan or type the waybill;
-|System|
-if (Duplicate waybill?) then (yes)
-  :Reject and show the existing parcel;
+:Courier delivers one parcel or a batch;
+if (Batch mode?) then (yes)
+  |System|
+  :Validate every submitted row independently;
+  :Register each valid row;
+  :Collect rejected rows with index, trackingNo and reason;
+  :Return ParcelBatchResult(created[], rejected[]);
+  |Counter (Staff)|
+  :Show successful parcels and per-row errors;
   stop
 else (no)
-  :Recommend a storage location;
-  if (A suitable location is free?) then (no)
-    :Report that no location is free;
-    |Counter (Staff)|
-    :Choose a location manually;
+  |Counter (Staff)|
+  :Scan or type the waybill;
+  |System|
+  if (Duplicate waybill?) then (yes)
+    :Reject and show the existing parcel;
+    stop
+  else (no)
     |System|
-  else (yes)
-    |Counter (Staff)|
-    :Accept the recommended location;
-    |System|
+    :Recommend a storage location;
+    if (A suitable location is free?) then (no)
+      :Report that no location is free;
+      |Counter (Staff)|
+      :Choose a location manually;
+      |System|
+    else (yes)
+      |Counter (Staff)|
+      :Accept the recommended location;
+      |System|
+    endif
   endif
+  |Counter (Staff)|
+  :Shelve the parcel;
+  |System|
+  fork
+    :Record the location and issue a pickup code;
+  fork again
+    :Notify the resident;
+  end fork
+  note right
+    Both branches are internal steps of the single
+    POST /parcels transaction, not two endpoints.
+  end note
+  :Return the single parcel result;
+  |Counter (Staff)|
+  stop
 endif
-|Counter (Staff)|
-:Shelve the parcel;
-|System|
-fork
-  :Record the location and issue a pickup code;
-fork again
-  :Notify the resident;
-end fork
-note right
-  Both branches are internal steps of the single
-  POST /parcels transaction, not two endpoints.
-end note
-|Counter (Staff)|
-stop
 @enduml

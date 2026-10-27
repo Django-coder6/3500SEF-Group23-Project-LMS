@@ -159,3 +159,9 @@ and are recorded in the SRS as open issues.
 | Retention period in days before a parcel is treated as overdue | No question asked for a number, and the administrator group did not choose fee configuration. | Adopt a configurable default of three days and state it as an assumption. |
 | Whether owners in small points also act as staff | Two owners reported managing only one point, where the roles are likely to overlap. | Treat the roles as combinable and record it as a decision. |
 | The exact identification fallback when a resident has lost the pickup code | Residents were not asked, and staff answers were split between code and identity checks. | Define a documented fallback: phone number plus surname, recorded as an alternative verification method. |
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 1 to Week 2 | Initial results: method and response summary, the four role sections, the conclusions carried into the requirements, the derived targets in section 7 and the limitations in section 1.2. `CR-008` is the change record that named this file | R1, R2 |

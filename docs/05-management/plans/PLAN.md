@@ -1,5 +1,13 @@
 # Project plan
 
+| Item | Detail |
+|---|---|
+| Task | T-00-07 |
+| Owner | R1 |
+| Version | v1.4 |
+| Status | Active, reviewed at the end of every sprint |
+
+
 Eight weeks, five sprints. Every task has an ID, an owner and a folder.
 Task IDs are used in commit messages so that any commit can be traced back
 to the task it belongs to.
@@ -35,6 +43,44 @@ usual two week length.
 | M10 | reporting, audit and admin | R6 |
 
 Frontend foundation is owned by R4: application layout, routing, Pinia setup, Axios wrapper and shared components. Feature pages are implemented by R5 under R4's standards and reviewed by R4. Page-level ownership follows docs/02-design/frontend-page-map.md
+
+## Sprint 0, week 1
+
+The setup week. `PLAN.md` named it in the sprint overview from the first draft, and this section
+is its task list: without it Sprint 0 could only be audited by guessing which files it should have
+produced.
+
+| ID | Task | Owner | Folder |
+|---|---|---|---|
+| T-00-01 | Team charter and the ethics and privacy statement | R1, R9 | `docs/05-management` |
+| T-00-02 | Repository scaffold: `README.md`, `CONTRIBUTING.md`, the issue and pull request templates, `.gitignore` | R1 | repository root |
+| T-00-03 | Logbook template and the first entries, so every member has a place to record work from day one | R1 | `docs/06-logbook` |
+| T-00-05 | Ten week 1 logbooks, each with a date, a time range, a task ID and an evidence link | All | `docs/06-logbook` |
+| T-00-06 | Weekly stand-up, risk register, change log and the contributor screenshot | R1 | `docs/05-management` |
+| T-00-07 | Project plan, release plan and glossary | R1 | `docs/05-management/plans`, `docs` |
+| T-00-08 | Consistency checklist used before each pull request | R1 | `docs/05-management` |
+| T-10-01 | Four role questionnaires, the response summary and the composite personas | R1, R2 | `docs/01-requirements/elicitation` |
+| T-10-04 | User journey maps for the four roles, referenced by the SRS | R4 | `docs/01-requirements/elicitation` |
+| T-30-01 | Docker Compose skeleton, started early so Sprint 2 can build on it | R10 | repository root |
+
+Deliverables that must exist at the end of the week:
+
+1. `README.md` and `CONTRIBUTING.md` describing the project, the team and the working agreement.
+2. `docs/05-management/team-charter.md` and `ethics-statement.md`.
+3. `docs/01-requirements/elicitation/` holding the questionnaires, the survey results and the personas.
+4. `docs/05-management/risk-register.md`, `change-log.md` and the first contributor screenshot.
+5. Ten logbooks in `docs/06-logbook/`, one per member.
+6. Release tag `v0.0.1`.
+
+> **Two notes on identifiers.** `T-00-06` is the recurring management task and appears again in
+> Sprint 1 and every sprint after it; it is not a duplicate. `T-00-04` is unused: the numbering
+> skips it because the task it was reserved for was folded into `T-00-03`. Recording the hole is
+> cheaper than renumbering every reference to it.
+
+> **On the competency review.** The sprint overview describes Sprint 0 as "repository, research,
+> competency review". The first two produced the artefacts above. The third produced no document of
+> its own: the gap analysis lives in `RSK-11`, which records that Java and Spring Boot are new to
+> part of the team. A separate competency review would restate that risk, so it was not written.
 
 ## Sprint 1, week 2
 
@@ -77,7 +123,8 @@ decisions.
 
 Deliverables that must exist at the end of the week:
 
-1. `SRS.md` complete, chapters 1 to 7.
+1. `SRS.md` complete, chapters 1 to 4: introduction, overall description,
+   functional requirements and non-functional requirements.
 2. `RTM.md` with every must-have requirement mapped to at least one test case.
 3. `docs/02-design/uml/` containing the use case, sequence, class, state and
    activity sources, all in PlantUML.
@@ -104,7 +151,7 @@ hands the parcel over. Everything else waits.
 | T-30-03 | Flyway migrations and seed data | R7 | backend/src/main/resources/db/migration |
 | T-30-04 | Frontend skeleton: Vite, router, Pinia, Axios wrapper, shared layout, /login and /dashboard placeholders | R4 | frontend/src |
 | T-30-05 | Checkstyle, Spotless, commitlint, Git hooks | R10 | repository root |
-| T-30-06 | CI runs `./mvnw verify` and frontend tests | R10 | .github/workflows |
+| T-30-06 | CI runs `./mvnw verify` and frontend tests | R6 | .github/workflows |
 | T-41-01 | Registration, login, JWT, four-role RBAC | R6 | backend/src/main/java/com/group23/auth |
 | T-41-02 | Login page; connect to the auth store and route guards | R5 | frontend/src/views |
 | T-41-03 | Audit log interceptor | R7 | backend/src/main/java/com/group23/common |
@@ -113,7 +160,7 @@ hands the parcel over. Everything else waits.
 | T-42-02 | Storage location recommender: size filter, zone priority, the deterministic ordering from `location-recommender-rules.md`, safe under concurrency | R6 | backend/src/main/java/com/group23/location |
 | T-42-03 | Storage location management: zones, states, manual override | R7 | backend/src/main/java/com/group23/location |
 | T-42-04 | Pickup code issue and handover, one-time use, transaction and unique constraint | R6 | backend/src/main/java/com/group23/pickup |
-| T-42-05	| Pickup verification and handover page	| R4 | frontend/src/views |
+| T-42-05 | Pickup verification and handover page | R4 | frontend/src/views |
 | T-42-06 | Location board component with zone filter and full-shelf warning | R5 | frontend/src/components |
 | T-42-07 | Staff workbench: intake form, suggested location, handover screen | R5 | frontend/src/views |
 | T-42-08 | Unit and integration tests for the intake to handover path | R8 | backend/src/test/java/com/group23 |
@@ -138,7 +185,7 @@ hands the parcel over. Everything else waits.
 
 | ID | Task | Owner | Folder |
 |---|---|---|---|
-| T-44-05	| Reports view: parcel volume, overdue and exception summary | R4 | frontend/src/views |
+| T-44-05 | Reports view: parcel volume, overdue and exception summary | R4 | frontend/src/views |
 | T-44-06 | End to end tests with Playwright covering the must-have flows | R8 | frontend/tests |
 | T-50-01 | System testing across the five test scope dimensions | R8 | docs/04-testing |
 | T-50-02 | Performance and concurrency testing | R8 | docs/04-testing |
@@ -188,3 +235,12 @@ A task is done when:
 4. the deliverable sits in the folder listed above
 5. the person who did it has written a logbook entry with a link
 
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 1 | Initial eight-week, five-sprint plan with a task ID, an owner and a folder for every task | R1 |
+| v1.1 | Week 2 | `T-42-02` corrected to drop the turnover score, which `CRJ-001` had rejected (`CR-016`), and the week 2 scope of issue #73 narrowed to the two jobs that could run (`CR-017`) | R1 |
+| v1.2 | Week 3 | Added the Sprint 0 section, which the sprint overview named but the body never described. The task identifiers are the ones the files and commits already use, not new ones | R1 |
+| v1.3 | Week 3 | Moved `T-30-06` from R10 to R6. `#137`'s fourth acceptance criterion already assigns enabling the backend CI job to R6, and one deliverable should not carry two owners; `PLAN.md` was the odd one out. R10 keeps `T-30-01` (delivered) and `T-30-05`, and wrote the commented-out `backend` block that R6 now activates | R1 |
+| v1.4 | Week 3 | Corrected the Sprint 1 deliverable from "chapters 1 to 7" to "chapters 1 to 4". The line had said 1 to 7 since it was written on 12 October, while `SRS.md` has had four chapters throughout, its table of contents lists four, and no other document mentions seven; `SRS.md` 1.7 cites IEEE 830 / ISO 29148 as its structural basis and four chapters are those standards' core sections. Also replaced two tab characters that had taken the place of the cell delimiter in the Sprint 2 and Sprint 4 task tables. `#175` took `v1.3` for the `T-30-06` ownership change while this was open, so this is `v1.4` rather than a second `v1.3` | R1 |

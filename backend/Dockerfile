@@ -1,7 +1,8 @@
-# NOTE: this image cannot be built yet. It expects backend/pom.xml, the Maven
-# wrapper (.mvn/, mvnw) and backend/src, which are delivered by [T-30-02]
-# (issue #137). The backend service is therefore behind the "full" profile in
-# docker-compose.yml, so `docker compose up -d` does not try to build it.
+# Builds the Spring Boot service from backend/. It needs backend/pom.xml, the
+# Maven wrapper (.mvn/, mvnw) and backend/src, all delivered by [T-30-02]
+# (issue #137, merged as #192). The service is behind the "full" profile in
+# docker-compose.yml because the image takes a few minutes to build, so
+# `docker compose up -d` leaves it out unless you ask for it.
 
 # Stage 1: Build stage (Use JDK and Maven wrapper to build the project)
 FROM eclipse-temurin:17-jdk AS builder

@@ -1,15 +1,16 @@
 # Storage Location Recommender Rules
 
-- Status: Accepted
-- Date: 2026-10-15
-- Accepted: 2026-10-15, by R6 as the reviewer and the ADR owner of T-20-15. This
-  table is the order T-42-02 implements and the normative home of the rule
-- Design record: `docs/02-design/location-recommender.md` holds the ruling, the
-  evidence and the reasoning; this file holds the rule
-- Task: T-20-15
-- Owners: R6 Backend Lead, R7 Backend Developer
-- Reviewer: R6 Backend Lead
-- Related: ADR-004, SRS FR-11, FR-14, FR-15, FR-16, FR-19 and FR-20; CR-004; CRJ-001; `docs/03-api/openapi.yaml`; `docs/02-design/database/ERD.md`; `docs/02-design/ui-prototype.md`
+| Item | Detail |
+|---|---|
+| Status | Accepted |
+| Version | v1.0 |
+| Date | 2026-10-15 |
+| Accepted | 2026-10-15, by R6 as the reviewer and the ADR owner of T-20-15. This table is the order T-42-02 implements and the normative home of the rule |
+| Design record | `docs/02-design/location-recommender.md` holds the ruling, the evidence and the reasoning; this file holds the rule |
+| Task | T-20-15 |
+| Owners | R6 Backend Lead, R7 Backend Developer |
+| Reviewer | R6 Backend Lead |
+| Related | ADR-004, SRS FR-11, FR-14, FR-15, FR-16, FR-19 and FR-20; CR-004; CRJ-001; `docs/03-api/openapi.yaml`; `docs/02-design/database/ERD.md`; `docs/02-design/ui-prototype.md` |
 
 ## 1. Purpose
 
@@ -282,3 +283,11 @@ Component tests must cover:
       a change record approves it.
 - [ ] The implementation task T-42-02 uses this rule table and does not add a
       weighted or learned score.
+
+
+
+## Revision history
+
+| Version | Week | Change | Author |
+|---|---|---|---|
+| v1.0 | Week 2 | First version recorded in this file. The rule table `T-42-02` implements, accepted by R6 on 2026-10-15. Any earlier edit is not listed: this file had no revision history until week 3, so records of those edits do not exist here. | R1 |

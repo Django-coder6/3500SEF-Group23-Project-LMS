@@ -1,5 +1,5 @@
-# Stage 1: Build stage (Use Node 20 to build static files)
-FROM node:20 AS builder
+# Stage 1: Build stage (Use Node 24 to build static files)
+FROM node:24 AS builder
 WORKDIR /app
 
 # Consumed by Vite at build time (see .env.example)

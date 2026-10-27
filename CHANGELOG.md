@@ -5,6 +5,40 @@
 ### Added
 - repository scaffold, working agreement, issue and pull request templates (week 1)
 
+## [v0.1.1] - Sprint 1 close-out, 21 October 2026
+
+Sprint 1 ended on 19 October. `v0.1.0` was tagged on 14 October, **five days before the sprint
+ended**, so four of the sprint's own deliverables landed after their release tag. This tag covers
+them.
+
+### Added since v0.1.0
+
+- the requirements traceability matrix, 61 rows covering 47 functional and 14 non-functional
+  requirements (PR #155)
+- the product backlog with Given/When/Then acceptance criteria and MoSCoW order (PR #159)
+- the test-case register, 61 reserved identifiers with the level column filled (PR #155, PR #161)
+- the requirement confirmation record with three respondents and fourteen verified findings (PR #166,
+  PR #169)
+- SRS section 3.7, the acceptance criteria and failure behaviour for `FR-18` (PR #168)
+- the week 2 contributor evidence (PR #172)
+
+### Changed
+
+- SRS raised to `v0.7` and its status changed from draft to complete for Sprint 1
+- the ERD, the product backlog, the test plan and the requirement confirmation record moved off
+  `Draft`
+- the billing scope ruled as eight weeks, recorded as `CR-022` (PR #165)
+- `PLAN.md` gained the Sprint 0 section the overview had always named but the body never described
+
+### Known gaps at this tag
+
+- **`SRS.md` has chapters 1 to 4, not the 1 to 7 that `PLAN.md` L88 promises.** The requirement
+  content is complete; the chapters on external interfaces, data requirements and constraints are
+  not written, and their content currently lives in `openapi.yaml`, `ERD.md` and `glossary.md`.
+- **The Sprint 1 review and retrospective had not been held when this tag was cut.** It is scheduled
+  with the week 3 stand-up.
+- **`#137`, the Spring Boot skeleton, does not exist**, so no backend code is in this release.
+
 ## [v0.1.0] - week 3, 14 October 2026
 
 Sprint 1, the requirements and design baseline. Tagged on `develop`.
@@ -26,7 +60,7 @@ Sprint 1, the requirements and design baseline. Tagged on `develop`.
 
 ### Known gaps at this tag
 - SRS chapter 3 onwards does not exist yet (issue #76)
-- `backend/` holds no code: no `pom.xml` and no Maven wrapper (issue #75)
+- `backend/` holds no code: no `pom.xml` and no Maven wrapper (issue #137)
 - the resident read path, `/my-parcels`, has no endpoint; the scope ruling is CR-013, status Proposed
 - the traceability matrix and the product backlog do not exist (issue #77, issue #78)
 

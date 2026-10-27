@@ -50,27 +50,25 @@ test('multiple refs combine changes and git failures reject the push', () => {
   assert.throws(() => changedPaths(ref(), 'origin', () => { throw new Error('missing remote tip') }), /missing remote tip/)
 })
 
-test('commitlint accepts project examples and rejects invalid headers', () => {
+test('commitlint uses conventional rules without imposing scope or task IDs', () => {
+  assert.deepEqual(require('../commitlint.config.js'), {
+    extends: ['@commitlint/config-conventional'],
+  })
   const cli = path.resolve(__dirname, '../node_modules/@commitlint/cli/cli.js')
   const accepted = [
     'feat(backend): add parcel intake endpoint [TASK-012]',
     'chore(tooling): add quality checks [T-30-05]',
+    'feat: add checks',
+    'ci(tooling): add checks',
+    'chore: refresh dependencies',
+    'Merge develop into the Flyway branch so CI can run the migrations [T-30-03]',
+    "Merge branch 'develop' into feature/tooling-quality-checks",
+    'Merge pull request #230 from group/tooling',
   ]
-  const rejected = [
-    'update files',
-    'feat: add checks [T-30-05]',
-    'ci(tooling): add checks [T-30-05]',
-    'chore(tooling): add checks',
-    'chore(tooling): Add checks [T-30-05]',
-    'chore(tooling): add Checks [T-30-05]',
-    'chore(tooling): add checks. [T-30-05]',
-    'chore(tooling): add checks [UNKNOWN-01]',
-    'chore(tooling): add checks [Week3-3]',
-    'chore(tooling): add checks  [T-30-05]',
-  ]
+  const rejected = ['update files', 'Update README.md', 'feat:', 'unknown: add checks']
   for (const message of [...accepted, ...rejected]) {
-    const result = spawnSync(process.execPath, [cli], { input: `${message}\n`, encoding: 'utf8' })
+    const result = spawnSync(process.execPath, [cli], { input: message + '\n', encoding: 'utf8' })
     assert.ifError(result.error)
-    assert.equal(result.status === 0, accepted.includes(message), `${message}\n${result.stdout}\n${result.stderr}`)
+    assert.equal(result.status === 0, accepted.includes(message), message + '\n' + result.stdout + '\n' + result.stderr)
   }
 })
