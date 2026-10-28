@@ -4,8 +4,10 @@
 #
 # - CR-003 (FR-18): batch registration of up to 50 parcels is a must-have, so
 #   POST /parcels/batch is part of this contract.
-# - CR-004: the location recommendation is advice only. The staff member may
-#   ignore it and assign a location by hand; it is never applied automatically.
+# - CR-023 superseded CR-004 and deferred the location recommendation: FR-19 and FR-20 are
+#   Could, the Sprint 2 path is manual selection, and POST /locations/recommend is specified
+#   and not built. CR-004's advice-only rule still describes what it does if it is built: it
+#   is advice, and it is never applied automatically.
 # - CR-006: the parcel status model is registered / shelved / collected only.
 #   Courier and logistics stages are outside the system boundary (SRS section
 #   1.5), and an exception is a separate flow rather than a parcel status.
@@ -25,7 +27,7 @@
 # defined in SRS section 1.5 and the FR-nn identifiers defined in SRS chapter 3
 # (issue #76, R3, PR #114). Chapter 3 is a draft that R2 has not yet approved, so
 # an FR identifier used here is proposed until a change record approves it: FR-18
-# is approved by CR-003, FR-19 and FR-20 by CR-004, and FR-9 and FR-10 are
+# is approved by CR-003, FR-19 and FR-20 were reduced to Could by CR-023, and FR-9 and FR-10 are
 # deferred by CR-005. The traceability matrix does not exist yet (issue #77,
 # RSK-14), so this file and docs/03-api/frontend-api-dependencies.md carry the
 # endpoint-to-requirement mapping in the meantime.
@@ -367,15 +369,17 @@ paths:
     post:
       summary: Recommend an available location
       description: >
-        Satisfies IS-3, FR-19 and FR-20, both approved by CR-004. This is a
-        suggestion only: the staff member may ignore it and assign a location by
-        hand, and the result is never applied automatically. The rule is
-        deterministic, per CRJ-001; the normative rule table is
+        Deferred under CR-023, which superseded CR-004 and reduced FR-19 and FR-20 to
+        Could. The Sprint 2 path is manual selection with no recommendation UI, so this
+        endpoint is specified and not built; it stays here as the contract for the release
+        that does build it.
+        It satisfies IS-3, FR-19 and FR-20. When it is built it stays advice only: the
+        staff member may ignore it and assign a location by hand, and it is never applied
+        automatically. The rule is deterministic, per CRJ-001; the normative rule table is
         docs/02-design/location-recommender-rules.md and the design behind it is
-        docs/02-design/location-recommender.md. When no location is free the
-        endpoint still returns 200, with
-        `recommendedLocation` null and `reason` `no_location_available`, so the
-        frontend can offer manual assignment.
+        docs/02-design/location-recommender.md. When no location is free the endpoint would
+        still return 200, with `recommendedLocation` null and `reason`
+        `no_location_available`, so the frontend can offer manual assignment.
       requestBody:
         required: true
         content:

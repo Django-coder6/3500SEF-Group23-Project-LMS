@@ -14,7 +14,7 @@ calendar week do not line up in this project.
 |---|---|---|
 | W01 | 2026-10-02 to 2026-10-09 | Sprint 0: repository setup |
 | W02 | 2026-10-10 to 2026-10-19 | Sprint 1: Docker Environment Configuration and Frontend CI Pipeline Setup |
-| W03 | from 2026-10-20 | Sprint 2:  |
+| W03 | 2026-10-20 to 2026-10-28 | Sprint 2: quality tooling and the tooling CI |
 
 ## Weekly log
 
@@ -39,7 +39,7 @@ calendar week do not line up in this project.
 
 | Week | Dates covered | Hours |
 |---|---|---|
-| W01 | 2026-10-02 to 2026-10-11 | 0.6 |
-| W02 | 2026-10-12 to 2026-10-19 | 7.0 |
-| W03 | 2026-10-20 to 2026-10-25 | 19.67 |
-| **Total to date** | | **24.52** |
+| W01 | 2026-10-02 to 2026-10-09 | 0.6 |
+| W02 | 2026-10-10 to 2026-10-19 | 7.0 |
+| W03 | 2026-10-20 to 2026-10-28 | 19.67 |
+| **Total to date** | | **27.27** |
