@@ -1,8 +1,27 @@
-// T-42-05: the single API boundary used by the pickup page.
-// TODO(T-42-04): when the backend endpoints exist, replace this re-export
-// with the real http.post('/pickup/verify') and http.post('/pickup/confirm')
-// functions. The page imports this file only, so page code will not change.
-export {
-  verifyPickupCode,
-  confirmHandover,
-} from './mock/pickup'
+import http from './http'
+
+/**
+ * Verify an active pickup code before handover.
+ *
+ * Contract: POST /pickup/verify
+ * Request: { pickupCode }
+ * Success: { pickupCode, parcelSummary, location }
+ */
+export function verifyPickupCode(pickupCode) {
+  return http.post('/pickup/verify', {
+    pickupCode,
+  })
+}
+
+/**
+ * Confirm the handover after the pickup code has been verified.
+ *
+ * Contract: POST /pickup/confirm
+ * The operator is taken from the authenticated session, not sent here.
+ */
+export function confirmHandover(pickupCode, result = 'collected') {
+  return http.post('/pickup/confirm', {
+    pickupCode,
+    result,
+  })
+}
