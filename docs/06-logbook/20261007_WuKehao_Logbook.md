@@ -24,6 +24,7 @@
 | W04 |  2026-10-28 | T-42-08 | Measure coverage and generate reports | 22:47-23:40 | 0.88 | done | docs/04-testing/reports/Coverage-Report1.md| - | - | - |
 | W04 |  2026-10-29 | T-42-08 | test-plan.md updated to v0.5 | 00:03-00:12 | 0.15 |done| docs/04-testing/test-plan.md | - | - | - |
 | W04 | 2026-10-29 | T-42-08 | Writing a test framework | 14:17-14:53 | 0.6 | done | PR #249 | - | - | The framework was written against src/main/java by mistake, which puts JUnit on the production classpath and fails the build. It is withdrawn here and returns with T-42-03 and T-42-04, the two packages it needs |
+| W04 |  2026-10-29 | T-42-08 | test-plan.md updated to v0.6 | 19:30-19:45 | 0.25 |done| docs/04-testing/test-plan.md | - | - | - |
 
 ---
 
