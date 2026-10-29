@@ -8,7 +8,7 @@
 |---|---|
 | Task | T-50-19 |
 | Owner | R8 |
-| Version | v0.4 |
+| Version | v0.5 |
 | Status | Active, extended in Sprint 2 |
 
 ## 1. Purpose and scope
@@ -47,18 +47,17 @@ integration and payment, because both are outside the system boundary.
 These come from the non-functional requirements. They are targets, not
 aspirations: the build reports them, and a shortfall is recorded as a defect.
 
-| Area | Target |
-|---|---|
-| Line coverage overall | At least 60 per cent |
-> **Coverage target status (week 3).** The JaCoCo report is now produced by `mvn verify`
-> (`backend/target/site/jacoco/`) and collected as the `jacoco-report` CI artefact. The
-> **60 per cent target above has not yet been compared against a measured figure**;
-> no figure is claimed here until that comparison is recorded.
-| Handover service | At least 80 per cent |
-| Storage location recommender | At least 80 per cent |
-| Overdue fee engine | At least 80 per cent |
-| Must-have requirements with at least one test case | 100 per cent |
-| Checkstyle errors | Zero |
+ **Coverage measurement (week 4).** As of the latest build, the measured overall line coverage is **87.75%** (351 of 400 lines) and branch coverage is **62%** (75 of 120 branches). This meets the 60% minimum target. However, the current denominator is small because the core business modules (`parcel`, `location`, `pickup`) are not yet implemented. These figures will drop when those modules are added unless they are accompanied by tests. The full breakdown is recorded in `docs/04-testing/reports/Coverage-Report1.md`.
+
+| Area | Target | Current Status |
+|---|---|---|
+| Line coverage overall | At least 60 per cent | **87.75%** (Pass) |
+| Branch coverage overall | (Not originally specified) | 62% (Baseline recorded) |
+| Handover service | At least 80 per cent | Not yet implemented |
+| Storage location recommender | At least 80 per cent | Not yet implemented |
+| Overdue fee engine | At least 80 per cent | Not yet implemented |
+| Must-have requirements with at least one test case | 100 per cent | In progress |
+| Checkstyle errors | Zero | Pass |
 
 ## 4. What must be tested in every case
 
@@ -164,8 +163,9 @@ Progress is reported in `docs/04-testing/reports/`, in three forms:
 
 2. A coverage report. JaCoCo is bound to `verify` and writes `jacoco.xml` and an HTML rendering
    to `backend/target/site/jacoco/`, which the `backend` CI job uploads as the `jacoco-report`
-   artefact. **The 60 per cent target in section 3 has not yet been compared against a measured
-   figure**, and no coverage number is claimed here until it is.
+   artefact. **The first measured figure (2026-10-28) is 87.75% line coverage and 62% branch
+   coverage**, meeting the 60 per cent target in section 3. A detailed breakdown and analysis
+   of the coverage risks are recorded in `docs/04-testing/reports/Coverage-Report1.md`.
 
 3. A test report at the end of Sprint 4, containing the results, the defects
    found and closed, the coverage figures, and an insight and recommendation
@@ -187,3 +187,4 @@ Progress is reported in `docs/04-testing/reports/`, in three forms:
 | v0.2 | Week 2 | Section 11 states where each report is generated, the format (Surefire XML and text, plus an HTML summary), the CI artefact name, and who reads each one | R8 |
 | v0.3 | Week 3 | Status changed from draft to active. The SRS is frozen for Sprint 2, so the condition this document was waiting on is met; the remaining work is the Sprint 2 test cases, not the plan itself | R1 |
 | v0.4 | Week 4 | Corrected the coverage-report paragraph in section 11. It still said the report was "not yet produced" and that no JaCoCo plugin was bound to `verify`, while section 3 already recorded the opposite: JaCoCo is bound to `verify` and the `backend` job uploads the `jacoco-report` artefact. The 60 per cent target is still unmeasured against a figure, and that is now the only claim the document makes about coverage | R8 |
+| v0.5 | Week 4 | Replaced the "unmeasured" status in sections 3 and 11 with the first measured coverage figures (87.75% line, 62% branch), confirming the 60 per cent target is met. Added a note that the current small denominator (400 lines) will change when core modules are implemented. | R8 |
