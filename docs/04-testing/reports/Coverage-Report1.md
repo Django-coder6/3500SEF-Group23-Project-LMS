@@ -2,16 +2,16 @@
 
 | Field | Detail |
 |---|---|
-| Date | 2026-10-28 |
-| Baseline Commit | `develop` (`0fdb727` + #229) |
+| Date | 2026-10-29 |
+| Baseline Commit | `develop` (`512efc9`) |
 | Tool | JaCoCo 0.8.12 |
 | Command | `./mvnw -B verify` (CI artefact: `jacoco-report`) |
 
 ## 1. Measured Coverage
 
-- **Line Coverage: 87.75%** (351 of 400 lines covered, 49 missed)
-- Branch Coverage: **62%** (75 of 120 branches covered)
-- Instruction Coverage: **89%** (1,476 of 1,654 instructions covered)
+- **Line Coverage: 85.92%** (470 of 547 lines covered, 77 missed)
+- Branch Coverage: **62%** (102 of 163 branches covered)
+- Instruction Coverage: **87%** (2,060 of 2,355 instructions covered)
 
 ## 2. Module Breakdown & The "Missing Denominator"
 
@@ -19,29 +19,31 @@
 |---|:--:|---|
 | `com.group23.auth` | 100% | Fully covered |
 | `com.group23.config` | 100% | Fully covered |
-| `com.group23.security` | 94.6% | Heavily tested |
-| `com.group23.user` | 88.5% | Heavily tested |
-| `com.group23.audit` | 80.3% | Tested (largest current module) |
-| `parcel`, `location`, `pickup` | — | **0 lines in build (Not yet implemented)** |
+| `com.group23.security` | 94.3% | Heavily tested |
+| `com.group23.user` | 88.0% | Heavily tested |
+| `com.group23.parcel` | 88.0% | **Newly added, heavily tested** |
+| `com.group23.audit` | 83.3% | Tested |
+| `com.group23.common` | 54.3% | Needs attention |
+| `location`, `pickup` | — | **0 lines in build (Not yet implemented)** |
 
-**The Catch:** The current total codebase is only **400 lines**. The core business logic (`parcel`, `location`, `pickup`) currently contributes 0 lines to this report because those modules are not yet in the compiled build. The 87.75% is heavily skewed by the foundational modules (Auth, Security, User, Audit) which are well-tested.
+**The Catch:** The current total codebase is now **547 lines** (up from 400). The core business logic `parcel` has landed with strong test coverage (88%), which prevented the overall score from plummeting. However, `location` and `pickup` still contribute 0 lines to this report. The 85.92% is still skewed by foundational modules, and the denominator will grow further when the remaining core modules are merged.
 
 ## 3. Is the 60% target correct?
 
-**Conclusion: The 60% target is mathematically conservative today, but practically necessary for tomorrow.**
+**Conclusion: The 60% target is currently met (85.92%), but the "denominator risk" has officially started to materialize.**
 
 Here is the honest engineering assessment:
 
-1. **Right now, 60% is too low.** We have achieved 87.75% line coverage. If we only hit 60% in the future, we would be regressing significantly in the currently well-tested modules.
-2. **The real risk is the denominator.** When `parcel`, `location`, and `pickup` are merged (which will likely add hundreds of lines), if we do not write tests for them, the overall coverage will plummet below 60%. 
-3. **Branch coverage is the weak point.** At 62%, we are barely passing our threshold. This indicates that edge cases in `audit` (56%) and `user` (58%) are not fully tested. 
+1. **The score dipped slightly.** As predicted, adding `parcel` increased the denominator by 147 lines, causing the overall line coverage to drop from 87.75% to 85.92%. Because `parcel` arrived with its own tests, the drop was minor. If `parcel` had 0% coverage, the total would have dropped below 70%.
+2. **The remaining risk is `location` and `pickup`.** When these two modules are implemented, the total line count will likely exceed 800+. If they do not arrive with tests, the overall coverage will experience a severe drop. The 60% target will be truly tested in Sprint 3.
+3. **Branch coverage remains the weak point.** At 62%, it is barely passing the threshold. The `common` module (30% branch coverage) and `audit` (62%) suggest that edge cases and conditional logic need more negative testing.
 
 ## 4. Recommendations
 
-- **Keep the 60% CI threshold** as a hard floor. It acts as a safety net to prevent future regressions when core modules are added.
-- **Do NOT artificially inflate the numbers.** We explicitly reject writing trivial tests for `UserRole` getters or enums just to pad the coverage score. The metric must reflect genuine functional testing.
-- **Aspirational Goal:** Target **80% line** and **70% branch** coverage once the `parcel` and `pickup` modules are integrated. 
-- **Action for R9 / Sprint 3:** When core modules are merged, they must arrive with their own integration tests to keep the score above 60%.
+- **Keep the 60% CI threshold** as a hard floor. It acts as a safety net.
+- **Do NOT artificially inflate the numbers.** We explicitly reject writing trivial tests just to pad the coverage score.
+- **Aspirational Goal:** Target **80% line** and **70% branch** coverage overall.
+- **Action for Sprint 3:** The `location` and `pickup` modules must arrive with their own integration tests (similar to how `parcel` did in #250) to keep the score above 60%.
 
 ---
-*Report generated based on JaCoCo `jacoco.xml` and HTML report attached to CI build for commit `0fdb727`.*
+*Report generated based on JaCoCo `jacoco.xml` and HTML report attached to CI build for commit `1c8e488`.*
