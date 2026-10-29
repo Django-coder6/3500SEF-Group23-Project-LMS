@@ -25,16 +25,22 @@ class AuditPayloadSanitizerTest {
             public String getPickupCode() {
                 return "4821";
             }
+
+            public String getRecipientName() {
+                return "Resident Name";
+            }
         });
 
         assertThat(result)
                 .containsEntry("recipientPhone", "138****5678")
                 .containsEntry("password", "[REDACTED]")
-                .containsEntry("pickupCode", "[REDACTED]");
+                .containsEntry("pickupCode", "[REDACTED]")
+                .containsEntry("recipientName", "[REDACTED]");
         assertThat(result.toString())
                 .doesNotContain("13812345678")
                 .doesNotContain("plain-text-password")
-                .doesNotContain("4821");
+                .doesNotContain("4821")
+                .doesNotContain("Resident Name");
     }
 
     @Test
