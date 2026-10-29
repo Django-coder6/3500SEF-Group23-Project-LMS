@@ -145,7 +145,7 @@ describe('ParcelCreateView', () => {
   it('shows a duplicate waybill as a field-level error', async () => {
     registerParcel.mockRejectedValueOnce({
       status: 409,
-      code: 'DUPLICATE_WAYBILL',
+      code: 'DUPLICATE_TRACKING_NO',
       message: 'This waybill is already registered.',
       requestId: 'req-duplicate',
     })

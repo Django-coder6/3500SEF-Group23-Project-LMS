@@ -168,7 +168,7 @@ async function submitSingle() {
     single.recipientPhone = ''
     single.locationId = ''
   } catch (value) {
-    if (value?.code === 'DUPLICATE_WAYBILL') {
+    if (value?.code === 'DUPLICATE_TRACKING_NO') {
       fieldErrors.trackingNo = value.message
     } else {
       submitError.value = normaliseError(value)

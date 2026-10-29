@@ -84,15 +84,7 @@ const LOCATIONS = [
   },
 ]
 
-function wait(milliseconds = 200) {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds))
-}
 
-function copy(value) {
-  return structuredClone(value)
-}
-
-export async function fetchLocations() {
-  await wait()
-  return copy(LOCATIONS)
+export function createLocationsFixture() {
+  return structuredClone(LOCATIONS)
 }
