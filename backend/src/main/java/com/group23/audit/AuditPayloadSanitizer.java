@@ -23,8 +23,8 @@ public class AuditPayloadSanitizer {
 
     private static final Pattern CHINESE_MOBILE_NUMBER = Pattern.compile("(?<!\\d)(1[3-9]\\d{9})(?!\\d)");
 
-    private static final Set<String> REDACTED_KEY_PARTS =
-            Set.of("password", "token", "authorization", "pickupcode", "actorid", "operatorid");
+    private static final Set<String> REDACTED_KEY_PARTS = Set.of(
+            "password", "token", "authorization", "pickupcode", "actorid", "operatorid", "recipientname", "fullname");
 
     private final ObjectMapper objectMapper;
     private final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
