@@ -365,6 +365,52 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Location"
+  /locations/{id}/status:
+    patch:
+      summary: Change a storage location's manual state
+      description: >
+        Satisfies FR-16 without automatic assignment. The location must belong
+        to the authenticated staff member's collection point. Manual changes
+        are limited to available and disabled so that reserved and occupied
+        remain consistent with parcel and handover operations.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationStatusUpdateRequest"
+      responses:
+        "200":
+          description: Location state changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+        "403":
+          description: Caller is not a staff member assigned to a collection point
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Location does not exist at the caller's collection point
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Requested state is managed by the parcel workflow rather than manual override
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /locations/recommend:
     post:
       summary: Recommend an available location
@@ -624,6 +670,17 @@ components:
           type: string
           format: uuid
           nullable: true
+    LocationStatusUpdateRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          description: >
+            Manual override targets only available or disabled. If the current
+            location is reserved or occupied, the change is rejected with 422
+            because parcel operations own those transitions.
+          enum: [available, disabled]
     LocationRecommendation:
       type: object
       properties:

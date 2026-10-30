@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .hasRole("RESIDENT")
                         .requestMatchers(HttpMethod.GET, "/api/locations")
                         .hasAnyRole("STAFF", "OWNER", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/locations/*/status")
+                        .hasRole("STAFF")
                         .requestMatchers(HttpMethod.POST, "/api/locations/recommend")
                         .hasRole("STAFF")
                         .requestMatchers(HttpMethod.POST, "/api/pickup/verify", "/api/pickup/confirm")

@@ -81,6 +81,10 @@ class AuthSecurityIntegrationTest {
                     Set.of(UserRole.resident)),
             new ProtectedEndpoint(
                     HttpMethod.GET, "/api/locations", Set.of(UserRole.staff, UserRole.owner, UserRole.admin)),
+            new ProtectedEndpoint(
+                    HttpMethod.PATCH,
+                    "/api/locations/30000000-0000-4000-8000-000000000003/status",
+                    Set.of(UserRole.staff)),
             new ProtectedEndpoint(HttpMethod.POST, "/api/locations/recommend", Set.of(UserRole.staff)),
             new ProtectedEndpoint(HttpMethod.POST, "/api/pickup/verify", Set.of(UserRole.staff)),
             new ProtectedEndpoint(HttpMethod.POST, "/api/pickup/confirm", Set.of(UserRole.staff)));

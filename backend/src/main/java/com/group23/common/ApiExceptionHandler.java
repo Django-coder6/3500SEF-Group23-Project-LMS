@@ -1,6 +1,9 @@
 package com.group23.common;
 
 import com.group23.auth.InvalidCredentialsException;
+import com.group23.location.InvalidLocationTransitionException;
+import com.group23.location.LocationAccessDeniedException;
+import com.group23.location.LocationNotFoundException;
 import com.group23.parcel.BatchLimitExceededException;
 import com.group23.parcel.DuplicateTrackingNoException;
 import com.group23.parcel.InvalidParcelBatchException;
@@ -83,6 +86,28 @@ public class ApiExceptionHandler {
                         "FORBIDDEN",
                         "Ask an administrator to assign this staff account to a collection point, then sign in again.",
                         RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(LocationAccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> locationAccessDenied(
+            HttpServletRequest request, LocationAccessDeniedException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiErrorResponse.of("FORBIDDEN", exception.getMessage(), RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(LocationNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> locationNotFound(
+            HttpServletRequest request, LocationNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiErrorResponse.of("NOT_FOUND", exception.getMessage(), RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(InvalidLocationTransitionException.class)
+    public ResponseEntity<ApiErrorResponse> invalidLocationTransition(
+            HttpServletRequest request, InvalidLocationTransitionException exception) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ApiErrorResponse.of(
+                        "UNPROCESSABLE_ENTITY", exception.getMessage(), RequestIds.getOrCreate(request)));
     }
 
     private static String validationReason(String code) {
