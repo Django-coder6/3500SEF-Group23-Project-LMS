@@ -89,9 +89,11 @@ The team would freeze requirements before design and write the traceability matr
 
 | Section | Status | Source |
 |---|---|---|
-| 1. The problem and context | Drafted; needs reduction to its 130-word allocation | `01-introduction.md` |
-| 2. Process | Drafted; needs reduction to its 150-word allocation | `02-process.md` |
-| 3-9 | Outline and section notes only; the referenced evidence is available | `00-outline.md` and the cited project artefacts |
+| 1. The problem and context | Drafted; needs reduction to its 130-word allocation | `chapters/01-introduction.md` |
+| 2. Process | Drafted; needs reduction to its 150-word allocation | `chapters/02-process.md` |
+| 3. Requirements engineering | Drafted; within budget | `chapters/03-requirements.md` ([PR #257](https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/257)) |
+| 4. System modeling | Drafted; within budget | `chapters/04-modeling.md` ([PR #258](https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/pull/258)) |
+| 5-9 | Outline and section notes only | `00-outline.md` and the cited project artefacts |
 
 ## Revision history
 | Version | Week | Change | Author |
