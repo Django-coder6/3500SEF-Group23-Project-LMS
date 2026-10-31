@@ -60,9 +60,13 @@ Install frontend dependencies separately with `npm --prefix frontend ci`.
   the push. Fetch the destination branch if its old tip is missing locally.
 - Local checks run against the current working tree. Review unrelated edits and
   check out the branch being pushed before running them.
-- CI runs on every branch push and on PRs targeting `main` or `develop`, even
-  when local hooks are absent. It retains the backend, frontend, sanity, and
-  Docker smoke jobs and adds commitlint. Commitlint checks only the changed
+- CI runs on pushes to `main` or `develop` and on PRs targeting either branch,
+  even when local hooks are absent. Open a PR promptly after pushing a working
+  branch: a branch without a PR receives no CI, including commitlint, backend
+  and frontend checks. This W04 trade-off (CR-032) removes duplicate full-stack
+  runs for updates to PR branches and supersedes the all-branch push policy
+  introduced for T-30-05. All five jobs remain: backend, frontend, sanity,
+  Docker smoke and commitlint. Commitlint checks only the changed
   commit range; pushes exclude history already on the other integration branches
   and the previous remote tip, including when a feature branch is new. CI reports
   failures after a push, while hooks reject
