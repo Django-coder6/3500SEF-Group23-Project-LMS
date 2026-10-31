@@ -1,0 +1,3 @@
+# 6. Design and Implementation
+
+Design and implementation share a tokenised status language. `tokens.css` defines five semantic colour roles once, while `design-system.md` maps parcel, location, pickup-code and exception states to those roles. Components consume semantic tokens rather than raw colours. `StatusTag` renders both the mapped label and tone, so meaning survives greyscale. This turns a convention repeated across four user roles into one reviewable mapping. The same contract-first discipline appears at the API boundary: Vue pages call one normalised layer, allowing frontend workflows and Spring Boot services to be built in parallel without later redesign.
