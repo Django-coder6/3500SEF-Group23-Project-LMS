@@ -23,6 +23,7 @@ public class AuditLogRepository {
         Objects.requireNonNull(entry, "entry must not be null");
         AuditLog log = AuditLog.from(entry);
         entityManager.persist(log);
+        entityManager.flush();
         return log.getId();
     }
 }

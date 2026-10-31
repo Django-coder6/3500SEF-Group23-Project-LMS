@@ -88,4 +88,12 @@ public class Location {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public void release() {
+        if (status != LocationStatus.occupied || parcelId == null) {
+            throw new IllegalStateException("only an occupied location can be released");
+        }
+        this.status = LocationStatus.available;
+        this.parcelId = null;
+    }
 }

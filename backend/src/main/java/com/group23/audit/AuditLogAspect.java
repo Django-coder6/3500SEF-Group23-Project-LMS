@@ -79,7 +79,7 @@ public class AuditLogAspect {
                     UUID targetId = evaluateUuid(audited.targetIdExpression(), joinPoint, method, result, "targetId");
                     UUID collectionPointId = evaluateUuid(
                             audited.collectionPointIdExpression(), joinPoint, method, result, "collectionPointId");
-                    auditLogRepository.append(new AuditLogEntry(
+                    UUID auditId = auditLogRepository.append(new AuditLogEntry(
                             actor.userId(),
                             audited.action(),
                             audited.targetType(),
@@ -87,6 +87,9 @@ public class AuditLogAspect {
                             before,
                             payloadSanitizer.sanitizeResult(result),
                             collectionPointId));
+                    if (result instanceof AuditAttachable attachable) {
+                        return attachable.attachAudit(auditId);
+                    }
                     return result;
                 } catch (RuntimeException | Error exception) {
                     throw exception;

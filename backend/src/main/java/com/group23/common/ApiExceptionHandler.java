@@ -9,6 +9,11 @@ import com.group23.parcel.DuplicateTrackingNoException;
 import com.group23.parcel.InvalidParcelBatchException;
 import com.group23.parcel.MissingCollectionPointException;
 import com.group23.parcel.ParcelRegistrationException;
+import com.group23.pickup.InvalidHandoverResultException;
+import com.group23.pickup.ParcelNotOnShelfException;
+import com.group23.pickup.PickupCodeExpiredException;
+import com.group23.pickup.PickupCodeInvalidException;
+import com.group23.pickup.PickupCodeUsedException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,6 +113,44 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(ApiErrorResponse.of(
                         "UNPROCESSABLE_ENTITY", exception.getMessage(), RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(PickupCodeInvalidException.class)
+    public ResponseEntity<ApiErrorResponse> pickupCodeInvalid(
+            HttpServletRequest request, PickupCodeInvalidException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiErrorResponse.of(
+                        "PICKUP_CODE_INVALID", exception.getMessage(), RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(PickupCodeExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> pickupCodeExpired(
+            HttpServletRequest request, PickupCodeExpiredException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiErrorResponse.of(
+                        "PICKUP_CODE_EXPIRED", exception.getMessage(), RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(PickupCodeUsedException.class)
+    public ResponseEntity<ApiErrorResponse> pickupCodeUsed(
+            HttpServletRequest request, PickupCodeUsedException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiErrorResponse.of("PICKUP_CODE_USED", exception.getMessage(), RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(ParcelNotOnShelfException.class)
+    public ResponseEntity<ApiErrorResponse> parcelNotOnShelf(
+            HttpServletRequest request, ParcelNotOnShelfException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiErrorResponse.of(
+                        "PARCEL_NOT_ON_SHELF", exception.getMessage(), RequestIds.getOrCreate(request)));
+    }
+
+    @ExceptionHandler(InvalidHandoverResultException.class)
+    public ResponseEntity<ApiErrorResponse> invalidHandoverResult(
+            HttpServletRequest request, InvalidHandoverResultException exception) {
+        return ResponseEntity.badRequest()
+                .body(ApiErrorResponse.of("VALIDATION_ERROR", exception.getMessage(), RequestIds.getOrCreate(request)));
     }
 
     private static String validationReason(String code) {

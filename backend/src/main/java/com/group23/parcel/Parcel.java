@@ -148,4 +148,12 @@ public class Parcel {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public void collect() {
+        if (status != ParcelStatus.shelved) {
+            throw new IllegalStateException("only a shelved parcel can be collected");
+        }
+        this.status = ParcelStatus.collected;
+        this.locationId = null;
+    }
 }

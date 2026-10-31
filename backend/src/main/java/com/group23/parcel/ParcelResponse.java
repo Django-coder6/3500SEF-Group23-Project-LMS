@@ -31,7 +31,7 @@ public record ParcelResponse(
         Instant createdAt,
         Instant updatedAt) {
 
-    static ParcelResponse from(Parcel parcel) {
+    public static ParcelResponse from(Parcel parcel) {
         return new ParcelResponse(
                 parcel.getId(),
                 parcel.getTrackingNo(),
