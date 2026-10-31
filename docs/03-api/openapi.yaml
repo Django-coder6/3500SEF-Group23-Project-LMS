@@ -14,6 +14,10 @@
 # - CR-007: the handover operator is read from the authenticated session, never
 #   from the request body, so one staff member cannot record a handover as
 #   another (NFR-6).
+# - CR-031: failure codes are a stable vocabulary in ErrorResponse.
+# - CR-032 (proposed): extend that vocabulary with the generic protocol codes
+#   already emitted by the security and exception handlers, so every structured
+#   failure response remains valid against the same schema.
 # - CRJ-001: no complex scoring algorithm for the recommendation.
 #
 # - CR-013 (approved 2026-10-14) adds the resident read path to this contract:
@@ -53,11 +57,14 @@
 # v0.3.0 | Week 2 | First version recorded in this file. The Sprint 2 contract: 12 paths and 16 component schemas, frozen for the frontend. Any earlier edit is
 # not listed: this file had no revision history until week 3, so records of
 # those edits do not exist here.
+# v0.4.0 | Week 4 | Drafted the stable error vocabulary for CR-031 and proposed
+# CR-032 for the generic protocol codes already emitted by the backend. Defined
+# the pickup verification failures and recorded NFR-4's repeat confirmation.
 
 openapi: 3.0.3
 info:
   title: Community Parcel Collection Point Management System API
-  version: 0.3.0-draft
+  version: 0.4.0-draft
   description: >
     Draft OpenAPI contract for Sprint 2. The backend owns the final paths and
     fields; the frontend must not invent fields before they appear here.
@@ -106,6 +113,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Username or password fails request validation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
   /parcels:
@@ -470,7 +483,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/PickupVerifyResponse"
         "404":
-          description: Code not found or invalid
+          description: >
+            The code is invalid, expired or already used. The operation uses one
+            HTTP status because none of these states is a valid handover; the
+            caller distinguishes them with error.code
+            PICKUP_CODE_INVALID, PICKUP_CODE_EXPIRED or PICKUP_CODE_USED.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: >
+            The code identifies a parcel, but the parcel is not at the location
+            recorded for it. The body uses code PARCEL_NOT_ON_SHELF.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /pickup/confirm:
     post:
       summary: Confirm handover
@@ -505,6 +534,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Handover"
+        "404":
+          description: >
+            The pickup code is invalid. A code that has already been confirmed
+            does not use this response: NFR-4 requires the same recorded
+            handover and a 200 response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: >
+            The parcel is not at the location recorded for it. The body uses
+            code PARCEL_NOT_ON_SHELF.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   securitySchemes:
     bearerAuth:
@@ -789,6 +835,20 @@ components:
           properties:
             code:
               type: string
+              enum:
+                - INVALID_CREDENTIALS
+                - VALIDATION_ERROR
+                - BATCH_LIMIT_EXCEEDED
+                - UNAUTHORIZED
+                - ACCESS_DENIED
+                - FORBIDDEN
+                - NOT_FOUND
+                - DUPLICATE_TRACKING_NO
+                - UNPROCESSABLE_ENTITY
+                - PARCEL_NOT_ON_SHELF
+                - PICKUP_CODE_INVALID
+                - PICKUP_CODE_EXPIRED
+                - PICKUP_CODE_USED
             message:
               type: string
             requestId:

@@ -3,8 +3,8 @@
 | Item | Detail |
 |---|---|
 | Status | Active |
-| Version | v1.0 |
-| Task | T-30-04 |
+| Version | v1.1 |
+| Task | T-30-04; R4 Week 4 frontend error alignment |
 | Owners | R4 Frontend Lead, R6 Backend Lead |
 | Consumers | R4 and R5 frontend implementation |
 | Base URL | `/api` |
@@ -80,6 +80,72 @@ status; it is a separate record, listed below.
 
 The backend provides the canonical values. The frontend maps them to display labels and colours.
 
+## Error Contract
+
+Every failure uses the shared envelope `{ error: { code, message, requestId } }`.
+`frontend/src/api/http.js` unwraps it to `{ status, code, message, requestId }`. Pages
+show the backend message, branch on `code` only where the UI has a recoverable state,
+and show `requestId` when present. A network or timeout failure never reaches the
+backend; the wrapper gives it status `0`, code `REQUEST_FAILED` and a null request id.
+An HTTP 401 clears the stored session and redirects to `/login`; the login route
+remains visible so its page can display `INVALID_CREDENTIALS`.
+
+### Codes implemented by the backend
+
+| Status | Code | Emitted by | Current frontend handling |
+|---|---|---|---|
+| 400 | `VALIDATION_ERROR` | Invalid request body, field validation, empty batch, or a parcel/location combination rejected during intake | Generic form or operation error |
+| 400 | `BATCH_LIMIT_EXCEEDED` | A batch larger than 50 parcels | Generic error; the page also validates the count before sending |
+| 401 | `INVALID_CREDENTIALS` | `POST /auth/login` with an incorrect username or password | Login form displays its fixed credentials message |
+| 401 | `UNAUTHORIZED` | Missing, invalid or expired bearer token | Session storage is cleared and the user is redirected to `/login` |
+| 403 | `ACCESS_DENIED` | The authenticated role is not allowed to use the endpoint | Generic error using the backend message |
+| 403 | `FORBIDDEN` | A staff account has no collection point, or cannot access a location | Generic error using the backend message |
+| 404 | `NOT_FOUND` | A location is absent or belongs to another collection point | Generic error; the location board offers retry |
+| 409 | `DUPLICATE_TRACKING_NO` | The same tracking number is registered twice | The tracking-number field shows the backend message |
+| 422 | `UNPROCESSABLE_ENTITY` | A location is moved manually between workflow-managed states | Generic error using the backend message |
+
+### Endpoint expectations
+
+| Endpoint | Success | Failure behaviour |
+|---|---|---|
+| `POST /auth/login` | `200` with token and user | `401 INVALID_CREDENTIALS` |
+| `GET /locations` | `200` with a bare location array | `401 UNAUTHORIZED`; `403 FORBIDDEN` |
+| `POST /parcels` | `201` with the parcel | `400 VALIDATION_ERROR`; `403 FORBIDDEN`; `409 DUPLICATE_TRACKING_NO` |
+| `POST /parcels/batch` | `201` with `created` and `rejected`; a rejected row is data, not an HTTP error | `400 VALIDATION_ERROR`; `400 BATCH_LIMIT_EXCEEDED`; `403 FORBIDDEN` |
+| `POST /pickup/verify` | `200` with parcel and location summary | `404` with `PICKUP_CODE_INVALID`, `PICKUP_CODE_EXPIRED` or `PICKUP_CODE_USED`; `409 PARCEL_NOT_ON_SHELF` |
+| `POST /pickup/confirm` | `200` with the handover; repeating the same confirmation returns the same handover | `404 PICKUP_CODE_INVALID`; `409 PARCEL_NOT_ON_SHELF` |
+
+Every protected endpoint above can also return `401 UNAUTHORIZED` or
+`403 ACCESS_DENIED` from the security filter before its controller runs.
+
+### Pickup codes required by the current page
+
+| Code | Recoverable state | HTTP status |
+|---|---|---|
+| `PICKUP_CODE_INVALID` | Code not recognised | `404` |
+| `PICKUP_CODE_EXPIRED` | Code has expired | `404` |
+| `PICKUP_CODE_USED` | Code has already been redeemed | `404` when verifying; a repeated confirmation instead returns the recorded handover with `200` |
+| `PARCEL_NOT_ON_SHELF` | Code is valid but the parcel is not at its recorded location | `409` under approved `CR-031` |
+
+The page branches on these codes rather than on HTTP status. The backend must keep
+the codes stable and return a useful message for each case.
+
+### CR-031 alignment
+
+The `openapi.yaml` v0.4.0 draft in this change carries one enum for every structured
+failure the current backend emits. It includes the nine codes approved by `CR-031`
+and the generic protocol codes `UNAUTHORIZED`, `ACCESS_DENIED`, `NOT_FOUND` and
+`UNPROCESSABLE_ENTITY`, which are proposed in `CR-032`. `REQUEST_FAILED` remains
+frontend-only because it describes a request that never reached the server.
+
+The pickup failure statuses are now fixed for the frontend: invalid, expired and
+used codes return `404` from verification and are distinguished by `code`;
+`PARCEL_NOT_ON_SHELF` returns `409`. `NFR-4` and the existing OpenAPI description
+settle repeat confirmation as idempotent `200`, returning the handover already
+recorded rather than reporting `PICKUP_CODE_USED`. Issue #238's wording ("a second
+attempt fails") must be corrected to match that requirement before its concurrency
+test is implemented.
+
 ## Shared API Wrapper
 
 Use one Axios instance:
@@ -141,3 +207,4 @@ Until an endpoint is approved, each feature uses a local mock module with the sa
 | Version | Week | Change | Author |
 |---|---|---|---|
 | v1.0 | Week 2 | First version recorded in this file. The endpoint list the frontend depends on, aligned with OpenAPI `v0.3.0-draft`. Any earlier edit is not listed: this file had no revision history until week 3, so records of those edits do not exist here. | R1 |
+| v1.1 | Week 4 | Added the frontend error contract: the normalised error shape, implemented status/code mappings, endpoint expectations, pickup codes the page already handles, and the remaining CR-031/OpenAPI reconciliation items. | R4 |
