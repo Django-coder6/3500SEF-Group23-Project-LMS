@@ -73,6 +73,22 @@ class AuditLogAspectTest {
                                 && entry.after().toString().contains("138****5678")));
     }
 
+    @Test
+    void attachesTheGeneratedAuditIdBeforeReturningTheMutationResult() {
+        UUID auditId = UUID.randomUUID();
+        when(repository.append(any())).thenReturn(auditId);
+        AuditPayloadSanitizer sanitizer = new AuditPayloadSanitizer(new ObjectMapper().findAndRegisterModules());
+        AuditLogAspect aspect = new AuditLogAspect(repository, sanitizer, transactionManager);
+        AspectJProxyFactory factory = new AspectJProxyFactory(new AttachableMutationService());
+        factory.addAspect(aspect);
+        AttachableMutationService service = factory.getProxy();
+        AttachableMutation mutation = new AttachableMutation(UUID.randomUUID(), COLLECTION_POINT_ID);
+
+        AttachableMutation result = service.confirm(mutation);
+
+        assertThat(result.getAttachedAuditId()).isEqualTo(auditId);
+    }
+
     static class TestMutationService {
 
         @Audited(
@@ -126,6 +142,48 @@ class AuditLogAspectTest {
 
         public String getRecipientPhone() {
             return recipientPhone;
+        }
+    }
+
+    static class AttachableMutationService {
+
+        @Audited(
+                action = "handover.confirm",
+                targetType = "parcel",
+                targetIdExpression = "#a0.targetId",
+                collectionPointIdExpression = "#a0.collectionPointId")
+        public AttachableMutation confirm(AttachableMutation mutation) {
+            return mutation;
+        }
+    }
+
+    static class AttachableMutation implements AuditAttachable {
+
+        private final UUID targetId;
+        private final UUID collectionPointId;
+        private UUID attachedAuditId;
+
+        AttachableMutation(UUID targetId, UUID collectionPointId) {
+            this.targetId = targetId;
+            this.collectionPointId = collectionPointId;
+        }
+
+        public UUID getTargetId() {
+            return targetId;
+        }
+
+        public UUID getCollectionPointId() {
+            return collectionPointId;
+        }
+
+        public UUID getAttachedAuditId() {
+            return attachedAuditId;
+        }
+
+        @Override
+        public Object attachAudit(UUID auditId) {
+            attachedAuditId = auditId;
+            return this;
         }
     }
 }

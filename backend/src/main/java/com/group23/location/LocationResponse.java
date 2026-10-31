@@ -9,7 +9,7 @@ import java.util.UUID;
 public record LocationResponse(
         UUID id, String code, String zone, ParcelSize size, LocationStatus status, UUID parcelId) {
 
-    static LocationResponse from(Location location) {
+    public static LocationResponse from(Location location) {
         return new LocationResponse(
                 location.getId(),
                 location.getCode(),

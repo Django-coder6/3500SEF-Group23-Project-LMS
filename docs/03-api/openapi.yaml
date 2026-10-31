@@ -42,10 +42,10 @@
 #   FR-24 for them, so what is still missing is R2's MoSCoW approval, not the
 #   requirement.
 #
-# - Issue #98 records two contract gaps this file does not close: shelving an
-#   already registered parcel cannot carry a storage location (FR-14), and the
-#   lost-code path has no endpoint. Both change the shape of a frozen contract,
-#   so they wait for a scope ruling instead of being closed here.
+# - CR-029 to CR-031 (approved for Week 4) close the contract gaps carried by
+#   issue #98: locationId may be omitted when a parcel cannot be placed on a
+#   shelf, and ErrorResponse.code has one explicit vocabulary shared by the
+#   backend and frontend.
 
 #
 # Revision history
@@ -150,7 +150,9 @@ paths:
       description: >
         Satisfies IS-2 and FR-12, registration of an incoming parcel by staff
         member. The parcel starts in the registered state. FR-17 requires a
-        duplicate waybill to be rejected, which is the 409 below.
+        duplicate waybill to be rejected, which is the 409 below. CR-029 allows
+        locationId to be omitted when no storage location is available; the
+        parcel remains registered until a location is assigned.
       requestBody:
         required: true
         content:
@@ -207,12 +209,7 @@ paths:
         guarded by expectedVersion optimistic locking. A stale version is
         rejected with 409 rather than overwriting a newer state. A transition
         the state machine does not allow is rejected with 422, per
-        docs/02-design/backend-state-machines.md. FR-14, recording the storage
-        location when a parcel is shelved, is not yet expressible here: the body
-        carries no locationId, so a parcel that is already registered cannot be
-        shelved with its location in one call. That gap is issue #98 and is left
-        open on purpose, because adding the field changes the shape of the
-        contract that was frozen for Sprint 2.
+        docs/02-design/backend-state-machines.md.
       parameters:
         - name: id
           in: path
@@ -470,7 +467,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/PickupVerifyResponse"
         "404":
-          description: Code not found or invalid
+          description: >
+            The code is unknown, revoked, expired or already used. The body uses
+            PICKUP_CODE_INVALID, PICKUP_CODE_EXPIRED or PICKUP_CODE_USED.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: >
+            The parcel is not in one matching occupied shelf location at this
+            collection point. The body uses PARCEL_NOT_ON_SHELF.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /pickup/confirm:
     post:
       summary: Confirm handover
@@ -497,7 +508,7 @@ paths:
                   type: string
                 result:
                   type: string
-                  enum: [collected, returned, exception]
+                  enum: [collected]
       responses:
         "200":
           description: Handover confirmed
@@ -505,6 +516,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Handover"
+        "404":
+          description: >
+            The code is unknown, revoked, expired or already used without a
+            recorded handover. The body uses PICKUP_CODE_INVALID,
+            PICKUP_CODE_EXPIRED or PICKUP_CODE_USED.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: >
+            The parcel is not in one matching occupied shelf location at this
+            collection point. The body uses PARCEL_NOT_ON_SHELF.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   securitySchemes:
     bearerAuth:
@@ -577,6 +605,7 @@ components:
         locationId:
           type: string
           format: uuid
+          nullable: true
         expectedVersion:
           type: integer
           format: int64
@@ -604,6 +633,7 @@ components:
         locationId:
           type: string
           format: uuid
+          nullable: true
     ParcelBatchCreateRequest:
       type: object
       required: [parcels]
@@ -718,7 +748,7 @@ components:
           format: uuid
         result:
           type: string
-          enum: [collected, returned, exception]
+          enum: [collected]
         createdAt:
           type: string
           format: date-time
@@ -789,6 +819,16 @@ components:
           properties:
             code:
               type: string
+              enum:
+                - INVALID_CREDENTIALS
+                - VALIDATION_ERROR
+                - FORBIDDEN
+                - DUPLICATE_TRACKING_NO
+                - PARCEL_NOT_ON_SHELF
+                - PICKUP_CODE_INVALID
+                - PICKUP_CODE_EXPIRED
+                - PICKUP_CODE_USED
+                - BATCH_LIMIT_EXCEEDED
             message:
               type: string
             requestId:
