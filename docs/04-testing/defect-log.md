@@ -43,13 +43,12 @@ The first entries below show the rule in use.
 | DEF-OPS-001 | P0 | W04 | R1 reachability review | NFR-14 | Run the full Compose stack and open `http://localhost:80`. The frontend image has no Nginx `/api` proxy, so the browser's login request never reaches `backend:8080`; `docker-smoke` only checked the backend directly. | Closed | `frontend/nginx.conf`; `frontend/Dockerfile`; `docker-smoke` health/login through port 80 passed in CI `41658317363` (automated closing evidence). R10 video evidence attached in [Evidence handoff #293](https://github.com/Django-coder6/3500SEF-Group23-Project-LMS/issues/293) is supplementary manual evidence: complete port-80 staff flow on 4 November, registration returned 201 for SF1793777829702, verification and confirmation returned 200, and SQL confirmed the collected parcel and used code. Closure relies on the CI `docker-smoke` output, not the video alone. |
 | DEF-DOC-001 | P1 | W04 | R1 document audit | Report quality | Report chapter 7 said 17 test classes / 74 tests and 85.9% coverage as current; chapter 8 said CR-013 added resident endpoints that `openapi.yaml` marks specified and not built. | Closed | Chapters 7 and 8 corrected on 2026-11-03; outline v0.7 records 90 backend methods; coverage report output post-merge: 88.78% line / 64.64% branch |
 | DEF-UI-001 | P2 | W04 | Local test run | NFR-13 | Run the full frontend suite from a cold start: `router-guard.spec.js` “lets staff open the pickup page” can exceed the 5 s Vitest timeout; the same test passes when the module cache is warm. | Closed | `vite.config.js` test timeout raised to 15 s; cold-cache run passed 68/68 on 2026-11-03 |
-
 ### Status meanings
 - **Open** – Logged by QA; not fixed yet.
 - **Fixed** – Developer says it is fixed; waiting for QA verification.
 - **Closed** – QA verified the failed test case now passes.
 
-**Closing Rule**: A defect is closed **only when a test case that failed now passes**. The test case ID must be referenced in the closing evidence (for example, `TC-PARC-001`).
+**Closing Rule**: A defect is closed **only when a test case that failed now passes**. The closing evidence must reference the test case ID (for example, `TC-PARC-001`), or the test name plus CI/output where a TC ID is not yet assigned.
 
 ## Revision history
 
