@@ -1,0 +1,2 @@
+{"id":"c6707091-121f-4c77-bc4e-cc369e8c6328","trackingNo":"TEST-SYS001-1793977073","carrier":"SF","recipientName":"Demo Recipient","recipientPhone":"138****8888","status":"shelved","size":"small","locationId":"30000000-0000-4000-8000-000000000003","pickupCode":"65584873","expectedVersion":2,"createdAt":"2026-11-06T14:57:53.408454047Z","updatedAt":"2026-11-06T14:57:53.526932602Z"}
+HTTP 201

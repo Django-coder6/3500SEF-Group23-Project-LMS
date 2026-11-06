@@ -1,0 +1,10 @@
+ parcels 
+---------
+       1
+(1 row)
+
+  status   | parcel_id 
+-----------+-----------
+ available | 
+(1 row)
+

@@ -1,0 +1,2 @@
+{"error":{"code":"PICKUP_CODE_USED","message":"The pickup code has already been used. Do not hand over the parcel again.","requestId":"73688c34-358b-4d11-b943-d5cae18982bf"}}
+HTTP 404
