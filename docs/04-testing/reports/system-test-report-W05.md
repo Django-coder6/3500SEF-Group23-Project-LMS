@@ -5,7 +5,7 @@
 | Version | v1.0 |
 | Date | 2026-11-06 |
 | Environment | GitHub Codespaces, Docker Compose (`--profile full`), http://localhost:80 |
-| Tester | R8 / <name> |
+| Tester | R8 |
 | Build / CI | tested commit 30f776b (w05r81); report commit faa2afa; local run 2026-11-06 (Codespaces, docker compose --profile full) |
 | Contract | docs/03-api/openapi.yaml v0.7.0-draft |
 
