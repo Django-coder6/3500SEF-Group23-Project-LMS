@@ -40,7 +40,7 @@
 | Completion time | 5s |
 | Blockers | The duplicate-waybill scenario has no UI surface because `/parcels/new` is a placeholder. This observation substitutes an invalid-code rejection, which exercises the same pickup error path. Duplicate rejection itself is covered by system test ST-SYS-002. |
 | Verdict | PASS |
-| Evidence | UI observation on `/pickup` (no artifact captured) |
+| Evidence | evidence/acceptance-2-db.txt |
 
 ### ACC-W05-003
 
