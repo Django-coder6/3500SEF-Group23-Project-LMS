@@ -1,0 +1,2 @@
+{"id":"0a52b5b0-c438-4b09-9586-ddd8d20c16cf","parcelId":"c6707091-121f-4c77-bc4e-cc369e8c6328","result":"collected","createdAt":"2026-11-06T15:00:17.694967Z"}
+HTTP 200

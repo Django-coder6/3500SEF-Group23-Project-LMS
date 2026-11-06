@@ -25,6 +25,10 @@
 | W04 |  2026-10-29 | T-42-08 | test-plan.md updated to v0.5 | 00:03-00:12 | 0.15 |done| docs/04-testing/test-plan.md | - | - | - |
 | W04 | 2026-10-29 | T-42-08 | Writing a test framework | 14:17-14:53 | 0.6 | done | PR #249 | - | - | The framework was written against src/main/java by mistake, which puts JUnit on the production classpath and fails the build. It is withdrawn here and returns with T-42-03 and T-42-04, the two packages it needs |
 | W04 |  2026-10-29 | T-42-08 | test-plan.md updated to v0.6 | 19:30-19:45 | 0.25 |done| docs/04-testing/test-plan.md | - | - | - |
+| W05 |  2026-11-04 | T-50-05 | Posted CI and integration test evidence to #291|14:02-14:48|0.77|done|#291| - | - | - |
+| W05 |  2026-11-05 | T-50-05 | Marked DEF-PARC-001/002 and DEF-SEC-001 as Closed based on the CI evidence | 14:30-14:46 | 0.27 |done| docs/04-testing/reports/system-test-report-W05.md | - | - | - |
+| W05 |  2026-11-06 | T-50-05 | Write 3 system tests | 22:04-23:39 | 1.58 |done| defect-log.md | - | - | - |
+| W05 |  2026-11-07 | T-50-05 | Carry out 3 acceptance tests and interim test report | 00:24-02:10 | 2.17 |done| docs/04-testing/reports/interim-test-report-W05.md docs/04-testing/reports/acceptance-observation-W05.md | - | - | - |
 
 ---
 
