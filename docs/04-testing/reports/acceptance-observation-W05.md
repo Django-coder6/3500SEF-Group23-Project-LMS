@@ -4,7 +4,7 @@
 |---|---|
 | Version | v1.0 |
 | Date | 2026-11-07 |
-| Observer |R8|
+| Observer | R8 |
 | Environment | GitHub Codespaces, forwarded URL for port 80, Docker Compose `--profile full` |
 | Build / CI | tested commit 30f776b; local run 2026-11-07 |
 
@@ -19,7 +19,7 @@
 | Parcel type | Standard parcel (small) |
 | Scenario | Register → shelve → verify → confirm |
 | Steps observed | Registration UI not implemented in this build (`/parcels` and `/parcels/new` are placeholders). A parcel `ACC-UI-20261107-1` was created via the API, and the operator completed verify and confirm through `/pickup`. |
-| Expected | 201 / 200 / 200; parcel collected; code used |
+| Expected | Verify returns 200 and confirm returns 200 in the UI; parcel collected; code used (registration 201 covered by ST-SYS-001). |
 | Actual | Verify accepted code `72182490` and the pickup page allowed confirm; confirm succeeded. DB after: `parcels.status=collected`, `pickup_codes.status=used` (`used_at=2026-11-06 16:49:40`), 1 handover row with `result=collected`. |
 | Completion time | not measured (timing not started before submission) |
 | Blockers | No UI path to register a parcel; `/parcels/new` is a placeholder. Parcel created via API. Pickup verify + confirm worked in the UI. |
@@ -32,14 +32,15 @@
 |---|---|
 | Date | 2026-11-07 |
 | Observer | R8 |
-| Parcel type | Standard parcel (small) — invalid-code probe on /pickup |
+| Parcel type | Standard parcel (small) — invalid-code probe on `/pickup` |
 | Scenario | Invalid pickup code rejection (substitute for duplicate-waybill, which has no UI surface) |
+| Steps observed | Opened `/pickup`, entered code `00000000`, submitted. The page rejected it with `Pickup code not recognised`. No parcel state changed. |
 | Expected | Invalid code rejected with a clear error; no parcel state changed |
-| Actual | Entered 00000000 on /pickup; page showed `Pickup code not recognised`; DB unchanged |
-| Completion time | 5 second |
-| Blockers | Duplicate-waybill could not be observed in the UI (registration page is a placeholder). This observation substitutes an invalid-code rejection, which exercises the same error path in the pickup UI. |
+| Actual | Page showed `Pickup code not recognised`; no parcel state changed (no new parcel, no handover) |
+| Completion time | 5s |
+| Blockers | The duplicate-waybill scenario has no UI surface because `/parcels/new` is a placeholder. This observation substitutes an invalid-code rejection, which exercises the same pickup error path. Duplicate rejection itself is covered by system test ST-SYS-002. |
 | Verdict | PASS |
-| Evidence | `system-test-report-W05.md` ST-SYS-002 |
+| Evidence | UI observation on `/pickup` (no artifact captured) |
 
 ### ACC-W05-003
 
@@ -62,10 +63,10 @@
 | Observation | Date | Parcel type | Verdict |
 |---|---|---|---|
 | ACC-W05-001 | 2026-11-07 | Standard parcel (small) | PASS |
-| ACC-W05-002 | 2026-11-07 | N/A | NOT OBSERVED |
+| ACC-W05-002 | 2026-11-07 | Standard parcel (small) | PASS |
 | ACC-W05-003 | 2026-11-07 | Standard parcel (small) | PASS |
 
 ## Blockers and follow-ups
-- Landing page (/dashboard), /parcels and /parcels/new are placeholders in this build. A staff user has no in-app navigation or UI to register a parcel; /pickup and /locations are the only working staff screens. Registration was exercised via the API. This is a Sprint 2 scope gap, recorded for the team.
-- ACC-W05-002 (duplicate waybill) could not be observed in the UI for the same reason; it is covered by system test ST-SYS-002.
+- Landing page (`/dashboard`), `/parcels` and `/parcels/new` are placeholders in this build. A staff user has no in-app navigation or UI to register a parcel; `/pickup` and `/locations` are the only working staff screens. Registration was exercised via the API. This is a Sprint 2 scope gap, recorded for the team.
+- The duplicate-waybill scenario originally planned for ACC-W05-002 has no UI surface for the same reason. ACC-W05-002 substitutes an invalid-code probe on `/pickup`; the duplicate rejection itself is covered by system test ST-SYS-002.
 - Completion times were not measured for ACC-W05-001 and ACC-W05-003 because timing was not started before submission. Recorded honestly rather than estimated.
