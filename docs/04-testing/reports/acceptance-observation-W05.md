@@ -35,7 +35,7 @@
 | Parcel type | Standard parcel (small) — invalid-code probe on /pickup |
 | Scenario | Invalid pickup code rejection (substitute for duplicate-waybill, which has no UI surface) |
 | Expected | Invalid code rejected with a clear error; no parcel state changed |
-| Actual | Entered 00000000 on /pickup; page showed <Pickup code not recognised>; DB unchanged |
+| Actual | Entered 00000000 on /pickup; page showed `Pickup code not recognised`; DB unchanged |
 | Completion time | 2 second |
 | Blockers | Duplicate-waybill could not be observed in the UI (registration page is a placeholder). This observation substitutes an invalid-code rejection, which exercises the same error path in the pickup UI. |
 | Verdict | PASS |
