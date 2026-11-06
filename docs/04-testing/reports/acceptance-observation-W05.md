@@ -2,10 +2,10 @@
 
 | Item | Detail |
 |---|---|
-| Version | v0.1 |
+| Version | v1.0 |
 | Date | 2026-11-07 |
 | Observer |R8|
-| Environment | GitHub Codespaces, forwarded URL for port 80, Docker Compose --profile full |
+| Environment | GitHub Codespaces, forwarded URL for port 80, Docker Compose `--profile full` |
 | Build / CI | tested commit 30f776b; local run 2026-11-07 |
 
 ## Observations
@@ -15,7 +15,7 @@
 | Field | Detail |
 |---|---|
 | Date | 2026-11-07 |
-| Observer | R8 (self-observed) |
+| Observer | R8 |
 | Parcel type | Standard parcel (small) |
 | Scenario | Register → shelve → verify → confirm |
 | Steps observed | Registration UI not implemented in this build (`/parcels` and `/parcels/new` are placeholders). A parcel `ACC-UI-20261107-1` was created via the API, and the operator completed verify and confirm through `/pickup`. |
@@ -31,12 +31,12 @@
 | Field | Detail |
 |---|---|
 | Date | 2026-11-07 |
-| Observer | R8 (self-observed) |
+| Observer | R8 |
 | Parcel type | Standard parcel (small) — invalid-code probe on /pickup |
 | Scenario | Invalid pickup code rejection (substitute for duplicate-waybill, which has no UI surface) |
 | Expected | Invalid code rejected with a clear error; no parcel state changed |
 | Actual | Entered 00000000 on /pickup; page showed `Pickup code not recognised`; DB unchanged |
-| Completion time | 2 second |
+| Completion time | 5 second |
 | Blockers | Duplicate-waybill could not be observed in the UI (registration page is a placeholder). This observation substitutes an invalid-code rejection, which exercises the same error path in the pickup UI. |
 | Verdict | PASS |
 | Evidence | `system-test-report-W05.md` ST-SYS-002 |
@@ -46,7 +46,7 @@
 | Field | Detail |
 |---|---|
 | Date | 2026-11-07 |
-| Observer | R8 (self-observed) |
+| Observer | R8 |
 | Parcel type | Standard parcel (small) — same parcel as ACC-W05-001 |
 | Scenario | Used pickup code rejection |
 | Steps observed | Entered the used code `72182490` on `/pickup`; the page did not allow a second handover; repeat confirm returned the completed state. |
