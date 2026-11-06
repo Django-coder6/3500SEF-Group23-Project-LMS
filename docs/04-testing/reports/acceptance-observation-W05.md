@@ -3,8 +3,8 @@
 | Item | Detail |
 |---|---|
 | Version | v0.1 |
-| Date | 2026-11-05 |
-| Observer | |
+| Date | 2026-11-07 |
+| Observer |R8|
 | Environment | GitHub Codespaces, forwarded URL for port 80, Docker Compose --profile full |
 | Build / CI | tested commit 30f776b; local run 2026-11-07 |
 
