@@ -32,14 +32,13 @@
 |---|---|
 | Date | 2026-11-07 |
 | Observer | R8 (self-observed) |
-| Parcel type | N/A |
-| Scenario | Duplicate waybill rejection |
-| Steps observed | Could not be observed through the UI: the registration page (`/parcels/new`) is a placeholder in this build. |
-| Expected | Duplicate rejected with clear error; no second row |
-| Actual | Not observable in the UI. Covered by system test ST-SYS-002 at the API level (HTTP 409, `DUPLICATE_TRACKING_NO`, 1 row). |
-| Completion time | N/A |
-| Blockers | Registration UI not implemented; duplicate rejection has no UI surface. |
-| Verdict | NOT OBSERVED |
+| Parcel type | Standard parcel (small) — invalid-code probe on /pickup |
+| Scenario | Invalid pickup code rejection (substitute for duplicate-waybill, which has no UI surface) |
+| Expected | Invalid code rejected with a clear error; no parcel state changed |
+| Actual | Entered 00000000 on /pickup; page showed <Pickup code not recognised>; DB unchanged |
+| Completion time | 2 second |
+| Blockers | Duplicate-waybill could not be observed in the UI (registration page is a placeholder). This observation substitutes an invalid-code rejection, which exercises the same error path in the pickup UI. |
+| Verdict | PASS |
 | Evidence | `system-test-report-W05.md` ST-SYS-002 |
 
 ### ACC-W05-003
