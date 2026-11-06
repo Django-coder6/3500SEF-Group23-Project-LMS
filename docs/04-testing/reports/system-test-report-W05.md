@@ -6,7 +6,7 @@
 | Date | 2026-11-06 |
 | Environment | GitHub Codespaces, Docker Compose (`--profile full`), http://localhost:80 |
 | Tester | R8 / <name> |
-| Build / CI | commit <sha>; CI run <id> |
+| Build / CI | tested commit 30f776b (w05r81); report commit faa2afa; local run 2026-11-06 (Codespaces, docker compose --profile full) |
 | Contract | docs/03-api/openapi.yaml v0.7.0-draft |
 
 ## Scope
@@ -70,3 +70,4 @@ End-to-end staff flow through the Nginx proxy on port 80.
 3. **`recipientPhone` masked in create response.** The registration response masks the phone as `138****8888`, matching the ethics statement's masking rule; the test does not depend on the unmasked value.
 4. **Compose profile.** `docker compose` commands must run with `--profile full` (or `COMPOSE_PROFILES=full` in the same shell), otherwise `frontend` fails with `undefined service "backend"` because the backend service lives in the `full` profile. This is a startup ergonomics issue, not a system defect.
 5. **Codespaces port-forward.** `curl` in the Codespaces terminal uses `http://localhost:80`; browser/UI checks use the PORTS-panel forwarded URL.
+6. **CI status.** No CI run exists for commit `faa2afa`: branch `docs/w05-testing-evidence` has no workflow run because CI triggers on `pull_request` and no PR had been opened at test time. The latest run on the parent branch, run `42239430380`, failed in the `commitlint` job on commit `9273b705` ("Revise system test report for Week 5"), which is no longer in this branch's history after a rebase. `commitlint` checks commit-message format only and does not build or test the application. The system tests in this report were executed locally in Codespaces against `30f776b` with the full Compose stack (postgres, redis, backend, frontend all healthy). The commitlint failure is tracked separately and does not affect the verdicts above.
