@@ -4,9 +4,9 @@
 |---|---|
 | Version | v0.1 |
 | Date | 2026-11-05 |
-| Observer | <R5 找人，寫名字> |
+| Observer | |
 | Environment | Docker Compose, http://localhost:80 |
-| Build / CI | commit <sha>; CI run <id> |
+| Build / CI | tested commit 30f776b (w05r81); report commit faa2afa; local run 2026-11-06 |
 
 ## Observations
 
@@ -19,7 +19,7 @@
 | Parcel type | Standard parcel |
 | Scenario | Register → shelve → verify → confirm |
 | Steps observed | <簡述觀察步驟> |
-| Expected | 201 / 200 / 200; parcel collected; code used |
+| Expected | Verify of a used code is rejected with a clear error; repeating confirm returns the already-recorded handover without creating a second collection. No double collection.|
 | Actual | <實際結果> |
 | Completion time | <開始到完成，例如 3m 20s> |
 | Blockers | None / <卡點> |
