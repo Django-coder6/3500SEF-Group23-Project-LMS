@@ -7,7 +7,7 @@ https://github.com/Django-coder6/3500SEF-Group23-Project-LMS
 
 # 1. The Problem and the Context
 
-Community collection points receive bulk parcels for local residents. Staff already use digital tools: among seven staff respondents, three use spreadsheets, two use existing software, and two use chat histories. Records are fragmented, so staff cannot reliably answer where a parcel is or who collected it.
+Community collection points receive bulk parcels for local residents. Staff already use digital tools: among seven staff respondents, three use spreadsheets, two use existing software, and two use chat histories. Because records are fragmented, staff cannot reliably answer where a parcel is or who collected it.
 
 Four role-specific questionnaires (29 responses) put different problems first: late or missing notification for 4 of 11 residents, and batch registration for 4 of 7 staff. The project builds a web system that records parcel locations, issues pickup codes, and audits every handover.
 
@@ -15,9 +15,9 @@ Four role-specific questionnaires (29 responses) put different problems first: l
 
 The project spans eight weeks across five sprints: Sprint 0 and Sprint 1 one week each, then three two-week sprints. **Figure 1 summarises the sprint cadence.** Every task has an identifier, owner and folder in `PLAN.md`; completion requires its artefact.
 
-We used a hybrid incremental and plan-driven model: two-week sprints, a product backlog and retrospectives inside a fixed SRS/architecture baseline and change log. This fitted a fixed assessment calendar with moving requirements; waterfall would have frozen the wrong scope, while pure Scrum would have under-produced the artefact trail the rubric assesses.
+We used a hybrid incremental and plan-driven model: two-week sprints, a product backlog and retrospectives inside a fixed SRS/architecture baseline and change log. This fitted a fixed assessment calendar; waterfall would have frozen the wrong scope, while pure Scrum would have under-produced the artefact trail the rubric assesses.
 
-The cadence is in `team-charter.md` and the sprint minutes: a Wednesday checkpoint, a Sunday logbook deadline, non-author review before merge, and protected branches. Review evidence is the PR thread, not always a formal approval. A change not in `change-log.md` did not happen.
+The cadence is in `team-charter.md`: a Wednesday checkpoint, a Sunday logbook deadline, and protected branches. A change not in `change-log.md` did not happen.
 
 Design held to schedule; requirements did not. Documents were still changing in week 3, after coding began; `RSK-01` predicted that eight weeks leaves no buffer, so Sprint 1 slippage spills into build.
 
@@ -25,9 +25,9 @@ Design held to schedule; requirements did not. Documents were still changing in 
 
 # 3. Requirements Engineering
 
-Requirements were elicited through four role-specific questionnaires (29 responses). The data shaped scope: location recommendation was demoted from must-have to should-have because 0 of 7 staff requested it (`CR-004`), while delegated collection was excluded because 0 of 11 residents chose it (`CR-005`).
+Requirements were elicited through four role-specific questionnaires (29 responses). The data shaped scope: location recommendation was demoted to should-have because 0 of 7 staff requested it (`CR-004`), while delegated collection was excluded because 0 of 11 residents chose it (`CR-005`).
 
-Composite personas and user journey maps grounded the findings in scenarios. The SRS defines 47 functional and 14 non-functional requirements. The RTM maps every must-have to a design artefact and a reserved test identifier; implementation status is recorded separately rather than implied by the mapping.
+Composite personas and user journey maps grounded the findings in scenarios. The SRS defines 47 functional and 14 non-functional requirements. The RTM maps every must-have to a design artefact and a test identifier; implementation status is recorded separately.
 
 # 4. System Modeling
 
@@ -39,13 +39,13 @@ Exceptions are not modeled as parcel states. Instead, a separate `ParcelExceptio
 
 Four ADRs record the architecture and rejected options. **Figure 2 shows the three-tier architecture.** `ADR-002` fixes a layered monolith: Vue 3 SPA, REST contract, Spring Boot controller/service/repository, PostgreSQL, Flyway and an audit aspect. We rejected microservices because four developers had eight weeks, and because handover needs one transaction across parcel, location and audit.
 
-`ADR-003` fixes the frontend, `ADR-005` selects Spring Boot, and `ADR-004` records the deferred recommendation rule. The schema is one Flyway baseline of nine tables and eighteen foreign keys. The parcel model reduced seven statuses to three, because the others described courier stages outside the SRS boundary (`CR-006`).
+`ADR-003` fixes the frontend, `ADR-005` selects Spring Boot, and `ADR-004` records the deferred recommendation rule. The schema is one Flyway baseline of nine tables and eighteen foreign keys. The parcel model reduced seven statuses to three (`CR-006`).
 
 **Figure 2: Architecture (Shows the 3-tier architecture and P0 fix)**
 
 # 6. Design and Implementation
 
-Design and implementation share a contract-first boundary. The OpenAPI contract was frozen before frontend feature work, so Vue pages and Spring services could be built in parallel; **six operations** were explicitly marked specified and not built rather than allowed to drift.
+Design and implementation share a contract-first boundary. The OpenAPI contract was frozen before frontend feature work, so Vue pages and Spring services could be built in parallel; **six operations** were explicitly marked specified and not built.
 
 The frontend uses one Axios wrapper and a tokenised status language: `tokens.css` defines semantic roles once, and `design-system.md` maps parcel, location, pickup and exception states to them. The backend keeps state changes in services, uses Flyway for every schema change, and writes audit rows through one aspect.
 
@@ -62,3 +62,16 @@ To verify these P0 requirements, we trace them from specification to CI. **Figur
 SRS FR-12 → sequence-staff-intake → POST /parcels
 → ParcelRegistrationService → ParcelRegistrationIntegrationTest
 → CI 41977146617
+```
+# 8. Software Evolution
+
+Change is recorded rather than remembered: thirty-six change records carry every decision. `CR-013` added the resident read paths to the contract, exposing that they were absent from the implementation; they remain specified and not built.
+
+`CR-010/011` corrected the exception types to five values, because `CR-006` governed only parcel status. `CR-012` single-sourced an exception list seven documents restated. `CR-029` corrected `CR-028`, which invented a pending storage slot the schema cannot represent. `CR-033` made handover idempotent, matching `NFR-4` against a task description that claimed the opposite.
+
+**CR-034–036 record the reachability fixes. The risk register closes a risk only with evidence.**
+
+# 9. Conclusion and Reflection
+
+Two lessons would change the order of work. Requirements would be frozen before design, because revision in week 3 forced the contract to move under working code. The traceability matrix would be written alongside the requirements rather than reconstructed afterwards, since a matrix built in retrospect proves what was remembered rather than what was decided.
+
