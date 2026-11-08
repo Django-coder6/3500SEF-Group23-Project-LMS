@@ -21,7 +21,6 @@ The cadence is in `team-charter.md` and the sprint minutes: a Wednesday checkpoi
 
 Design held to schedule; requirements did not. Documents were still changing in week 3, after coding began; `RSK-01` predicted that eight weeks leaves no buffer, so Sprint 1 slippage spills into build.
 
-*[Insert Figure 1 here: Process / Sprint Cadence Table from PLAN.md]*
 **Figure 1: Process (Shows the hybrid process and sprint cadence)**
 
 # 3. Requirements Engineering
@@ -42,7 +41,6 @@ Four ADRs record the architecture and rejected options. **Figure 2 shows the thr
 
 `ADR-003` fixes the frontend, `ADR-005` selects Spring Boot, and `ADR-004` records the deferred recommendation rule. The schema is one Flyway baseline of nine tables and eighteen foreign keys. The parcel model reduced seven statuses to three, because the others described courier stages outside the SRS boundary (`CR-006`).
 
-*[Insert Figure 2 here: 3-Tier Architecture Diagram]*
 **Figure 2: Architecture (Shows the 3-tier architecture and P0 fix)**
 
 # 6. Design and Implementation
@@ -59,24 +57,8 @@ The most important defect came from tracing the model, not from a green test: ha
 
 To verify these P0 requirements, we trace them from specification to CI. **Figure 3 shows the RTM excerpt used for the traceability check.**
 
-| Requirement ID | statement summary | priority | source | design artefact | code module | test case ID | status |
-|---|---|---|---|---|---|---|---|
-| FR-12 | A staff member registers a single arriving parcel | Must (proposed) | S2 (3/7 spreadsheets, 2/7 software); SRS IS-2 | `ERD.md` `Parcel`; `openapi.yaml` `POST /parcels`; `docs/02-design/uml/state-parcel-lifecycle.puml` (`[*] --> Registered : register parcel` — creation starting point); `docs/02-design/uml/sequence-staff-intake.puml` (`POST /parcels` → 201 Parcel); `docs/02-design/uml/activity-parcel-intake.puml` ("Scan or type the waybill" → `POST /parcels`); `docs/02-design/uml/usecase-counter-work.puml` (`UC_Register` "Register incoming parcel", Staff actor); `frontend-page-map.md` `/parcels/new` | `backend/.../parcel/`; `frontend/src/pages/Parcels/` | TC-PARC-001 | implemented |
-| FR-14 | Staff record a parcel's storage location when shelving | Must (proposed) | SRS IS-3; CR-006; frontend-page-map `/locations` | `ERD.md` `Parcel.locationId`; `docs/02-design/uml/class-parcel-and-location.puml` (`Location holds Parcel`); `openapi.yaml` `ParcelCreateRequest.locationId`; `docs/02-design/uml/state-parcel-lifecycle.puml` (`Registered --> Shelved : assign storage location` — the state machine requires shelving to carry a storage location); `docs/02-design/uml/state-storage-location.puml` (`Reserved --> Occupied : shelve parcel` — shelving transition); `docs/02-design/uml/sequence-staff-intake.puml` (`POST /parcels` body carries `locationId` — create-with-shelving path is complete); `docs/02-design/uml/activity-parcel-intake.puml` (fork branch "Record the location"); `docs/02-design/uml/usecase-counter-work.puml` (`UC_Shelve` "Shelve parcel", `..> UC_Code : <<include>>` — shelve transaction includes issuing a pickup code); `frontend-page-map.md` `/locations`; **GAP:** issue #98 (`PATCH /parcels/{id}/status` body has no `locationId`; the state machine's transition precondition cannot be satisfied through that path) | `backend/.../parcel/`; `backend/.../location/`; `frontend/src/pages/Parcels/`; `frontend/src/pages/Locations/` | TC-LOC-001 | implemented |
-| FR-21 | Staff verify an active pickup code before handover | Must (proposed) | **S4: 3/7**; frontend-page-map `/pickup` | `ERD.md` `PickupCode` (code, status=active, expiresAt); `docs/02-design/uml/class-parcel-and-location.puml` (`PickupCode` class + `PickupCodeStatus` enum); `docs/02-design/uml/state-pickup-code.puml` (only `active` can confirm handover: `Active --> Used : confirm handover`; `Used` / `Expired` / `Revoked` are all terminal and cannot return to `Active`); `openapi.yaml` `POST /pickup/verify`; `docs/02-design/uml/sequence-resident-pickup.puml` (`POST /pickup/verify` → 200 `{parcelSummary, location}` → "show the parcel and its location"); `docs/02-design/uml/activity-handover.puml` ("Enter the pickup code" → "Pickup code found?" → "Show the parcel and its location"); `docs/02-design/uml/usecase-counter-work.puml` (`UC_Handover` "Verify pickup code and hand over", first half); `frontend-page-map.md` `/pickup` | `backend/.../pickup/`; `frontend/src/pages/Pickup/` | TC-PICK-001 | designed |
-
-**Figure 3: Traceability (Shows the RTM linking requirements to tests)**
-
-# 8. Software Evolution
-
-Change is recorded rather than remembered: thirty-six change records carry every decision. `CR-013` added the resident read paths to the contract, exposing that they were absent from the implementation; they remain specified and not built.
-
-`CR-010/011` corrected the exception types to five values, because `CR-006` governed only parcel status. `CR-012` single-sourced an exception list seven documents restated. `CR-029` corrected `CR-028`, which invented a pending storage slot the schema cannot represent. `CR-033` made handover idempotent, matching `NFR-4` against a task description that claimed the opposite.
-
-**CR-034–036 record the reachability fixes. The risk register closes a risk only with evidence.**
-
-# 9. Conclusion and Reflection
-
-Two lessons would change the order of work. Requirements would be frozen before design, because revision in week 3 forced the contract to move under working code.
-
-The traceability matrix would be written alongside the requirements rather than reconstructed afterwards, since a matrix built in retrospect proves what was remembered rather than what was decided.
+**Figure 3: Traceability chain for FR-12 (Staff intake)**
+```text
+SRS FR-12 → sequence-staff-intake → POST /parcels
+→ ParcelRegistrationService → ParcelRegistrationIntegrationTest
+→ CI 41977146617
