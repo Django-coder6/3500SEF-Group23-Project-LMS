@@ -51,21 +51,21 @@ The frontend uses one Axios wrapper and a tokenised status language: `tokens.css
 
 # 7. Testing and Validation
 
-Continuous verification runs on every pull request: ESLint, **68 frontend tests**, and **90 backend tests** (including **35 Testcontainers** tests across 7 classes). The test suite achieves **88.78% line coverage** and **64.64% branch coverage**, confirming that core workflows are adequately validated. The database design incorporates **18 foreign keys** and **36 change records (CRs)** have been logged to date.
+Continuous verification runs on every pull request: ESLint, **68 frontend tests**, and **90 backend tests** (including **35 Testcontainers** tests across 7 classes). The test suite achieves **88.79% line coverage** and **64.64% branch coverage**, covering the core intake-to-handover workflows; non-core and some failure paths remain partially tested and are recorded as gaps. The database design incorporates **18 foreign keys** and **37 change records (CRs)** have been logged to date.
 
 The most important defect came from tracing the model, not from a green test: handover tests inserted `shelved` directly, so they passed while the application could not reach that state. The missing path is now a recorded P0 defect and is fixed.
 
-To verify these P0 requirements, we trace them from specification to CI. **Figure 3 shows the RTM excerpt used for the traceability check.**
+To verify these P0 requirements, we trace them from specification to CI. **Figure 3 shows the traceability chain for FR-12, from specification through design and code to the CI run.**
 
 **Figure 3: Traceability chain for FR-12 (Staff intake)**
 ```text
 SRS FR-12 → sequence-staff-intake → POST /parcels
 → ParcelRegistrationService → ParcelRegistrationIntegrationTest
-→ CI 41977146617
+→ CI 43037569806
 ```
 
 8. Software Evolution
-Change is recorded rather than remembered: thirty-six change records carry every decision. CR-013 added the resident read paths to the contract, exposing that they were absent from the implementation; they remain specified and not built.
+Change is recorded rather than remembered: thirty-seven change records carry every decision. CR-013 added the resident read paths to the contract, exposing that they were absent from the implementation; they remain specified and not built.
 
 CR-010/011 corrected the exception types to five values, because CR-006 governed only parcel status. CR-012 single-sourced an exception list seven documents restated. CR-029 corrected CR-028, which invented a pending storage slot the schema cannot represent. CR-033 made handover idempotent, matching NFR-4 against a task description that claimed the opposite.
 
