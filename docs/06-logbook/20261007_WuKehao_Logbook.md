@@ -29,6 +29,7 @@
 | W05 |  2026-11-05 | T-50-05 | Marked DEF-PARC-001/002 and DEF-SEC-001 as Closed based on the CI evidence | 14:30-14:46 | 0.27 |done| docs/04-testing/reports/system-test-report-W05.md | - | - | - |
 | W05 |  2026-11-06 | T-50-05 | Write 3 system tests | 22:04-23:39 | 1.58 |done| defect-log.md | - | - | - |
 | W05 |  2026-11-07 | T-50-05 | Carry out 3 acceptance tests and interim test report | 00:24-02:10 | 2.17 |done| docs/04-testing/reports/interim-test-report-W05.md docs/04-testing/reports/acceptance-observation-W05.md | - | - | - |
+| W6 |  2026-11-11 | T-60-08 |Reconciled the defect log and final test summary, locking QA evidence to commit 3359c39 / CI run 43009104923; all 6 defects have passing evidence, and the stale run 41658317363 is marked superseded. | 23:02-23:34| 0.53 |done| #329 docs/04-testing/defect-log.md docs/04-testing/reports/final-test-summary.md | - | - |- |
 
 ---
 
