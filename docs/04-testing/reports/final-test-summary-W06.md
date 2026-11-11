@@ -8,7 +8,7 @@
 - Result: success
 - Jobs: sanity / commitlint / frontend / backend / docker-smoke — all success
 - Superseded run: 41658317363 (commit b6011b5). It is stale because b6011b5..3359c39 includes backend code and test changes (ParcelShelvingIntegrationTest +193 lines, ParcelShelvingService, ParcelRepository, LocationRepository).
-- Current develop HEAD: 3359c39 (#321 merged as 4716815 on 2026-11-11).
+- Code/evidence commit: 3359c39 (#321 merged as 4716815 on 2026-11-11); the QA evidence files were merged afterwards.
 
 ## Test counts (run 43009104923)
 
