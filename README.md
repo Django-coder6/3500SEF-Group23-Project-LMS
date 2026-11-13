@@ -55,7 +55,7 @@ by staff through the web interface.
 | Security | Spring Security with JWT | Four roles with clear permission boundaries |
 | API documentation | SpringDoc OpenAPI | Generated from the controllers, so it cannot drift from the code |
 | Backend tests | JUnit 5, Mockito, MockMvc | Unit tests plus slice tests for the controllers |
-| Frontend tests | Vitest, Playwright | Unit tests plus end to end tests |
+| Frontend tests | Vitest | Unit and component tests |
 | CI | GitHub Actions | Lint, tests and build run on every push |
 | Deployment | Docker Compose, Nginx | One command reproduces the environment |
 
