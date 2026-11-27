@@ -1,75 +1,76 @@
 https://github.com/Django-coder6/3500SEF-Group23-Project-LMS
 
 # Community Parcel Collection Point Management System
-**COMP 3500SEF Group 23 | November 2026**
 
----
+**COMP 3500SEF Group 23 | 8 December 2026**
 
-# 1. The Problem and the Context
+## 1. Introduction and Scope
 
-Community collection points receive bulk parcels for local residents. Staff already use digital tools: among seven staff respondents, three use spreadsheets, two use existing software, and two use chat histories. Because records are fragmented, staff cannot reliably answer where a parcel is or who collected it.
+Community collection points receive parcels in bulk for local residents. Staff at the studied point use spreadsheets, existing software and chat histories, so one parcel can exist in three records and no one can reliably answer where it is or who collected it. Four role-specific questionnaires (29 responses) confirmed the problem but ranked pains differently: residents wanted timely notification, while staff wanted faster intake. The project therefore delivers a staff counter slice: register a parcel, put it away, issue a pickup code, verify that code and record one handover. We use the term *shelving* for the physical put-away plus the system location record, and *handover* for verification plus the audit row. The assessed release is this vertical slice, not the whole product.
 
-Four role-specific questionnaires (29 responses) put different problems first: late or missing notification for 4 of 11 residents, and batch registration for 4 of 7 staff. The project builds a web system that records parcel locations, issues pickup codes, and audits every handover.
+## 2. Process
 
-# 2. Process
+We used a hybrid incremental and plan-driven process across five sprints. A fixed SRS and architecture baseline plus a change log protected reviewability; a product backlog and two-week increments allowed learning. Every task had an owner, folder and required artefact, and a Wednesday checkpoint, Sunday logbook and non-author pull-request review made progress visible. Waterfall would have frozen uncertain scope; pure Scrum would have produced too little evidence for the assessment. The main process risk, RSK-01, was that eight weeks left no buffer. When requirements moved in week 3, we protected the transactional slice and recorded the cuts instead of hiding them.
 
-The project spans eight weeks across five sprints: Sprint 0 and Sprint 1 one week each, then three two-week sprints. **Figure 1 summarises the sprint cadence.** Every task has an identifier, owner and folder in `PLAN.md`; completion requires its artefact.
+| Sprint | Weeks | Goal | Tag |
+|---|---|---|---|
+| 0 | 1 | repository, research, competency review | v0.0.1 |
+| 1 | 2 | requirements and design baseline | v0.1.0 |
+| 2 | 3-4 | intake, shelving and pickup end to end | v0.2.0 |
+| 3 | 5-6 | progress review, hardening and evidence | v0.3.0 |
+| 4 | 7-8 | test pass, report, presentation and logbooks | v1.0.0 |
 
-We used a hybrid incremental and plan-driven model: two-week sprints, a product backlog and retrospectives inside a fixed SRS/architecture baseline and change log. This fitted a fixed assessment calendar; waterfall would have frozen the wrong scope, while pure Scrum would have under-produced the artefact trail the rubric assesses.
+*Figure 1: Hybrid five-sprint cadence. The vertical slice was protected when requirements moved.*
 
-The cadence is in `team-charter.md`: a Wednesday checkpoint, a Sunday logbook deadline, and protected branches. A change not in `change-log.md` did not happen.
+## 3. Requirements Engineering
 
-Design held to schedule; requirements did not. Documents were still changing in week 3, after coding began; `RSK-01` predicted that eight weeks leaves no buffer, so Sprint 1 slippage spills into build.
+Requirements came from four role-specific questionnaires (29 responses: 11 residents, 7 staff, 7 owners and 4 administrators), followed by personas and journey maps. The SRS contains 47 functional and 14 non-functional requirements. MoSCoW prioritisation produced a 32-requirement product Must baseline, and the RTM maps each Must to a design artefact and a reserved test identifier; implementation status is a separate column. That separation prevents *mapped* from being read as *built*. Table 1 gives representative requirements and evidence. Seven Musts are implemented in this release; the rest are designed, deferred or explicit gaps. For example, CR-004 demoted location recommendation after 0 of 7 staff selected it, and CR-005 excluded delegated collection after 0 of 11 residents selected it. The Must baseline is a priority list, not a delivery list; the release slice is the riskiest end-to-end transaction, not a random subset.
 
-**Figure 1: Process (Shows the hybrid process and sprint cadence)**
+| ID | Requirement | Priority | Status | Evidence |
+|---|---|---|---|---|
+| FR-12 | Register one parcel with one location and one code | Must | Implemented | ST-SYS-001 |
+| FR-21 | Verify a pickup code before handover | Must | Implemented | ST-SYS-003 |
+| FR-22 | Record exactly one handover | Must | Implemented | ST-SYS-003 |
+| NFR-4 | Repeat confirmation returns the same handover | Must | Implemented | ST-SYS-003 |
 
-# 3. Requirements Engineering
+*Table 1: Representative requirements. Status is separate from priority; mapped is not built.*
 
-Requirements were elicited through four role-specific questionnaires (29 responses). The data shaped scope: location recommendation was demoted to should-have because 0 of 7 staff requested it (`CR-004`), while delegated collection was excluded because 0 of 11 residents chose it (`CR-005`).
+## 4. System Modeling
 
-Composite personas and user journey maps grounded the findings in scenarios. The SRS defines 47 functional and 14 non-functional requirements. The RTM maps every must-have to a design artefact and a test identifier; implementation status is recorded separately.
+The use-case model scopes the staff counter: register a parcel, shelve it, verify a code and hand over, with pickup-code issue included in shelving. Exception registration is designed but not built, and search/list is a recorded gap (issue 289); a diagram that claimed the whole product would hide those gaps. The FR-12 sequence model shows the success path and two alternatives: a duplicate waybill returns 409, and no free location follows the CR-029 contract path of registering first and assigning a location later. The parcel state model reduces seven candidate states to registered, shelved and collected because courier states lie outside the system boundary; illegal transitions return 422. These models exposed a reachability defect: tests inserted *shelved* directly, so they passed while the application could not reach that state. Modeling therefore changed both design and tests.
 
-# 4. System Modeling
+![Figure 2: Staff-counter use-case baseline](figures/usecase-counter-work.png)
 
-System modeling is anchored by the parcel lifecycle state machine. The model defines three states: `registered → shelved → collected`, with strict transitions enforced by the service layer (`CR-006`). The original seven-state enumeration was reduced because `ready_for_pickup` and `out_for_delivery` described courier logistics stages that the SRS places outside the system boundary.
+*Figure 2: Staff-counter use-case baseline. Search and exception registration are recorded gaps, not released behaviour.*
 
-Exceptions are not modeled as parcel states. Instead, a separate `ParcelException` flow (`open → processing → resolved`) records damage, loss, or wrong-recipient cases without altering the parcel's physical status. Illegal transitions are rejected with a 422 error.
+## 5. Architecture and Design
 
-# 5. Architectural and Database Design
+ADR-002 selects a layered monolith: Vue 3 SPA, REST/OpenAPI, Spring Boot controller-service-repository, PostgreSQL and Flyway, plus an audit aspect. Microservices were rejected because the team had eight weeks and because handover must update parcel, location and audit in one transaction; distributing that transaction would add failure modes without a user benefit. The schema has nine tables and eighteen foreign keys, and the audit aspect writes one row per handover. Contract-first design froze OpenAPI before frontend feature work, allowing parallel work and making missing operations visible: six operations are specified but not built. The architecture is a deliberate trade-off between deployability and transactional integrity.
 
-Four ADRs record the architecture and rejected options. **Figure 2 shows the three-tier architecture.** `ADR-002` fixes a layered monolith: Vue 3 SPA, REST contract, Spring Boot controller/service/repository, PostgreSQL, Flyway and an audit aspect. We rejected microservices because four developers had eight weeks, and because handover needs one transaction across parcel, location and audit.
+![Figure 3: Layered architecture](figures/architecture.png)
 
-`ADR-003` fixes the frontend, `ADR-005` selects Spring Boot, and `ADR-004` records the deferred recommendation rule. The schema is one Flyway baseline of nine tables and eighteen foreign keys. The parcel model reduced seven statuses to three (`CR-006`).
+*Figure 3: Layered architecture. The audit aspect is inside the same transaction boundary.*
 
-**Figure 2: Architecture (Shows the 3-tier architecture and P0 fix)**
+## 6. Implementation
 
-# 6. Design and Implementation
+The implemented slice is one request, one transaction. `POST /parcels` inserts the parcel, occupies the location and issues the pickup code; `POST /pickup/verify` returns the parcel or an error; `POST /pickup/confirm` records one handover and frees the location. A used code returns 404 `PICKUP_CODE_USED`, while a repeat confirm returns 200 with the same handover (NFR-4). Duplicate waybills return 409 and keep one row. The UI exposes the code once, and the audit aspect records the operator. Implementation stopped at the slice boundary: resident reads and admin/report pages remain contract-only or placeholders and are recorded as gaps rather than presented as complete.
 
-Design and implementation share a contract-first boundary. The OpenAPI contract was frozen before frontend feature work, so Vue pages and Spring services could be built in parallel; **six operations** were explicitly marked specified and not built.
+## 7. Testing and Validation
 
-The frontend uses one Axios wrapper and a tokenised status language: `tokens.css` defines semantic roles once, and `design-system.md` maps parcel, location, pickup and exception states to them. The backend keeps state changes in services, uses Flyway for every schema change, and writes audit rows through one aspect.
+Every pull request ran lint, 90 backend tests, 68 frontend tests and a Docker smoke test; 35 Testcontainers tests across 7 classes exercised real PostgreSQL. Line coverage was 88.79% and branch coverage 64.64% on CI run 43009104923. Three system tests and three first-time-user acceptance observations passed; acceptance times are estimates, not measured benchmarks. Testing found a P0 reachability defect: handover tests had inserted *shelved* directly, masking the missing application path. The defect was fixed and linked to CR-034 to CR-036. Validation remains limited: there is no full end-user acceptance test, some failure paths are partial, and the sample is convenience-based. We report these limits rather than claiming 100% coverage.
 
-# 7. Testing and Validation
+| Requirement | Design | Endpoint | Code | Test | CI |
+|---|---|---|---|---|---|
+| FR-12 | sequence-staff-intake.puml | POST /parcels | ParcelRegistrationService | ParcelRegistrationIntegrationTest | 43009104923 |
 
-Continuous verification runs on every pull request: ESLint, **68 frontend tests**, and **90 backend tests** (including **35 Testcontainers** tests across 7 classes). The test suite achieves **88.79% line coverage** and **64.64% branch coverage**, covering the core intake-to-handover workflows; non-core and some failure paths remain partially tested and are recorded as gaps. The database design incorporates **18 foreign keys** and **37 change records (CRs)** have been logged to date.
+*Figure 4: Traceability chain for FR-12, from requirement to CI evidence (run 43009104923).*
 
-The most important defect came from tracing the model, not from a green test: handover tests inserted `shelved` directly, so they passed while the application could not reach that state. The missing path is now a recorded P0 defect and is fixed.
+## 8. Software Evolution
 
-To verify these P0 requirements, we trace them from specification to CI. **Figure 3 shows the traceability chain for FR-12, from specification through design and code to the CI run.**
+Change is recorded in 37 CRs. CR-006 reduced seven parcel states to three; CR-028 and CR-029 removed a pending-slot concept the schema could not represent and made `locationId` optional; CR-033 made handover idempotent and aligned NFR-4 with the implementation; CR-034 to CR-036 record reachability fixes. The log is a decision record, not decoration: later records correct earlier ones, and each links to code, tests or API changes. The risk register closes a risk only with evidence. This is how the project handled evolution after the baseline moved.
 
-**Figure 3: Traceability chain for FR-12 (Staff intake)**
-```text
-SRS FR-12 → sequence-staff-intake → POST /parcels
-→ ParcelRegistrationService → ParcelRegistrationIntegrationTest
-→ CI 43037569806
-```
+## 9. Conclusion and Reflection
 
-8. Software Evolution
-Change is recorded rather than remembered: thirty-seven change records carry every decision. CR-013 added the resident read paths to the contract, exposing that they were absent from the implementation; they remain specified and not built.
+The project delivered a defensible staff intake-to-handover slice, not the full product. The main lessons are to freeze requirements and write the RTM before design, and to prove reachability end-to-end earlier; both would have reduced late contract movement. The report limits its claims to evidence in the repository.
 
-CR-010/011 corrected the exception types to five values, because CR-006 governed only parcel status. CR-012 single-sourced an exception list seven documents restated. CR-029 corrected CR-028, which invented a pending storage slot the schema cannot represent. CR-033 made handover idempotent, matching NFR-4 against a task description that claimed the opposite.
-
-CR-034–036 record the reachability fixes. The risk register closes a risk only with evidence.
-
-9. Conclusion and Reflection
-Two lessons would change the order of work. Requirements would be frozen before design, because revision in week 3 forced the contract to move under working code. The traceability matrix would be written alongside the requirements rather than reconstructed afterwards, since a matrix built in retrospect proves what was remembered rather than what was decided.
+**Body word count: 947 (within the 1000-word limit).**
