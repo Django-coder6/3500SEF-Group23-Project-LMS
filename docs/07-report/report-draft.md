@@ -28,7 +28,7 @@ R9 Guo Yuhui (14294174)
 
 R10 Chan Sung Ming (14480597)
 
-Body word count: 996 (within the 1000-word limit)
+Body word count: 995 (within the 1000-word limit)
 
 ## 1. Introduction and Scope
 
@@ -40,7 +40,7 @@ We used a hybrid incremental and plan-driven process across five sprints. A fixe
 
 ## 3. Requirements Engineering
 
-Requirements came from four role-specific questionnaires (29 responses: 11 residents, 7 staff, 7 owners and 4 administrators), followed by personas and journey maps. The SRS contains 47 functional and 14 non-functional requirements. MoSCoW prioritisation produced a 32-requirement product Must baseline, and the RTM maps each Must to a design artefact and a reserved test identifier; implementation status is a separate column. That separation prevents mapped from being read as built. Appendix A gives representative requirements and evidence. Seven Musts are implemented in this release; the rest are designed, deferred or explicit gaps. For example, CR-004 demoted location recommendation after 0 of 7 staff selected it, and CR-005 excluded delegated collection after 0 of 11 residents selected it. The Must baseline is a priority list, not a delivery list; the release slice is the riskiest end-to-end transaction, not a random subset.
+Requirements came from four role-specific questionnaires (29 responses: 11 residents, 7 staff, 7 owners and 4 administrators), followed by personas and journey maps. The SRS contains 47 functional and 14 non-functional requirements. MoSCoW prioritisation produced a 32-requirement product Must baseline, and the RTM maps each Must to a design artefact and a reserved test identifier; implementation status is a separate column. That separation prevents mapped from being read as built. The 47 are atomic requirements, not 47 features; Appendix A groups them and lists every ID. Seven Musts are implemented in this release; the rest are designed, deferred or explicit gaps. CR-004 and CR-005 removed recommendation and delegated collection after no staff or resident selected them. The Must baseline is a priority list, not a delivery list; the release slice is the riskiest end-to-end transaction, not a random subset.
 
 ## 4. System Modeling
 
@@ -127,6 +127,202 @@ Table A2: Representative requirements. Status is separate from priority; mapped 
 
 
 Table A3: Elicitation sample. This is a convenience sample, not a representative survey.
+
+The 47 FRs are atomic requirements, not 47 features: 3 access/role, 10 intake/shelving, 3 pickup/handover, 9 resident/notification, 2 exception, 19 owner/admin and 1 admin-audit requirement. Most of the count is therefore outside the staff counter slice: 19 owner/admin and 9 resident requirements are designed but not built. The 14 NFRs are quality constraints, not features. Table A4 groups the FRs; Table A5 lists every FR; Table A6 lists every NFR.
+
+
+
+| Area | FR IDs | Count | Implemented |
+
+|---|---|---|---|
+
+| Access and roles | FR-1, FR-45, FR-46 | 3 | 2 |
+
+| Intake and shelving | FR-11 to FR-20 | 10 | 2 |
+
+| Pickup and handover | FR-21, FR-22, FR-25 | 3 | 3 |
+
+| Resident and notification | FR-2 to FR-10 | 9 | 0 |
+
+| Exception | FR-23, FR-24 | 2 | 0 |
+
+| Owner and administration | FR-26 to FR-44 | 19 | 0 |
+
+| Admin audit | FR-47 | 1 | 0 |
+
+| Total |  | 47 | 7 |
+
+
+
+Table A4: Functional requirements grouped by area. Status is implementation, not priority.
+
+## Appendix A (continued) - Full requirement lists
+
+
+
+| ID | Requirement | Priority | Status |
+
+|---|---|---|---|
+
+| FR-1 | A registered resident signs in via the web app | Must | implemented |
+
+| FR-2 | A resident sees only their own parcels in the list | Must | designed |
+
+| FR-3 | A resident opens a detail view of their own parcel | Must | designed |
+
+| FR-4 | Each parcel shows its current approved lifecycle status to its resident | Must | designed |
+
+| FR-5 | A shelved parcel's storage location is shown to its resident | Must | designed |
+
+| FR-6 | Shelving a parcel creates one in-system arrival notification | Must | designed |
+
+| FR-7 | A resident views their own in-system arrival notifications | Must | designed |
+
+| FR-8 | A resident retrieves their own parcel's pickup code via an authenticated action | Must | designed |
+
+| FR-9 | [Future work] A resident issues a time-limited delegated collection authorization | Should not | - |
+
+| FR-10 | [Future work] A resident revokes an unused delegated collection authorization | Should not | - |
+
+| FR-11 | Staff view parcels at their assigned collection point | Must | not implemented |
+
+| FR-12 | A staff member registers a single arriving parcel | Must | implemented |
+
+| FR-13 | Staff view a parcel's handling history | Must | designed |
+
+| FR-14 | Staff record a parcel's storage location when shelving | Must | implemented |
+
+| FR-15 | Storage location availability is displayed to staff | Must | designed |
+
+| FR-16 | Staff manually select a storage location | Must | designed |
+
+| FR-17 | A duplicate waybill number is rejected | Must | designed |
+
+| FR-18 | A batch of up to 50 parcels is registered in one operation | Must | designed |
+
+| FR-19 | An optional location suggestion is shown, never auto-applied | Could | deferred |
+
+| FR-20 | Staff can ignore a location suggestion and shelve manually | Could | deferred |
+
+| FR-21 | Staff verify an active pickup code before handover | Must | implemented |
+
+| FR-22 | A confirmed handover records the operator from the session | Must | implemented |
+
+| FR-23 | Staff record an exception as exactly one of five approved types | Should | designed |
+
+| FR-24 | An exception moves only through open → processing → resolved | Should | designed |
+
+| FR-25 | Confirming a handover creates one audit entry | Must | implemented |
+
+| FR-26 | An owner views the daily summary for their managed points | Must | designed |
+
+| FR-27 | An owner views parcel records from their managed points | Must | designed |
+
+| FR-28 | An owner filters parcels by a managed point | Must | designed |
+
+| FR-29 | An overdue report covers only the owner's managed points | Must | designed |
+
+| FR-30 | An owner compares volume across their managed points | Should | designed |
+
+| FR-31 | An owner views the collected count per managed point | Should | designed |
+
+| FR-32 | An owner lists staff at their managed points | Must | designed |
+
+| FR-33 | An owner assigns a staff account to their managed point | Should | designed |
+
+| FR-34 | Owner parcel queries are limited to managed points | Must | designed |
+
+| FR-35 | An owner views logs only for managed points | Must | designed |
+
+| FR-36 | An owner filters logs by parcel ID | Should | designed |
+
+| FR-37 | An owner filters logs by storage location ID | Should | designed |
+
+| FR-38 | An owner views the retention period of a managed point | Should | designed |
+
+| FR-39 | An overdue fee is calculated without taking payment | Should | designed |
+
+| FR-40 | A system administrator lists accounts across all points | Must | designed |
+
+| FR-41 | A system administrator approves a pending registration | Should | designed |
+
+| FR-42 | A system administrator disables a user account | Must | designed |
+
+| FR-43 | A system administrator creates a collection point | Must | designed |
+
+| FR-44 | A system administrator updates a point's basic configuration | Should | designed |
+
+| FR-45 | A user is limited to their role's permitted operations | Must | implemented |
+
+| FR-46 | Every scoped record carries a collection point identifier | Must | designed |
+
+| FR-47 | A system administrator views logs across all points | Must | designed |
+
+
+
+Table A5: All 47 functional requirements, with MoSCoW priority and implementation status.
+
+
+
+| Group | NFR IDs | Count |
+
+|---|---|---|
+
+| Timing and performance | NFR-1, NFR-2 | 2 |
+
+| Security and audit | NFR-3, NFR-6, NFR-8, NFR-11 | 4 |
+
+| Reliability and data integrity | NFR-4, NFR-5, NFR-7 | 3 |
+
+| Usability | NFR-9, NFR-10 | 2 |
+
+| Correctness | NFR-12 | 1 |
+
+| Operational quality | NFR-13, NFR-14 | 2 |
+
+| Total |  | 14 |
+
+
+
+Table A6a: Non-functional requirements grouped by quality concern.
+
+
+
+| ID | Requirement | Target / category |
+
+|---|---|---|
+
+| NFR-1 | The system shall notify a resident that a parcel has arrived within a bounded delay of the par... | Within 5 minutes as the design target; within 60 minut... |
+
+| NFR-2 | The system shall let a resident complete the collection journey, from opening the parcel list... | 3 to 5 minutes as the design target; 10 minutes as the... |
+
+| NFR-3 | The system shall authorise every endpoint by the role of the authenticated session, and shall... | Binary — every endpoint enforces its permitted roles a... |
+
+| NFR-4 | The system shall make handover confirmation idempotent: confirming the same pickup code more t... | Binary — one handover record per pickup code, under co... |
+
+| NFR-5 | The system shall not allow one storage location to hold more than one active parcel at a time. | Binary — at most one active parcel per location |
+
+| NFR-6 | The system shall take the handover operator identity from the authenticated session and never... | Binary — no request carries an operator identity, and... |
+
+| NFR-7 | The system shall treat a pickup code as single use and time limited: a code that has been used... | Binary — a used or expired code is refused |
+
+| NFR-8 | The system shall keep the data of one collection point separate from another within one shared... | Binary — every scoped record carries a collection poin... |
+
+| NFR-9 | The system shall state every error in terms a resident or staff member can act on, naming what... | Binary — every error message names an action, and no r... |
+
+| NFR-10 | The system shall be usable on a 375 px viewport, with a single column layout, no horizontal sc... | Binary — no horizontal scroll at 375 px, and every con... |
+
+| NFR-11 | The system shall record an audit entry for every sensitive operation, holding the actor, the a... | Binary — no sensitive operation without an audit entry... |
+
+| NFR-12 | The system shall calculate an overdue fee that agrees with an independent recalculation for ev... | At least 20 prepared cases, all agreeing to the cent |
+
+| NFR-13 | The system shall keep the automated test suite passing on every commit to develop, and shall t... | Binary — the pipeline is green on every merge into dev... |
+
+| NFR-14 | The system shall start from a clean checkout with one command, and every schema change shall b... | Binary — one command starts the stack; no manual schem... |
+
+
+
+Table A6b: All 14 non-functional requirements, with target or measurement.
 
 ## Appendix B - System models
 
